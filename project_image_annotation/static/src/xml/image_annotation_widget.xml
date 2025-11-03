@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+    <t t-name="project_image_annotation.ImageAnnotationWidget">
+        <div class="image_annotation_widget">
+            <div class="image-container" t-ref="imageContainer">
+                <t t-if="imageUrl">
+                    <img 
+                        t-ref="annotationImage"
+                        t-att-src="imageUrl" 
+                        class="annotation-image"
+                        t-on-click="onImageClick"
+                        t-on-load="onImageLoad"
+                        alt="Imagen para anotar"
+                    />
+                    
+                    <!-- Marcadores de anotaciones existentes -->
+                    <t t-foreach="state.annotations" t-as="annotation" t-key="annotation.id">
+                        <div class="annotation-marker" 
+                             t-att-style="getNumberStyle(annotation)"
+                             t-on-click.stop="(ev) => this.showAnnotationDetails(annotation, ev.clientX, ev.clientY)">
+                            <span class="annotation-number" t-esc="annotation.numero"/>
+                        </div>
+                        <div class="annotation-arrow" t-att-style="getArrowStyle(annotation)"/>
+                    </t>
+                </t>
+                <t t-else="">
+                    <div class="alert alert-info">
+                        No hay imagen cargada. Por favor, sube una imagen primero.
+                    </div>
+                </t>
+            </div>
+
+            <!-- Popup para agregar/editar anotación -->
+            <t t-if="state.showPopup">
+                <div class="annotation-popup-overlay" t-on-click="closePopup"/>
+                <div class="annotation-popup" 
+                     t-att-style="`left: ${state.popupPosition.x}px; top: ${state.popupPosition.y}px;`">
+                    <div class="popup-header">
+                        <h4>
+                            <t t-if="state.currentAnnotation.isNew">Nueva Anotación</t>
+                            <t t-else="">Editar Anotación</t>
+                        </h4>
+                        <button class="btn-close" t-on-click="closePopup">×</button>
+                    </div>
+                    
+                    <div class="popup-body">
+                        <div class="form-group">
+                            <label>Número:</label>
+                            <input 
+                                type="number" 
+                                class="form-control"
+                                t-att-value="state.currentAnnotation.numero"
+                                t-on-input="(ev) => this.updateField('numero', parseInt(ev.target.value))"
+                            />
+                        </div>
+
+                        <div class="form-group">
+                            <label>Descripción: *</label>
+                            <textarea 
+                                class="form-control"
+                                rows="3"
+                                t-att-value="state.currentAnnotation.descripcion"
+                                t-on-input="(ev) => this.updateField('descripcion', ev.target.value)"
+                                placeholder="Describe la anotación..."
+                            />
+                        </div>
+
+                        <div class="form-group">
+                            <label>Secuencia:</label>
+                            <input 
+                                type="number" 
+                                class="form-control"
+                                t-att-value="state.currentAnnotation.secuencia"
+                                t-on-input="(ev) => this.updateField('secuencia', parseInt(ev.target.value))"
+                            />
+                        </div>
+
+                        <div class="form-group">
+                            <label>Estado:</label>
+                            <select 
+                                class="form-control"
+                                t-att-value="state.currentAnnotation.estado"
+                                t-on-change="(ev) => this.updateField('estado', ev.target.value)">
+                                <option value="pendiente">Pendiente</option>
+                                <option value="en_proceso">En Proceso</option>
+                                <option value="completado">Completado</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Color:</label>
+                            <input 
+                                type="color" 
+                                class="form-control"
+                                t-att-value="state.currentAnnotation.color"
+                                t-on-input="(ev) => this.updateField('color', ev.target.value)"
+                            />
+                        </div>
+
+                        <div class="form-group">
+                            <label>Notas Adicionales:</label>
+                            <textarea 
+                                class="form-control"
+                                rows="2"
+                                t-att-value="state.currentAnnotation.notas_adicionales || ''"
+                                t-on-input="(ev) => this.updateField('notas_adicionales', ev.target.value)"
+                                placeholder="Información adicional..."
+                            />
+                        </div>
+                    </div>
+
+                    <div class="popup-footer">
+                        <button class="btn btn-primary" t-on-click="saveAnnotation">
+                            <i class="fa fa-save"/> Guardar
+                        </button>
+                        <t t-if="!state.currentAnnotation.isNew">
+                            <button class="btn btn-danger" t-on-click="deleteAnnotation">
+                                <i class="fa fa-trash"/> Eliminar
+                            </button>
+                        </t>
+                        <button class="btn btn-secondary" t-on-click="closePopup">
+                            Cancelar
+                        </button>
+                    </div>
+                </div>
+            </t>
+        </div>
+    </t>
+</templates>
