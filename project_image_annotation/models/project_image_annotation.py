@@ -4,11 +4,12 @@ from odoo import models, fields, api
 class ProjectImageAnnotation(models.Model):
     _name = 'project.image.annotation'
     _description = 'Anotaciones de Imágenes en Proyectos'
+    _inherit = ['mail.thread', 'mail.activity.mixin']
     _order = 'sequence, id'
 
-    name = fields.Char(string='Nombre', required=True)
-    project_id = fields.Many2one('project.project', string='Proyecto', required=True, ondelete='cascade')
-    task_id = fields.Many2one('project.task', string='Tarea', ondelete='cascade')
+    name = fields.Char(string='Nombre', required=True, tracking=True)
+    project_id = fields.Many2one('project.project', string='Proyecto', required=True, ondelete='cascade', tracking=True)
+    task_id = fields.Many2one('project.task', string='Tarea', ondelete='cascade', tracking=True)
     image = fields.Binary(string='Imagen', required=True, attachment=True)
     image_filename = fields.Char(string='Nombre del archivo')
     sequence = fields.Integer(string='Secuencia', default=10)
