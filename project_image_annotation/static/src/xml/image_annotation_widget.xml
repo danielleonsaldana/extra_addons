@@ -10,6 +10,7 @@
                         class="annotation-image"
                         t-on-click="onImageClick"
                         t-on-load="onImageLoad"
+                        t-on-error="onImageError"
                         alt="Imagen para anotar"
                     />
                     
@@ -24,8 +25,17 @@
                     </t>
                 </t>
                 <t t-else="">
-                    <div class="alert alert-info">
-                        No hay imagen cargada. Por favor, sube una imagen primero.
+                    <div class="alert alert-info" style="margin: 20px;">
+                        <i class="fa fa-info-circle"/> No hay imagen cargada. 
+                        <br/><br/>
+                        <strong>Pasos para agregar una imagen:</strong>
+                        <ol style="margin-top: 10px; text-align: left;">
+                            <li>Ve a la pestaña "Imagen"</li>
+                            <li>Haz clic en "Editar" (icono de lápiz)</li>
+                            <li>Sube tu imagen</li>
+                            <li>Guarda el registro (Ctrl+S)</li>
+                            <li>Vuelve a esta pestaña</li>
+                        </ol>
                     </div>
                 </t>
             </div>

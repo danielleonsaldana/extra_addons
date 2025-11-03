@@ -3,6 +3,7 @@
 import { registry } from "@web/core/registry";
 import { Component, useState, useRef, onMounted, onWillUpdateProps } from "@odoo/owl";
 import { useService } from "@web/core/utils/hooks";
+import { _t } from "@web/core/l10n/translation";
 
 export class ImageAnnotationWidget extends Component {
     setup() {
@@ -22,33 +23,89 @@ export class ImageAnnotationWidget extends Component {
         this.containerRef = useRef("imageContainer");
 
         onMounted(() => {
+            console.log('[ImageAnnotation] Component mounted');
+            console.log('[ImageAnnotation] Props:', this.props);
             this.loadAnnotations();
         });
 
-        onWillUpdateProps(() => {
+        onWillUpdateProps((nextProps) => {
+            console.log('[ImageAnnotation] Props will update');
             this.loadAnnotations();
         });
     }
 
     async loadAnnotations() {
-        if (!this.props.record.data.id) return;
+        if (!this.props.record.data.id) {
+            console.log('[ImageAnnotation] No record ID, skipping annotation load');
+            return;
+        }
         
-        const annotations = await this.orm.searchRead(
-            "project.image.annotation.point",
-            [["annotation_id", "=", this.props.record.data.id]],
-            ["numero", "descripcion", "secuencia", "pos_x", "pos_y", "color", "estado"]
-        );
+        console.log('[ImageAnnotation] Loading annotations for record:', this.props.record.data.id);
         
-        this.state.annotations = annotations;
+        try {
+            const annotations = await this.orm.searchRead(
+                "project.image.annotation.point",
+                [["annotation_id", "=", this.props.record.data.id]],
+                ["numero", "descripcion", "secuencia", "pos_x", "pos_y", "color", "estado"]
+            );
+            
+            console.log('[ImageAnnotation] Loaded annotations:', annotations.length);
+            this.state.annotations = annotations;
+        } catch (error) {
+            console.error('[ImageAnnotation] Error loading annotations:', error);
+        }
     }
 
     get imageUrl() {
-        if (!this.props.record.data.image) return null;
-        return `data:image/png;base64,${this.props.record.data.image}`;
+        // Obtener el valor del campo image
+        const record = this.props.record;
+        let imageData = null;
+        
+        // Intentar diferentes formas de acceder al campo image
+        if (record.data && record.data.image) {
+            imageData = record.data.image;
+        } else if (this.props.value) {
+            imageData = this.props.value;
+        }
+        
+        console.log('[ImageAnnotation] Record resId:', record.resId);
+        console.log('[ImageAnnotation] Image data type:', typeof imageData);
+        console.log('[ImageAnnotation] Image data exists:', !!imageData);
+        
+        if (!imageData) {
+            console.log('[ImageAnnotation] No image data found in any format');
+            return null;
+        }
+        
+        // Si ya es una URL completa, devolverla
+        if (typeof imageData === 'string' && imageData.startsWith('data:image')) {
+            console.log('[ImageAnnotation] Image is already a data URL');
+            return imageData;
+        }
+        
+        // Si es un string base64, construir la URL
+        if (typeof imageData === 'string') {
+            // Limpiar cualquier prefijo data:image si existe
+            const cleanData = imageData.replace(/^data:image\/[^;]+;base64,/, '');
+            const url = `data:image/png;base64,${cleanData}`;
+            console.log('[ImageAnnotation] Generated image URL (length:', url.length, ')');
+            return url;
+        }
+        
+        console.log('[ImageAnnotation] Unexpected image data type');
+        return null;
     }
 
-    onImageLoad() {
+    onImageLoad(ev) {
+        console.log('[ImageAnnotation] Image loaded successfully:', ev.target.naturalWidth, 'x', ev.target.naturalHeight);
         this.state.imageLoaded = true;
+    }
+    
+    onImageError(ev) {
+        console.error('[ImageAnnotation] Error loading image:', ev);
+        this.notification.add("Error al cargar la imagen. Verifica que la imagen esté correctamente subida.", { 
+            type: "danger" 
+        });
     }
 
     async onImageClick(ev) {
