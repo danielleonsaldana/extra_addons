@@ -35,17 +35,17 @@ export class ImageAnnotationWidget extends Component {
     }
 
     async loadAnnotations() {
-        if (!this.props.record.data.id) {
+        if (!this.props.record.resId) {
             console.log('[ImageAnnotation] No record ID, skipping annotation load');
             return;
         }
         
-        console.log('[ImageAnnotation] Loading annotations for record:', this.props.record.data.id);
+        console.log('[ImageAnnotation] Loading annotations for record:', this.props.record.resId);
         
         try {
             const annotations = await this.orm.searchRead(
                 "project.image.annotation.point",
-                [["annotation_id", "=", this.props.record.data.id]],
+                [["annotation_id", "=", this.props.record.resId]],
                 ["numero", "descripcion", "secuencia", "pos_x", "pos_y", "color", "estado"]
             );
             
@@ -55,66 +55,40 @@ export class ImageAnnotationWidget extends Component {
             console.error('[ImageAnnotation] Error loading annotations:', error);
         }
     }
+    
+    get hasImage() {
+        const record = this.props.record;
+        // Verificar si hay un resId (registro guardado) y si el campo image tiene valor
+        const hasResId = !!record.resId;
+        const hasImageData = record.data && record.data.image;
+        
+        console.log('[ImageAnnotation] Has resId:', hasResId);
+        console.log('[ImageAnnotation] Has image data:', !!hasImageData);
+        
+        return hasResId && hasImageData;
+    }
 
     get imageUrl() {
-        // Obtener el valor del campo image
         const record = this.props.record;
-        let imageData = null;
         
-        // Intentar diferentes formas de acceder al campo image
-        if (record.data && record.data.image) {
-            imageData = record.data.image;
-        } else if (this.props.value) {
-            imageData = this.props.value;
-        }
+        console.log('[ImageAnnotation] ===== DEBUG IMAGE URL =====');
+        console.log('[ImageAnnotation] Record:', record);
+        console.log('[ImageAnnotation] Record.data:', record.data);
+        console.log('[ImageAnnotation] Record.resId:', record.resId);
+        console.log('[ImageAnnotation] Props.value:', this.props.value);
         
-        console.log('[ImageAnnotation] Record resId:', record.resId);
-        console.log('[ImageAnnotation] Image data type:', typeof imageData);
-        console.log('[ImageAnnotation] Image data exists:', !!imageData);
-        
-        if (!imageData) {
-            console.log('[ImageAnnotation] No image data found in any format');
+        // Si no hay resId, no podemos cargar la imagen
+        if (!record.resId) {
+            console.log('[ImageAnnotation] No resId, cannot load image');
             return null;
         }
         
-        // Si ya es una URL completa, devolverla
-        if (typeof imageData === 'string' && imageData.startsWith('data:image')) {
-            console.log('[ImageAnnotation] Image is already a data URL');
-            return imageData;
-        }
+        // En Odoo, los campos Binary generalmente se acceden por URL, no por base64 directo
+        // Construir URL para acceder a la imagen
+        const imageUrl = `/web/image?model=project.image.annotation&id=${record.resId}&field=image&unique=${Date.now()}`;
+        console.log('[ImageAnnotation] Using image URL:', imageUrl);
         
-        // Si es un string base64, construir la URL
-        if (typeof imageData === 'string') {
-            // Limpiar cualquier prefijo data:image si existe
-            const cleanData = imageData.replace(/^data:image\/[^;]+;base64,/, '');
-            
-            // Detectar el tipo de imagen por los primeros bytes del base64
-            let mimeType = 'image/png'; // default
-            
-            // Decodificar los primeros caracteres para detectar el tipo
-            if (cleanData.startsWith('/9j/')) {
-                mimeType = 'image/jpeg'; // JPG/JPEG
-                console.log('[ImageAnnotation] Detected JPEG image');
-            } else if (cleanData.startsWith('iVBOR')) {
-                mimeType = 'image/png'; // PNG
-                console.log('[ImageAnnotation] Detected PNG image');
-            } else if (cleanData.startsWith('R0lGOD')) {
-                mimeType = 'image/gif'; // GIF
-                console.log('[ImageAnnotation] Detected GIF image');
-            } else if (cleanData.startsWith('UklGR')) {
-                mimeType = 'image/webp'; // WebP
-                console.log('[ImageAnnotation] Detected WebP image');
-            } else {
-                console.log('[ImageAnnotation] Unknown image type, using default (PNG)');
-            }
-            
-            const url = `data:${mimeType};base64,${cleanData}`;
-            console.log('[ImageAnnotation] Generated image URL with mime:', mimeType, '(length:', url.length, ')');
-            return url;
-        }
-        
-        console.log('[ImageAnnotation] Unexpected image data type');
-        return null;
+        return imageUrl;
     }
 
     onImageLoad(ev) {
@@ -145,7 +119,7 @@ export class ImageAnnotationWidget extends Component {
         if (!this.state.imageLoaded) return;
         
         // Verificar que el registro esté guardado
-        if (!this.props.record.data.id) {
+        if (!this.props.record.resId) {
             this.notification.add("Por favor, guarda el registro antes de agregar anotaciones", { 
                 type: "warning" 
             });
@@ -186,7 +160,7 @@ export class ImageAnnotationWidget extends Component {
             : 1;
 
         this.state.currentAnnotation = {
-            annotation_id: this.props.record.data.id,
+            annotation_id: this.props.record.resId,
             numero: nextNumero,
             descripcion: '',
             secuencia: nextNumero * 10,

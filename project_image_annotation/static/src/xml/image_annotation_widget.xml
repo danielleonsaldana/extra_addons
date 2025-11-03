@@ -3,7 +3,7 @@
     <t t-name="project_image_annotation.ImageAnnotationWidget">
         <div class="image_annotation_widget">
             <div class="image-container" t-ref="imageContainer">
-                <t t-if="imageUrl">
+                <t t-if="hasImage">
                     <img 
                         t-ref="annotationImage"
                         t-att-src="imageUrl" 
