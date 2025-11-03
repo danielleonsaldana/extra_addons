@@ -53,6 +53,14 @@ export class ImageAnnotationWidget extends Component {
 
     async onImageClick(ev) {
         if (!this.state.imageLoaded) return;
+        
+        // Verificar que el registro esté guardado
+        if (!this.props.record.data.id) {
+            this.notification.add("Por favor, guarda el registro antes de agregar anotaciones", { 
+                type: "warning" 
+            });
+            return;
+        }
 
         const rect = ev.currentTarget.getBoundingClientRect();
         const x = ((ev.clientX - rect.left) / rect.width) * 100;

@@ -7,6 +7,7 @@ class ProjectImageAnnotation(models.Model):
     _inherit = ['mail.thread', 'mail.activity.mixin']
     _order = 'sequence, id'
 
+    active = fields.Boolean(string='Activo', default=True)
     name = fields.Char(string='Nombre', required=True, tracking=True)
     project_id = fields.Many2one('project.project', string='Proyecto', required=True, ondelete='cascade', tracking=True)
     task_id = fields.Many2one('project.task', string='Tarea', ondelete='cascade', tracking=True)

@@ -8,7 +8,7 @@
             <form string="Anotación de Imagen">
                 <sheet>
                     <div class="oe_button_box" name="button_box">
-                        <button name="toggle_active" type="object" class="oe_stat_button" icon="fa-archive">
+                        <button class="oe_stat_button" icon="fa-tasks" type="object">
                             <field name="annotation_count" string="Anotaciones" widget="statinfo"/>
                         </button>
                     </div>
