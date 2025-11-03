@@ -1,0 +1,8 @@
+<odoo>
+    <template id="company_logo_template" name="Company Logo Navbar" inherit_id="web.webclient_bootstrap">
+        <xpath expr="//header" position="inside">
+            <img src="/mx_grupo_mla_company_logo/static/src/img/company_logo.png" 
+                 alt="Company Logo" class="o_company_logo"/>
+        </xpath>
+    </template>
+</odoo>

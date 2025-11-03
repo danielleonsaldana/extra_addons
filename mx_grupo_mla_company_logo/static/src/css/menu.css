@@ -1,0 +1,80 @@
+/* Logo de empresa en navbar - Odoo 17 */
+.o_company_logo_custom {
+    display: flex !important;
+    align-items: center !important;
+    margin-right: 1rem !important;
+    padding-right: 1rem !important;
+    border-right: 1px solid var(--border-color, #dee2e6) !important;
+    height: 100% !important;
+    transition: opacity 0.2s ease;
+}
+
+.o_company_logo_custom:hover {
+    opacity: 0.8;
+}
+
+/* Imagen del logo */
+.o_company_logo_img {
+    height: 32px !important;
+    max-width: 120px !important;
+    object-fit: contain !important;
+    border-radius: 4px;
+    cursor: pointer !important;
+}
+
+/* Logo de texto */
+.o_company_logo_text {
+    font-weight: 500 !important;
+    color: var(--primary, #0d6efd) !important;
+    font-size: 0.875rem !important;
+    cursor: pointer !important;
+    display: flex !important;
+    align-items: center !important;
+}
+
+.o_company_logo_text:hover {
+    color: var(--primary-emphasis, #052c65) !important;
+}
+
+.o_company_logo_text i {
+    margin-right: 0.5rem !important;
+    font-size: 1rem !important;
+}
+
+.o_company_logo_text span {
+    max-width: 150px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .o_company_logo_custom {
+        margin-right: 0.5rem !important;
+        padding-right: 0.5rem !important;
+    }
+    
+    .o_company_logo_text span {
+        max-width: 100px;
+    }
+}
+
+@media (max-width: 576px) {
+    .o_company_logo_custom {
+        display: none !important;
+    }
+}
+
+/* Tema oscuro */
+.o_dark .o_company_logo_custom {
+    border-right-color: var(--border-color-dark, rgba(255, 255, 255, 0.1)) !important;
+}
+
+.o_dark .o_company_logo_text {
+    color: var(--primary-dark, #6ea8fe) !important;
+}
+
+.o_dark .o_company_logo_text:hover {
+    color: var(--primary-emphasis-dark, #9ec5fe) !important;
+}
