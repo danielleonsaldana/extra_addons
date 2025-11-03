@@ -87,8 +87,29 @@ export class ImageAnnotationWidget extends Component {
         if (typeof imageData === 'string') {
             // Limpiar cualquier prefijo data:image si existe
             const cleanData = imageData.replace(/^data:image\/[^;]+;base64,/, '');
-            const url = `data:image/png;base64,${cleanData}`;
-            console.log('[ImageAnnotation] Generated image URL (length:', url.length, ')');
+            
+            // Detectar el tipo de imagen por los primeros bytes del base64
+            let mimeType = 'image/png'; // default
+            
+            // Decodificar los primeros caracteres para detectar el tipo
+            if (cleanData.startsWith('/9j/')) {
+                mimeType = 'image/jpeg'; // JPG/JPEG
+                console.log('[ImageAnnotation] Detected JPEG image');
+            } else if (cleanData.startsWith('iVBOR')) {
+                mimeType = 'image/png'; // PNG
+                console.log('[ImageAnnotation] Detected PNG image');
+            } else if (cleanData.startsWith('R0lGOD')) {
+                mimeType = 'image/gif'; // GIF
+                console.log('[ImageAnnotation] Detected GIF image');
+            } else if (cleanData.startsWith('UklGR')) {
+                mimeType = 'image/webp'; // WebP
+                console.log('[ImageAnnotation] Detected WebP image');
+            } else {
+                console.log('[ImageAnnotation] Unknown image type, using default (PNG)');
+            }
+            
+            const url = `data:${mimeType};base64,${cleanData}`;
+            console.log('[ImageAnnotation] Generated image URL with mime:', mimeType, '(length:', url.length, ')');
             return url;
         }
         
@@ -103,9 +124,21 @@ export class ImageAnnotationWidget extends Component {
     
     onImageError(ev) {
         console.error('[ImageAnnotation] Error loading image:', ev);
-        this.notification.add("Error al cargar la imagen. Verifica que la imagen esté correctamente subida.", { 
-            type: "danger" 
-        });
+        console.error('[ImageAnnotation] Image src:', ev.target?.src?.substring(0, 100));
+        
+        this.notification.add(
+            "Error al cargar la imagen. Esto puede deberse a:\n" +
+            "1. Formato de imagen no compatible\n" +
+            "2. Imagen corrupta o dañada\n" +
+            "3. Intenta subir la imagen de nuevo\n\n" +
+            "Formatos soportados: JPG, PNG, GIF, WebP", 
+            { 
+                type: "danger",
+                sticky: true 
+            }
+        );
+        
+        this.state.imageLoaded = false;
     }
 
     async onImageClick(ev) {
