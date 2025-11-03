@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 {
     'name': 'Project Image Annotations',
-    'version': '17.0.1.0.2',
+    'version': '17.0.1.0.3',
     'category': 'Project',
     'summary': 'Anotaciones interactivas en imágenes para proyectos de Odoo',
     'description': """
