@@ -7,13 +7,13 @@
             <field name="name">purchase.internal.request.line.tree</field>
             <field name="model">purchase.internal.request.line</field>
             <field name="arch" type="xml">
-                <tree editable="bottom">
+                <list editable="bottom">
                     <field name="product_id" optional="show"/>
                     <field name="description"/>
                     <field name="quantity"/>
                     <field name="uom_id"/>
                     <field name="notes" optional="hide"/>
-                </tree>
+                </list>
             </field>
         </record>
 
@@ -163,7 +163,7 @@
                                 </group>
                                 
                                 <field name="rfq_ids" readonly="1">
-                                    <tree>
+                                    <list>
                                         <field name="name"/>
                                         <field name="partner_id"/>
                                         <field name="date_order"/>
@@ -171,7 +171,7 @@
                                         <field name="currency_id" column_invisible="1"/>
                                         <field name="state"/>
                                         <field name="is_selected_rfq" column_invisible="1"/>
-                                    </tree>
+                                    </list>
                                 </field>
                             </page>
                             
@@ -223,7 +223,7 @@
             <field name="name">purchase.internal.request.tree</field>
             <field name="model">purchase.internal.request</field>
             <field name="arch" type="xml">
-                <tree string="Solicitudes de Compra Internas" 
+                <list string="Solicitudes de Compra Internas" 
                       decoration-info="state == 'draft'" 
                       decoration-muted="state == 'cancelled'"
                       decoration-success="state == 'approved'"
@@ -241,7 +241,7 @@
                            decoration-success="state in ['approved', 'done']"
                            decoration-danger="state == 'rejected'"/>
                     <field name="company_id" groups="base.group_multi_company"/>
-                </tree>
+                </list>
             </field>
         </record>
 
