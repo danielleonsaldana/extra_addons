@@ -123,7 +123,7 @@
                         </group>
                         
                         <notebook>
-                            <!--<page string="Productos/Servicios" name="lines">
+                            <page string="Productos/Servicios" name="lines">
                                 <field name="line_ids" readonly="state not in ['draft', 'submitted']">
                                     <tree editable="bottom">
                                         <field name="sequence" widget="handle"/>
@@ -134,7 +134,7 @@
                                         <field name="notes" optional="hide"/>
                                     </tree>
                                 </field>
-                            </page>-->
+                            </page>
                             
                             <page string="Cotizaciones" name="quotations" 
                                   invisible="state in ['draft', 'submitted']">
