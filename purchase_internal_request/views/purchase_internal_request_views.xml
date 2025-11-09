@@ -2,6 +2,21 @@
 <odoo>
     <data>
 
+        <!-- Vista Tree para Líneas de Solicitud -->
+        <record id="view_purchase_internal_request_line_tree" model="ir.ui.view">
+            <field name="name">purchase.internal.request.line.tree</field>
+            <field name="model">purchase.internal.request.line</field>
+            <field name="arch" type="xml">
+                <tree editable="bottom">
+                    <field name="product_id" optional="show"/>
+                    <field name="description"/>
+                    <field name="quantity"/>
+                    <field name="uom_id"/>
+                    <field name="notes" optional="hide"/>
+                </tree>
+            </field>
+        </record>
+
         <!-- Vista de Formulario -->
         <record id="view_purchase_internal_request_form" model="ir.ui.view">
             <field name="name">purchase.internal.request.form</field>
@@ -124,15 +139,7 @@
                         
                         <notebook>
                             <page string="Productos/Servicios" name="lines">
-                                <field name="line_ids" readonly="state not in ['draft', 'submitted']" context="{'tree_view_ref': 'purchase_internal_request.view_purchase_internal_request_line_tree'}">
-                                    <tree editable="bottom">
-                                        <field name="product_id" optional="show"/>
-                                        <field name="description"/>
-                                        <field name="quantity"/>
-                                        <field name="uom_id"/>
-                                        <field name="notes" optional="hide"/>
-                                    </tree>
-                                </field>
+                                <field name="line_ids" readonly="state not in ['draft', 'submitted']"/>
                             </page>
                             
                             <page string="Cotizaciones" name="quotations" 
