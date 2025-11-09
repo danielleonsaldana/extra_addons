@@ -168,9 +168,9 @@
                                         <field name="partner_id"/>
                                         <field name="date_order"/>
                                         <field name="amount_total" sum="Total"/>
-                                        <field name="currency_id" column_invisible="1"/>
+                                        <field name="currency_id" invisible="1"/>
                                         <field name="state"/>
-                                        <field name="is_selected_rfq" column_invisible="1"/>
+                                        <field name="is_selected_rfq" invisible="1"/>
                                     </list>
                                 </field>
                             </page>
@@ -234,7 +234,7 @@
                     <field name="department_id"/>
                     <field name="purchase_manager_id"/>
                     <field name="selected_rfq_amount" sum="Total" optional="hide"/>
-                    <field name="currency_id" column_invisible="1"/>
+                    <field name="currency_id" invisible="1"/>
                     <field name="state" widget="badge" 
                            decoration-info="state in ['draft', 'submitted']"
                            decoration-warning="state in ['in_progress', 'quotation_review', 'pending_approval']"
