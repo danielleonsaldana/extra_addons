@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="0">
+        
+        <!-- Grupos de Acceso -->
+        <record id="group_purchase_request_user" model="res.groups">
+            <field name="name">Usuario de Solicitudes</field>
+            <field name="category_id" ref="base.module_category_purchases"/>
+            <field name="implied_ids" eval="[(4, ref('base.group_user'))]"/>
+        </record>
+
+        <record id="group_purchase_request_manager" model="res.groups">
+            <field name="name">Gestor de Compras</field>
+            <field name="category_id" ref="base.module_category_purchases"/>
+            <field name="implied_ids" eval="[(4, ref('group_purchase_request_user'))]"/>
+        </record>
+
+        <record id="group_purchase_request_approver" model="res.groups">
+            <field name="name">Aprobador de Solicitudes</field>
+            <field name="category_id" ref="base.module_category_purchases"/>
+            <field name="implied_ids" eval="[(4, ref('group_purchase_request_user'))]"/>
+        </record>
+
+        <!-- Reglas de Registro -->
+        
+        <!-- Los usuarios pueden ver sus propias solicitudes -->
+        <record id="purchase_request_user_rule" model="ir.rule">
+            <field name="name">Usuario ve sus solicitudes</field>
+            <field name="model_id" ref="model_purchase_internal_request"/>
+            <field name="domain_force">[('employee_id.user_id', '=', user.id)]</field>
+            <field name="groups" eval="[(4, ref('group_purchase_request_user'))]"/>
+            <field name="perm_read" eval="True"/>
+            <field name="perm_write" eval="True"/>
+            <field name="perm_create" eval="True"/>
+            <field name="perm_unlink" eval="False"/>
+        </record>
+
+        <!-- Los gestores pueden ver todas las solicitudes asignadas a ellos -->
+        <record id="purchase_request_manager_rule" model="ir.rule">
+            <field name="name">Gestor ve solicitudes asignadas</field>
+            <field name="model_id" ref="model_purchase_internal_request"/>
+            <field name="domain_force">['|', ('purchase_manager_id', '=', user.id), ('state', '=', 'submitted')]</field>
+            <field name="groups" eval="[(4, ref('group_purchase_request_manager'))]"/>
+            <field name="perm_read" eval="True"/>
+            <field name="perm_write" eval="True"/>
+            <field name="perm_create" eval="True"/>
+            <field name="perm_unlink" eval="True"/>
+        </record>
+
+        <!-- Los aprobadores pueden ver solicitudes pendientes de aprobación -->
+        <record id="purchase_request_approver_rule" model="ir.rule">
+            <field name="name">Aprobador ve solicitudes pendientes</field>
+            <field name="model_id" ref="model_purchase_internal_request"/>
+            <field name="domain_force">['|', ('approver_1_id', '=', user.id), ('approver_2_id', '=', user.id)]</field>
+            <field name="groups" eval="[(4, ref('group_purchase_request_approver'))]"/>
+            <field name="perm_read" eval="True"/>
+            <field name="perm_write" eval="True"/>
+            <field name="perm_create" eval="False"/>
+            <field name="perm_unlink" eval="False"/>
+        </record>
+
+    </data>
+</odoo>

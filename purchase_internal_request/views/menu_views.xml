@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+        <!-- Menú Principal -->
+        <menuitem id="menu_purchase_internal_request_root"
+                  name="Solicitudes de Compra"
+                  parent="purchase.menu_purchase_root"
+                  sequence="5"/>
+
+        <!-- Menú de Solicitudes -->
+        <menuitem id="menu_purchase_internal_request"
+                  name="Solicitudes de Compra Internas"
+                  parent="menu_purchase_internal_request_root"
+                  action="action_purchase_internal_request"
+                  sequence="10"/>
+
+        <!-- Menú para Gestores - Solicitudes Por Asignar -->
+        <record id="action_purchase_internal_request_to_assign" model="ir.actions.act_window">
+            <field name="name">Por Asignar</field>
+            <field name="res_model">purchase.internal.request</field>
+            <field name="view_mode">tree,kanban,form</field>
+            <field name="context">{'search_default_to_assign': 1}</field>
+        </record>
+
+        <menuitem id="menu_purchase_internal_request_to_assign"
+                  name="Por Asignar"
+                  parent="menu_purchase_internal_request_root"
+                  action="action_purchase_internal_request_to_assign"
+                  sequence="20"
+                  groups="purchase_internal_request.group_purchase_request_manager"/>
+
+        <!-- Menú para Gestores - En Gestión -->
+        <record id="action_purchase_internal_request_in_progress" model="ir.actions.act_window">
+            <field name="name">En Gestión</field>
+            <field name="res_model">purchase.internal.request</field>
+            <field name="view_mode">tree,kanban,form</field>
+            <field name="context">{'search_default_in_progress': 1}</field>
+        </record>
+
+        <menuitem id="menu_purchase_internal_request_in_progress"
+                  name="En Gestión"
+                  parent="menu_purchase_internal_request_root"
+                  action="action_purchase_internal_request_in_progress"
+                  sequence="30"
+                  groups="purchase_internal_request.group_purchase_request_manager"/>
+
+        <!-- Menú para Aprobadores -->
+        <record id="action_purchase_internal_request_approvals" model="ir.actions.act_window">
+            <field name="name">Mis Aprobaciones</field>
+            <field name="res_model">purchase.internal.request</field>
+            <field name="view_mode">tree,kanban,form</field>
+            <field name="context">{'search_default_my_approvals': 1}</field>
+        </record>
+
+        <menuitem id="menu_purchase_internal_request_approvals"
+                  name="Mis Aprobaciones"
+                  parent="menu_purchase_internal_request_root"
+                  action="action_purchase_internal_request_approvals"
+                  sequence="40"
+                  groups="purchase_internal_request.group_purchase_request_approver"/>
+
+    </data>
+</odoo>
