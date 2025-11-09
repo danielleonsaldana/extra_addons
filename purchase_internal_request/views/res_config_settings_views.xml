@@ -2,53 +2,7 @@
 <odoo>
     <data>
 
-        <!-- Heredar vista de configuración de compras -->
-        <record id="res_config_settings_view_form_inherit" model="ir.ui.view">
-            <field name="name">res.config.settings.view.form.inherit.purchase.request</field>
-            <field name="model">res.config.settings</field>
-            <field name="inherit_id" ref="purchase.res_config_settings_view_form"/>
-            <field name="arch" type="xml">
-                
-                <xpath expr="//div[@id='purchase_order_approval']" position="after">
-                    <h2>Aprobaciones de Solicitudes de Compra Internas</h2>
-                    <div class="row mt16 o_settings_container">
-                        <div class="col-12 col-lg-6 o_setting_box">
-                            <div class="o_setting_left_pane"/>
-                            <div class="o_setting_right_pane">
-                                <label for="purchase_approver_1_id"/>
-                                <div class="text-muted">
-                                    Aprobador principal para solicitudes mayores a 5,000 USD
-                                </div>
-                                <div class="content-group">
-                                    <div class="mt16">
-                                        <field name="purchase_approver_1_id" 
-                                               class="oe_inline"
-                                               placeholder="Seleccione el Aprobador 1"/>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-12 col-lg-6 o_setting_box">
-                            <div class="o_setting_left_pane"/>
-                            <div class="o_setting_right_pane">
-                                <label for="purchase_approver_2_id"/>
-                                <div class="text-muted">
-                                    Segundo aprobador para solicitudes mayores a 5,000 USD
-                                </div>
-                                <div class="content-group">
-                                    <div class="mt16">
-                                        <field name="purchase_approver_2_id" 
-                                               class="oe_inline"
-                                               placeholder="Seleccione el Aprobador 2"/>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </xpath>
-
-            </field>
-        </record>
+        <!-- Configuración sin herencia - se agrega manualmente en settings -->
 
     </data>
 </odoo>
