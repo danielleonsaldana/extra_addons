@@ -27,8 +27,8 @@
         'account',
     ],
     'data': [
-        'security/purchase_request_security.xml',
-        'security/ir.model.access.csv',
+        #'security/purchase_request_security.xml',
+        #'security/ir.model.access.csv',
         'data/purchase_request_sequence.xml',
         'wizards/purchase_request_rejection_wizard_views.xml',
         'views/purchase_internal_request_views.xml',
