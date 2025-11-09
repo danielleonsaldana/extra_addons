@@ -246,7 +246,7 @@
         </record>
 
         <!-- Vista de Búsqueda -->
-        <record id="view_purchase_internal_request_search" model="ir.ui.view">
+        <!--<record id="view_purchase_internal_request_search" model="ir.ui.view">
             <field name="name">purchase.internal.request.search</field>
             <field name="model">purchase.internal.request</field>
             <field name="arch" type="xml">
@@ -287,10 +287,10 @@
                     </group>
                 </search>
             </field>
-        </record>
+        </record>-->
 
         <!-- Vista Kanban -->
-        <record id="view_purchase_internal_request_kanban" model="ir.ui.view">
+        <!--<record id="view_purchase_internal_request_kanban" model="ir.ui.view">
             <field name="name">purchase.internal.request.kanban</field>
             <field name="model">purchase.internal.request</field>
             <field name="arch" type="xml">
@@ -338,7 +338,7 @@
                     </templates>
                 </kanban>
             </field>
-        </record>
+        </record>-->
 
         <!-- Acción Principal -->
         <record id="action_purchase_internal_request" model="ir.actions.act_window">
