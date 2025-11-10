@@ -1,5 +1,0 @@
-id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
-access_project_image_annotation_user,project.image.annotation.user,model_project_image_annotation,project.group_project_user,1,1,1,1
-access_project_image_annotation_manager,project.image.annotation.manager,model_project_image_annotation,project.group_project_manager,1,1,1,1
-access_project_image_annotation_point_user,project.image.annotation.point.user,model_project_image_annotation_point,project.group_project_user,1,1,1,1
-access_project_image_annotation_point_manager,project.image.annotation.point.manager,model_project_image_annotation_point,project.group_project_manager,1,1,1,1

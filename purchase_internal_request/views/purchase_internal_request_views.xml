@@ -41,12 +41,8 @@
 
                     <sheet>
                         <div class="oe_button_box" name="button_box">
-                            <button name="action_view_rfqs" 
-                                    type="object" 
-                                    class="oe_stat_button" 
-                                    icon="fa-file-text-o"
-                                    invisible="rfq_count == 0">
-                                <field name="rfq_count" widget="statbutton" string="RFQs"/>
+                            <button name="action_view_rfqs" type="object" class="oe_stat_button" icon="fa-file-text-o" invisible="rfq_count == 0">
+                                <field name="rfq_count" widget="statbutton"/> RFQ's
                             </button>
                         </div>
 
