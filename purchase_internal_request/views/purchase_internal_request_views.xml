@@ -25,7 +25,6 @@
                 <form string="Solicitud de Compra Interna">
                     <header>
                         <button name="action_submit" string="Enviar" type="object" class="btn btn-primary"/>
-                        <button name="action_assign_manager" string="Asignar Gestor" type="object" class="btn btn-outline-primary" groups="purchase_internal_request.group_purchase_request_manager"/>
                         <button name="action_create_rfq" string="Crear RFQ" type="object" class="btn btn-success" groups="purchase_internal_request.group_purchase_request_manager"/>
                         <button name="action_send_to_requester" string="Enviar a Solicitante" type="object" class="btn btn-secondary" groups="purchase_internal_request.group_purchase_request_manager"/>
                         <button name="action_select_rfq" string="Seleccionar Cotización" type="object" class="btn btn-outline-success"/>
