@@ -27,80 +27,76 @@
                         <button name="action_submit" 
                                 string="Enviar" 
                                 type="object" 
-                                class="btn btn-primary"
+                                class="btn-primary"
                                 invisible="state != 'draft'"/>
                         
                         <button name="action_assign_manager" 
                                 string="Asignar Gestor" 
                                 type="object" 
-                                class="btn btn-primary"
+                                class="btn-primary"
                                 invisible="state != 'submitted'"
                                 groups="purchase_internal_request.group_purchase_request_manager"/>
                         
                         <button name="action_create_rfq" 
                                 string="Crear RFQ" 
                                 type="object" 
-                                class="btn btn-secondary"
+                                class="btn-secondary"
                                 invisible="state not in ['in_progress', 'quotation_review']"
                                 groups="purchase_internal_request.group_purchase_request_manager"/>
                         
                         <button name="action_send_to_requester" 
                                 string="Enviar a Solicitante" 
                                 type="object" 
-                                class="btn btn-primary"
+                                class="btn-primary"
                                 invisible="state != 'in_progress'"
                                 groups="purchase_internal_request.group_purchase_request_manager"/>
                         
                         <button name="action_select_rfq" 
                                 string="Seleccionar Cotización" 
                                 type="object" 
-                                class="btn btn-primary"
+                                class="btn-primary"
                                 invisible="state != 'quotation_review' or not selected_rfq_id"/>
                         
                         <button name="action_request_new_quotes" 
                                 string="Solicitar Nuevas Cotizaciones" 
                                 type="object" 
-                                class="btn btn-outline-warning"
                                 invisible="state != 'quotation_review'"/>
                         
                         <button name="action_approve_level_1" 
                                 string="Aprobar (Nivel 1)" 
                                 type="object" 
-                                class="btn btn-primary"
+                                class="btn-primary"
                                 invisible="state != 'pending_approval' or approver_1_status != 'pending'"
                                 groups="purchase_internal_request.group_purchase_request_approver"/>
                         
                         <button name="action_approve_level_2" 
                                 string="Aprobar (Nivel 2)" 
                                 type="object" 
-                                class="btn btn-primary"
+                                class="btn-primary"
                                 invisible="state != 'pending_approval' or approver_2_status != 'pending' or not approver_2_id"
                                 groups="purchase_internal_request.group_purchase_request_approver"/>
                         
                         <button name="action_reject" 
                                 string="Rechazar" 
                                 type="object" 
-                                class="btn btn-outline-danger"
                                 invisible="state != 'pending_approval'"
                                 groups="purchase_internal_request.group_purchase_request_approver"/>
                         
                         <button name="action_confirm_purchase" 
                                 string="Confirmar Compra" 
                                 type="object" 
-                                class="btn btn-success"
+                                class="btn-primary"
                                 invisible="state != 'approved'"
                                 groups="purchase_internal_request.group_purchase_request_manager"/>
                         
                         <button name="action_cancel" 
                                 string="Cancelar" 
                                 type="object" 
-                                class="btn btn-outline-secondary"
                                 invisible="state in ['done', 'cancelled']"/>
                         
                         <button name="action_reset_to_draft" 
                                 string="Reiniciar a Borrador" 
                                 type="object" 
-                                class="btn btn-outline-primary"
                                 invisible="state not in ['cancelled', 'rejected']"
                                 groups="purchase_internal_request.group_purchase_request_manager"/>
                         
@@ -204,13 +200,13 @@
                                        readonly="state not in ['draft', 'submitted']"/>
                             </page>
                         </notebook>
+                        
+                        <div class="oe_chatter">
+                            <field name="message_follower_ids"/>
+                            <field name="activity_ids"/>
+                            <field name="message_ids"/>
+                        </div>
                     </sheet>
-
-                    <div class="oe_chatter">
-                        <field name="message_follower_ids"/>
-                        <field name="activity_ids"/>
-                        <field name="message_ids"/>
-                    </div>
                 </form>
             </field>
         </record>
