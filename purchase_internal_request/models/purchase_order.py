@@ -50,7 +50,7 @@ class PurchaseOrder(models.Model):
             lines.append((0, 0, {
                 'description': line.name,
                 'quantity': line.product_qty,
-                'uom_id': line.product_uom.id,
+                'uom_id': line.product_uom_id.id,
                 'product_id': line.product_id.id if line.product_id else False,
             }))
         
