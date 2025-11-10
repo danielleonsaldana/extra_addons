@@ -236,6 +236,22 @@ class PurchaseInternalRequest(models.Model):
                 subject=_('Solicitud Enviada')
             )
 
+    def write(self, vals):
+        res = super().write(vals)
+        for request in self:
+            if 'purchase_manager_id' in vals and vals['purchase_manager_id']:
+                # si antes no tenía gestor y ahora sí
+                old_manager = request._origin.purchase_manager_id
+                if not old_manager:
+                    request.action_assign_manager()
+        return res
+    
+    @api.onchange('purchase_manager_id')
+    def _onchange_purchase_manager_id(self):
+        for request in self:
+            if request.purchase_manager_id and not self._origin.purchase_manager_id:
+                request.action_assign_manager()
+
     def action_assign_manager(self):
         """Asignar gestor de compras"""
         for request in self:

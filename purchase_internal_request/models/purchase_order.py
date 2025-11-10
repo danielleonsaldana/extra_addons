@@ -40,38 +40,6 @@ class PurchaseOrder(models.Model):
             'target': 'current',
         }
 
-    def action_create_internal_request(self):
-        """Crear Solicitud Interna desde Orden de Compra"""
-        self.ensure_one()
-        
-        # Crear líneas de solicitud
-        lines = []
-        for line in self.order_line:
-            lines.append((0, 0, {
-                'description': line.name,
-                'quantity': line.product_qty,
-                'uom_id': line.product_uom_id.id,
-                'product_id': line.product_id.id if line.product_id else False,
-            }))
-        
-        # Crear SCI
-        sci = self.env['purchase.internal.request'].create({
-            'employee_id': self.env.user.employee_id.id,
-            'line_ids': lines,
-            'description': f'Generada desde OC: {self.name}',
-        })
-        
-        # Vincular OC a SCI
-        self.internal_request_id = sci.id
-        
-        return {
-            'type': 'ir.actions.act_window',
-            'name': _('Solicitud Interna'),
-            'res_model': 'purchase.internal.request',
-            'res_id': sci.id,
-            'view_mode': 'form',
-            'target': 'current',
-        }
 
     def button_cancel(self):
         """Override para prevenir cancelación de RFQ seleccionada si está en proceso"""

@@ -17,8 +17,8 @@
         * Conversión automática a orden de compra
         * Cancelación automática de RFQs no seleccionadas
     """,
-    'author': 'Tu Empresa',
-    'website': 'https://www.tuempresa.com',
+    'author': 'Daniel León Saldaña',
+    'website': '',
     'license': 'LGPL-3',
     'depends': [
         'base',
