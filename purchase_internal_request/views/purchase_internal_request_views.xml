@@ -38,87 +38,96 @@
                         <button name="action_reset_to_draft" string="Reiniciar a Borrador" type="object" invisible="state not in ['cancelled', 'rejected']" groups="purchase_internal_request.group_purchase_request_manager"/>
                         <field name="state" widget="statusbar" statusbar_visible="draft,submitted,in_progress,quotation_review,pending_approval,approved,done"/>
                     </header>
+
                     <sheet>
                         <div class="oe_button_box" name="button_box">
-                            <button name="action_view_rfqs" type="object" class="oe_stat_button" icon="fa-file-text-o" invisible="rfq_count == 0">
+                            <button name="action_view_rfqs" 
+                                    type="object" 
+                                    class="oe_stat_button" 
+                                    icon="fa-file-text-o"
+                                    invisible="rfq_count == 0">
                                 <field name="rfq_count" widget="statbutton" string="RFQs"/>
                             </button>
                         </div>
+
                         <div class="oe_title">
-                            <h1><field name="name" readonly="1"/></h1>
+                            <h1><field name="name"/></h1>
                         </div>
+
                         <group>
                             <group>
-                                <field name="employee_id" readonly="state != 'draft'"/>
+                                <field name="employee_id"/>
                                 <field name="department_id"/>
-                                <field name="date_request" readonly="state != 'draft'"/>
-                                <field name="analytic_account_id" readonly="state != 'draft'"/>
+                                <field name="date_request"/>
+                                <field name="analytic_account_id"/>
                             </group>
                             <group>
-                                <field name="purchase_manager_id" readonly="state not in ['submitted', 'in_progress']" groups="purchase_internal_request.group_purchase_request_manager"/>
+                                <field name="purchase_manager_id"/>
                                 <field name="company_id" groups="base.group_multi_company"/>
                             </group>
                         </group>
+
                         <notebook>
                             <page string="Productos / Servicios">
-                                <field name="line_ids" readonly="state not in ['draft', 'submitted']"/>
+                                <field name="line_ids"/>
                             </page>
-                            <page string="Cotizaciones" invisible="state in ['draft', 'submitted']">
+
+                            <page string="Cotizaciones">
                                 <group>
                                     <group>
-                                        <field name="selected_rfq_id" domain="[('internal_request_id', '=', id), ('state', 'in', ['draft', 'sent'])]" options="{'no_create': True}" readonly="state != 'quotation_review'" invisible="not selected_rfq_id"/>
-                                        <field name="selected_rfq_amount" invisible="not selected_rfq_id"/>
-                                        <field name="currency_id" invisible="1"/>
+                                        <field name="selected_rfq_id" domain="[('internal_request_id', '=', id), ('state', 'in', ['draft', 'sent'])]" options="{'no_create': True}"/>
+                                        <field name="selected_rfq_amount"/>
+                                        <field name="currency_id"/>
                                     </group>
                                     <group>
-                                        <field name="selected_rfq_amount_usd" invisible="not selected_rfq_id"/>
-                                        <field name="approval_level" invisible="not selected_rfq_id"/>
+                                        <field name="selected_rfq_amount_usd"/>
+                                        <field name="approval_level"/>
                                     </group>
                                 </group>
-                                <field name="rfq_ids" readonly="1">
+
+                                <field name="rfq_ids">
                                     <list>
                                         <field name="name"/>
                                         <field name="partner_id"/>
                                         <field name="date_order"/>
                                         <field name="amount_total" sum="Total"/>
-                                        <field name="currency_id" invisible="1"/>
+                                        <field name="currency_id"/>
                                         <field name="state"/>
-                                        <field name="is_selected_rfq" invisible="1"/>
                                     </list>
                                 </field>
                             </page>
-                            <page string="Aprobaciones" invisible="state not in ['pending_approval', 'approved', 'rejected', 'done']">
+
+                            <page string="Aprobaciones">
                                 <group>
                                     <group string="Aprobador 1">
-                                        <field name="approver_1_id" readonly="1"/>
+                                        <field name="approver_1_id"/>
                                         <field name="approver_1_status"/>
-                                        <field name="approver_1_date" readonly="1"/>
+                                        <field name="approver_1_date"/>
                                     </group>
-                                    <group string="Aprobador 2" invisible="not approver_2_id">
-                                        <field name="approver_2_id" readonly="1"/>
+                                    <group string="Aprobador 2">
+                                        <field name="approver_2_id"/>
                                         <field name="approver_2_status"/>
-                                        <field name="approver_2_date" readonly="1"/>
+                                        <field name="approver_2_date"/>
                                     </group>
                                 </group>
-                                <group invisible="state != 'rejected'">
-                                    <field name="rejection_reason" readonly="1"/>
-                                </group>
-                            </page>
-                            <page string="Orden de Compra" invisible="not final_purchase_order_id">
                                 <group>
-                                    <field name="final_purchase_order_id" readonly="1"/>
+                                    <field name="rejection_reason"/>
                                 </group>
                             </page>
+
+                            <page string="Orden de Compra">
+                                <group>
+                                    <field name="final_purchase_order_id"/>
+                                </group>
+                            </page>
+
                             <page string="Descripción">
-                                <field name="description" placeholder="Descripción adicional de la solicitud..." readonly="state not in ['draft', 'submitted']"/>
+                                <field name="description" placeholder="Descripción adicional de la solicitud..."/>
                             </page>
                         </notebook>
                     </sheet>
-                    <div class="oe_chatter">
-                        <field name="message_follower_ids"/>
-                        <field name="activity_ids"/>
-                        <field name="message_ids"/>
-                    </div>
+
+                    <chatter/>
                 </form>
             </field>
         </record>
