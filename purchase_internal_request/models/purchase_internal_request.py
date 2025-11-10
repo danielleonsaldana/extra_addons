@@ -236,28 +236,16 @@ class PurchaseInternalRequest(models.Model):
                 subject=_('Solicitud Enviada')
             )
 
-    def write(self, vals):
-        res = super().write(vals)
-        for request in self:
-            if 'purchase_manager_id' in vals and vals['purchase_manager_id']:
-                old_manager = request._origin.purchase_manager_id
-                if not old_manager:
-                    request.action_assign_manager()
-        return res
-    
-    @api.onchange('purchase_manager_id')
-    def _onchange_purchase_manager_id(self):
-        for request in self:
-            if request.purchase_manager_id and not self._origin.purchase_manager_id:
-                request.action_assign_manager()
-
     def action_assign_manager(self):
         """Asignar gestor de compras"""
         for request in self:
             if not request.purchase_manager_id:
                 raise UserError(_('Debe asignar un gestor de compras.'))
             request.write({'state': 'in_progress'})
-
+            request.message_post(
+                body=_('Solicitud asignada a %s para gestión de cotizaciones.') % request.purchase_manager_id.name,
+                subject=_('Gestor Asignado')
+            )
 
     def action_create_rfq(self):
         """Crear nueva RFQ vinculada a esta solicitud"""
@@ -279,7 +267,7 @@ class PurchaseInternalRequest(models.Model):
             order_line = (0, 0, {
                 'name': line.description,
                 'product_qty': line.quantity,
-                'product_uom': line.uom_id.id if line.uom_id else self.env.ref('uom.product_uom_unit').id,
+                'product_uom_id': line.uom_id.id if line.uom_id else self.env.ref('uom.product_uom_unit').id,
                 'price_unit': 0.0,
                 'date_planned': fields.Datetime.now(),
             })
