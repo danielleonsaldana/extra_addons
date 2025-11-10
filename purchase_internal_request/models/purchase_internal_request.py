@@ -240,7 +240,6 @@ class PurchaseInternalRequest(models.Model):
         res = super().write(vals)
         for request in self:
             if 'purchase_manager_id' in vals and vals['purchase_manager_id']:
-                # si antes no tenía gestor y ahora sí
                 old_manager = request._origin.purchase_manager_id
                 if not old_manager:
                     request.action_assign_manager()
@@ -258,10 +257,7 @@ class PurchaseInternalRequest(models.Model):
             if not request.purchase_manager_id:
                 raise UserError(_('Debe asignar un gestor de compras.'))
             request.write({'state': 'in_progress'})
-            request.message_post(
-                body=_('Solicitud asignada a %s para gestión de cotizaciones.') % request.purchase_manager_id.name,
-                subject=_('Gestor Asignado')
-            )
+
 
     def action_create_rfq(self):
         """Crear nueva RFQ vinculada a esta solicitud"""
