@@ -293,7 +293,7 @@ class PurchaseInternalRequest(models.Model):
             'type': 'ir.actions.act_window',
             'name': _('Solicitudes de Cotización'),
             'res_model': 'purchase.order',
-            'view_mode': 'tree,form',
+            'view_mode': 'list,form',
             'domain': [('internal_request_id', '=', self.id)],
             'context': {'default_internal_request_id': self.id},
         }
