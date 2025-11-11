@@ -259,6 +259,7 @@ class PurchaseInternalRequest(models.Model):
             'internal_request_id': self.id,
             'origin': self.name,
             'user_id': self.purchase_manager_id.id if self.purchase_manager_id else self.env.user.id,
+            'partner_id': False,  # El usuario debe seleccionarlo manualmente
         }
         
         # Agregar líneas de la solicitud
@@ -270,6 +271,7 @@ class PurchaseInternalRequest(models.Model):
                 'product_uom_id': line.uom_id.id if line.uom_id else self.env.ref('uom.product_uom_unit').id,
                 'price_unit': 0.0,
                 'date_planned': fields.Datetime.now(),
+                'product_id': line.product_id.id if line.product_id else False,
             })
             order_lines.append(order_line)
         
