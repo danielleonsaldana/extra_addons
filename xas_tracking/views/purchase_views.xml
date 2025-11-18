@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<odoo>
+    <data noupdate="0">
+
+        <record id="purchase_order_form_inherit" model="ir.ui.view">
+            <field name="name">purchase_order_form_inherit</field>
+            <field name="model">purchase.order</field>
+            <field name="inherit_id" ref="purchase.purchase_order_form"/>
+            <field name="arch" type="xml">
+                <xpath expr="//form[1]/sheet[1]/group[1]" position="after">
+                    <group>
+                        <group>
+                            <field name="auto_sale_order_id" invisible="1"/>
+                            <field name="xas_tracking_id" string="Seguimiento" readonly="auto_sale_order_id != False"/>
+                        </group>
+                        <group></group>
+                        <group>
+                            <group>
+                                <field name="xas_trip_number_id" readonly="1"/>
+                            </group>
+                            <group invisible="xas_trip_number_id != False">
+                                <button name="add_trip_number" type="object" class="btn-primary oe_highlight" icon="fa-plus" help="Botón que permite agregar un número de viaje a la compra" invisible=""/>
+                            </group>
+                        </group>
+                    </group>
+                </xpath>
+
+                <xpath expr="//field[@name='picking_type_id']" position="after">
+                    <field name="xas_negotiation"/>
+                </xpath>
+            </field>
+        </record>
+
+        <!-- Herencia de vista busqueda para Solicitudes de cotización -->
+        <record id="view_purchase_order_filter_inherit" model="ir.ui.view">
+            <field name="name">view_purchase_order_filter_inherit</field>
+            <field name="model">purchase.order</field>
+            <field name="inherit_id" ref="purchase.view_purchase_order_filter"/>
+            <field name="arch" type="xml">
+                <field name="name" position="after">
+                    <field name="xas_tracking_id"/>
+                    <field name="xas_trip_number_id"/>
+                </field>
+                <xpath expr="//group" position="inside">
+                    <filter string="Id de seguimiento" name="xas_tracking_id" domain="[]" context="{'group_by': 'xas_tracking_id'}"/>
+                    <filter string="Código de embarque" name="xas_trip_number_id" domain="[]" context="{'group_by': 'xas_trip_number_id'}"/>
+                </xpath>
+            </field>
+        </record>
+
+        <!-- Herencia de vista busqueda para Órdenes de compras -->
+        <record id="purchase_order_view_search_inherit" model="ir.ui.view">
+            <field name="name">purchase_order_view_search_inherit</field>
+            <field name="model">purchase.order</field>
+            <field name="inherit_id" ref="purchase.purchase_order_view_search"/>
+            <field name="arch" type="xml">
+                <field name="name" position="after">
+                    <field name="xas_tracking_id"/>
+                    <field name="xas_trip_number_id"/>
+                </field>
+                <xpath expr="//group" position="inside">
+                    <filter string="Id de seguimiento" name="xas_tracking_id" domain="[]" context="{'group_by': 'xas_tracking_id'}"/>
+                    <filter string="Código de embarque" name="xas_trip_number_id" domain="[]" context="{'group_by': 'xas_trip_number_id'}"/>
+                </xpath>
+            </field>
+        </record>
+
+        <!-- Herencia de vista busqueda para Órdenes abiertas -->
+        <!--<record id="view_purchase_requisition_filter" model="ir.ui.view">
+            <field name="name">view_purchase_requisition_filter_inherit</field>
+            <field name="model">purchase.requisition</field>
+            <field name="inherit_id" ref="purchase_requisition.view_purchase_requisition_filter"/>
+            <field name="arch" type="xml">
+                <field name="name" position="after">
+                    <field name="xas_tracking_id"/>
+                    <field name="xas_trip_number_id"/>
+                </field>
+                <xpath expr="//group" position="inside">
+                    <filter string="Id de seguimiento" name="xas_tracking_id" domain="[]" context="{'group_by': 'xas_tracking_id'}"/>
+                    <filter string="Código de embarque" name="xas_trip_number_id" domain="[]" context="{'group_by': 'xas_trip_number_id'}"/>
+                </xpath>
+            </field>
+        </record>
+    -->
+    </data>
+</odoo>

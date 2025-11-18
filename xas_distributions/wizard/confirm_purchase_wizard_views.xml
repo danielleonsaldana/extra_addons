@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+
+    <!-- Vista del wizard -->
+    <record id="view_confirm_purchase_wizard" model="ir.ui.view">
+        <field name="name">confirm.purchase.wizard.form</field>
+        <field name="model">confirm.purchase.wizard</field>
+        <field name="arch" type="xml">
+            <form string="¿Estas seguro de confirmar la compra?">
+                <field name="xas_confirmation_message" readonly="1"/>
+                <footer>
+                    <button string="Confirmar" type="object" name="action_confirm" class="btn-primary"/>
+                    <button string="Cancelar" class="btn-secondary" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <!-- Acción del wizard -->
+    <record id="action_confirm_purchase_wizard" model="ir.actions.act_window">
+        <field name="name">Confirmación</field>
+        <field name="res_model">confirm.purchase.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="view_id" ref="view_confirm_purchase_wizard"/>
+        <field name="target">new</field>
+    </record>
+
+</odoo>

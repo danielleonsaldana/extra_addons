@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+
+    <!-- Vista formulario de asistente de distribución de productos en compra-->
+    <record id="purchase_order_distribution_wizard_form_view" model="ir.ui.view">
+        <field name="name">purchase_order_distribution_wizard_form_view</field>
+        <field name="model">purchase.order.distribution</field>
+        <field name="arch" type="xml">
+            <form string="Distribución de orden de compra">
+                <group>
+                    <field name="company_ids" invisible="1"/>
+                    <field name="purchase_state" invisible="1"/>
+                    <!-- <field name="line_ids" widget="one2many_delete"> -->
+                    <field name="line_ids" context="{'companies': company_ids}">
+                        <tree editable="bottom" create="0" delete="0" default_order="xas_product_custom_mla_id desc">
+                            <field name="purchase_state" column_invisible="1"/>
+                            <field name="line_ids" widget="many2many_tags" readonly="1" force_save="1"/>
+                            <field name="product_id" readonly="1" force_save="1" column_invisible="1"/>
+                            <field name="xas_product_custom_mla_id" readonly="1" force_save="1"/>
+                            <field name="xas_tracking_id" readonly="1" force_save="1"/>
+                            <field name="xas_trip_number_id" readonly="1" force_save="1"/>
+                            <field name="quantity" readonly="1" force_save="1"/>
+                            <field name="uom_id" readonly="1" force_save="1"/>
+                            <field name="xas_maynekman" readonly="purchase_state in ['done','cancel']" force_save="1"/>
+                            <field name="xas_fruitcore" readonly="purchase_state in ['done','cancel']" force_save="1"/>
+                            <field name="xas_outlandish" readonly="purchase_state in ['done','cancel']" force_save="1"/>
+                            <field name="xas_frutas_mayra" readonly="purchase_state in ['done','cancel']" force_save="1"/>
+                            <field name="xas_total_distributed"/>
+                            <field name="xas_product_custom_mla_id" column_invisible="1"/>
+                            <!-- <field name="uom_id"/> -->
+                        </tree>
+                    </field>
+                </group>
+                <footer>
+                    <button string="Guardar" type="object" name="action_confirm" class="btn-primary" invisible="purchase_state in ['done','cancel']"/>
+                    <button string="Cancelar" class="btn-secondary" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <!-- Vista formulario de asistente de distribución de productos en picking-->
+    <record id="picking_order_distribution_wizard_form_view" model="ir.ui.view">
+        <field name="name">picking_order_distribution_wizard_form_view</field>
+        <field name="model">picking.order.distribution</field>
+        <field name="arch" type="xml">
+            <form string="Distribución de productos en Picking">
+                <group>
+                    <field name="company_ids" invisible="1"/>
+                    <field name="picking_state" invisible="1"/>
+                    <field name="line_ids" readonly="message_to_display != False" context="{'companies': company_ids}">
+                        <tree editable="bottom" create="0" delete="0"  default_order="xas_product_custom_mla_id desc">
+                            <field name="picking_state" column_invisible="1"/>
+                            <field name="move_id" column_invisible="1"/>
+                            <field name="product_id" readonly="1" force_save="1"/>
+                            <field name="xas_tracking_id" readonly="1" force_save="1"/>
+                            <field name="xas_trip_number_id" readonly="1" force_save="1"/>
+                            <field name="quantity" readonly="1" force_save="1"/>
+                            <field name="uom_id" readonly="1" force_save="1"/>
+                            <field name="xas_maynekman" readonly="picking_state in ['done','cancel']" force_save="1"/>
+                            <field name="xas_fruitcore" readonly="picking_state in ['done','cancel']" force_save="1"/>
+                            <field name="xas_outlandish" readonly="picking_state in ['done','cancel']" force_save="1"/>
+                            <field name="xas_frutas_mayra" readonly="picking_state in ['done','cancel']" force_save="1"/>
+                            <field name="xas_total_distributed"/>
+                            <field name="xas_product_custom_mla_id" column_invisible="0"/>
+                        </tree>
+                    </field>
+                    <field name="message_to_display" readonly="1" invisible="message_to_display == False"/>
+                </group>
+                <footer>
+                    <button string="Guardar" type="object" name="action_confirm" class="btn-primary" invisible="message_to_display != False or picking_state in ['done','cancel']"/>
+                    <button string="Cancelar" class="btn-secondary" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+</odoo>

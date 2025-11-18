@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="action_report_informative_cost" model="ir.actions.report">
+        <field name="name">Hoja de costos informativos</field>
+        <field name="model">tracking</field>
+        <!-- <field name="report_type">qweb-html</field> -->
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">xas_tracking.report_informative_cost</field>
+        <field name="report_file">xas_tracking.report_informative_cost</field>
+        <field name="print_report_name">'Costo informativo seguimiento - %s' % (object.name)</field>
+        <field name="paperformat_id" ref="xas_tracking.paperformat_informative_cost"/>
+        <field name="binding_model_id" ref="model_tracking"/>
+        <field name="binding_type">report</field>
+    </record>
+
+</odoo>

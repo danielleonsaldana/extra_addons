@@ -1,0 +1,7 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+
+access_purchase_order_distribution,xas.purchase.order.distribution,model_purchase_order_distribution,,1,1,1,1
+access_purchase_order_distribution_line,xas.purchase.order.distribution.line,model_purchase_order_distribution_line,,1,1,1,1
+access_confirm_purchase_wizard,xas.confirm.purchase.wizard,model_confirm_purchase_wizard,,1,1,1,1
+access_picking_order_distribution,xas.picking.order.distribution,model_picking_order_distribution,,1,1,1,1
+access_picking_order_distribution_line,xas.picking.order.distribution.line,model_picking_order_distribution_line,,1,1,1,1

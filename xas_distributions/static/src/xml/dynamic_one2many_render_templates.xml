@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- Plantilla para agregar botones personalizados a un campo one2many -->
+<templates id="template" xml:space="preserve">
+    <!-- Hereda de la vista estándar X2ManyField -->
+    <t t-name="DynamicColumnsOne2ManyWidget" t-inherit="web.X2ManyField" t-inherit-mode="primary" owl="1">
+        <!-- Insertar un nuevo botón dentro del panel de control del one2many -->
+        <xpath expr="//div[hasclass('o_x2m_control_panel')]" position="inside">
+            <div>
+                <!-- Botón para eliminar los registros seleccionados -->
+                <!-- <button t-if="hasSelected" class="btn btn-danger"
+                        t-on-click="deleteSelected">
+                    Delete Selected
+                </button> -->
+                <!-- Botón para eliminar los registros no seleccionados -->
+                <!-- <button t-if="hasSelected" class="btn btn-success"
+                        t-on-click="deleteUnselected">
+                    Delete Unselected
+                </button> -->
+
+                <!-- Mostrar un mensaje cuando el campo es solo de lectura -->
+                <!-- <t t-if="props.readonly">
+                    <span class="oe_form_char_content">Read-only mode</span>
+                </t> -->
+            </div>
+        </xpath>
+
+        <!-- Aquí puedes agregar elementos adicionales que requieras en la vista -->
+    </t>
+</templates>

@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<odoo>
+    <data noupdate="1">
+
+        <!-- Plantillas de productos -->
+        <record id="xas_maynekman_id" model="destination">
+            <field name="name">MAYNEKMAN</field>
+        </record>
+
+        <record id="xas_fruitcore_id" model="destination">
+            <field name="name">FRUITCORE</field>
+        </record>
+
+        <record id="xas_outlandish_id" model="destination">
+            <field name="name">OUTLANDISH</field>
+        </record>
+
+        <record id="xas_frutas_mayra_id" model="destination">
+            <field name="name">FRUTAS MAYRA</field>
+        </record>
+
+    </data>
+</odoo>

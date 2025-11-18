@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <data>
+
+    <!-- Acción de servidor para hacer distribucion informativa multiple -->
+    <record id="action_multiple_distributions" model="ir.actions.server">
+        <field name="name">Distribuir compras</field>
+        <field name="model_id" ref="purchase.model_purchase_order"/>
+        <field name="binding_model_id" ref="purchase.model_purchase_order"/>
+        <field name="binding_view_types">list,form</field>
+        <field name="state">code</field>
+        <field name="code">
+action = records.action_distribution_wizard()
+        </field>
+    </record>
+
+    </data>
+</odoo>

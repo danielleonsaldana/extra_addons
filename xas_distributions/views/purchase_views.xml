@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<odoo>
+    <data>
+
+        <!-- Heredando vista form de compras -->
+        <record id="purchase_order_form_inherit" model="ir.ui.view">
+            <field name="name">purchase_order_form_inherit</field>
+            <field name="model">purchase.order</field>
+            <field name="inherit_id" ref="purchase.purchase_order_form"/>
+            <field name="arch" type="xml">
+
+                <xpath expr="//form/sheet/group/group" position="inside">
+                    <field name="xas_is_fruit" invisible="1"/>
+                    <field name="xas_distributed" invisible="0" widget="boolean_toggle" readonly="1" force_save="1"/>
+                    <field name="xas_distributed_real" invisible="0" widget="boolean_toggle" readonly="1" force_save="1"/>
+                    <field name="xas_company_type" invisible="1"/>
+                </xpath>
+
+                <xpath expr="//header" position="inside">
+                    <field name="xas_is_in_distribution_group" invisible="1"/>
+                    <field name="xas_company_distributed" invisible="1"/>
+                    <field name="xas_current_company" invisible="1"/>
+                    <button name="action_distribution_wizard" string="Generar distribución" type="object" class="oe_highlight" data-hotkey="d" invisible="(xas_is_in_distribution_group == False or xas_company_type != 'importing' or auto_sale_order_id != False) or (state in ['done','cancel'] and xas_company_distributed != xas_current_company)"/>
+                </xpath>
+
+                <xpath expr="//field[@name='order_line']//field[@name='product_packaging_id']" position="after">
+                    <field name="xas_real_pallets"/>
+                </xpath>
+
+                <xpath expr="//form[1]/sheet[1]/notebook[1]/page[@name='products']/field[@name='order_line']/tree[1]/field[@name='product_id']" position="after">
+                    <field name="xas_tracking_id" optional="show" force_save="1" readonly="1"/>
+                    <field name="xas_trip_number_id" optional="show" force_save="1" readonly="1"/>
+                </xpath>
+
+                <xpath expr="//field[@name='order_line']//tree" position="inside">
+                    <field name="xas_maynekman" column_invisible="1"/>
+                    <field name="xas_fruitcore" column_invisible="1"/>
+                    <field name="xas_outlandish" column_invisible="1"/>
+                    <field name="xas_frutas_mayra" column_invisible="1"/>
+                </xpath>
+
+                <button name="add_trip_number" position="attributes">
+                    <attribute name="invisible">auto_sale_order_id != False</attribute>
+                </button>
+
+                <!-- Agregamos el total de cajas -->
+                <xpath expr="//group[@class='oe_subtotal_footer']" position="inside">
+                    <field name="total_boxes"/>
+                </xpath>
+
+                <!-- Agregamos invisibilidad al numero de viaje/seguimiento -->
+                <xpath expr="//form[1]/sheet[1]/group[2]/group[1]/field[@name='xas_tracking_id']" position="attributes">
+                    <attribute name="invisible">not xas_is_fruit</attribute>
+                </xpath>
+                <xpath expr="//form[1]/sheet[1]/group[2]/group[3]/group[1]/field[@name='xas_trip_number_id']" position="attributes">
+                    <attribute name="invisible">not xas_is_fruit</attribute>
+                </xpath>
+
+                <xpath expr="//form[1]/sheet[1]/notebook[1]/page[@name='products']/field[@name='order_line']/tree[1]/field[@name='xas_tracking_id']" position="attributes">
+                    <attribute name="column_invisible">parent.xas_is_fruit == False</attribute>
+                </xpath>
+                <xpath expr="//form[1]/sheet[1]/notebook[1]/page[@name='products']/field[@name='order_line']/tree[1]/field[@name='xas_trip_number_id']" position="attributes">
+                    <attribute name="column_invisible">parent.xas_is_fruit == False</attribute>
+                </xpath>
+
+                <xpath expr="//button[@name='add_trip_number']" position="attributes">
+                    <attribute name="invisible">xas_is_fruit != True or auto_sale_order_id != False</attribute>
+                </xpath>
+
+            </field>
+        </record>
+
+        <!-- Heredando vista tree de compras -->
+        <record id="purchase_order_kpis_tree_inherit" model="ir.ui.view">
+            <field name="name">purchase_order_kpis_tree_inherit</field>
+            <field name="model">purchase.order</field>
+            <field name="inherit_id" ref="purchase.purchase_order_kpis_tree"/>
+            <field name="arch" type="xml">
+
+                <xpath expr="//field[@name='state']" position="after">
+                    <field name="xas_distributed" invisible="0" widget="boolean_toggle" readonly="1" force_save="1" optional="show"/>
+                    <field name="xas_distributed_real" invisible="0" widget="boolean_toggle" readonly="1" force_save="1" optional="show"/>
+                </xpath>
+
+            </field>
+        </record>
+
+        <!-- Heredando vista search de compras -->
+        <record id="view_purchase_order_filter_inherit" model="ir.ui.view">
+            <field name="name">view_purchase_order_filter_inherit</field>
+            <field name="model">purchase.order</field>
+            <field name="inherit_id" ref="purchase.view_purchase_order_filter"/>
+            <field name="arch" type="xml">
+                <!-- Añadir el filtro dentro del elemento search -->
+                <xpath expr="//search" position="inside">
+                    <filter name="purchase_distributed" string="Compras distribuidas (info)" domain="[('xas_distributed', '=', True)]"/>
+                    <filter name="purchase_distributed_real" string="Compras distribuidas (real)" domain="[('xas_distributed_real', '=', True)]"/>
+                </xpath>
+
+                <!-- Si también quieres añadir agrupación -->
+                <xpath expr="//group" position="after">
+                    <filter name="group_by_distributed" string="Agrupar por distribuidas (info)" context="{'group_by':'xas_distributed'}"/>
+                    <filter name="group_by_distributed" string="Agrupar por distribuidas (real)" context="{'group_by':'xas_distributed_real'}"/>
+                </xpath>
+            </field>
+        </record>
+
+        <!-- Accion para confirmar la orden de compra -->
+        <!-- <record id="action_confirm_purchase" model="ir.actions.server">
+            <field name="name">Confirmar compras</field>
+            <field name="model_id" ref="purchase.model_purchase_order"/>
+            <field name="binding_model_id" ref="purchase.model_purchase_order"/>
+            <field name="binding_view_types">tree,form</field>
+            <field name="state">code</field>
+            <field name="code">
+ctx = env.context
+_logger.info("PASO CONTEXT")
+purchase_id = ctx.get('purchase_id', [])
+_logger.info("PASO PURCHASE")
+action = model.with_context(can_pass=True,xas_purchase_id=purchase_id).button_confirm()
+_logger.info("PASO ACTION")
+            </field>
+        </record> -->
+
+
+    </data>
+</odoo>

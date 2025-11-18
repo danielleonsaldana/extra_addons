@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<odoo>
+    <data noupdate="0">
+
+        <!-- Heredando vista form de seguimiento -->
+        <record id="tracking_form_view_inh" model="ir.ui.view">
+            <field name="name">tracking_form_view_inh</field>
+            <field name="model">tracking</field>
+            <field name="inherit_id" ref="xas_tracking.tracking_form_view"/>
+            <field name="arch" type="xml">
+
+                <xpath expr="//field[@name='xas_invoice']" position="after">
+                    <field name="xas_destination_ids" widget="many2many_tags" readonly="0" force_save="1"/>
+                </xpath>
+
+            </field>
+        </record>
+
+    </data>
+</odoo>

@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <!-- Vista form de orden de fabricación -->
+    <record id="view_mrp_production_form_inherit" model="ir.ui.view">
+        <field name="name">mrp.production.form.inherit</field>
+        <field name="model">mrp.production</field>
+        <field name="inherit_id" ref="mrp.mrp_production_form_view"/>
+        <field name="arch" type="xml">
+            <!-- Agregar los campos después del campo "product_id" -->
+            <xpath expr="//field[@name='product_id']" position="after">
+                <field name="xas_trip_number_id"/>
+                <field name="xas_tracking_id"/>
+            </xpath>
+
+            <xpath expr="//form[1]/sheet[1]/notebook[1]/page[@name='components']/field[@name='move_raw_ids']/tree[1]/field[@name='product_id']" position="after">
+                <field name="xas_trip_number_id" readonly="1" force_save="1"/>
+                <field name="xas_tracking_id" readonly="1" force_save="1"/>
+            </xpath>
+        </field>
+    </record>
+
+    <!-- Vista Formulario de Desmantelamiento -->
+    <record id="view_mrp_unbuild_form_inherit_xas" model="ir.ui.view">
+        <field name="name">mrp.unbuild.form.inherit.xas</field>
+        <field name="model">mrp.unbuild</field>
+        <field name="inherit_id" ref="mrp.mrp_unbuild_form_view"/>
+        <field name="arch" type="xml">
+            <xpath expr="//group" position="inside">
+                <group string="Seguimiento">
+                    <field name="xas_trip_number_id"/>
+                    <field name="xas_tracking_id"/>
+                </group>
+            </xpath>
+        </field>
+    </record>
+
+    <!-- Vista Lista de Desmantelamiento -->
+    <record id="view_mrp_unbuild_tree_inherit_xas" model="ir.ui.view">
+        <field name="name">mrp.unbuild.tree.inherit.xas</field>
+        <field name="model">mrp.unbuild</field>
+        <field name="inherit_id" ref="mrp.mrp_unbuild_tree_view"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='product_id']" position="after">
+                <field name="xas_trip_number_id"/>
+                <field name="xas_tracking_id"/>
+            </xpath>
+        </field>
+    </record>
+
+    <!-- Herencia de vista busqueda para Órdenes de fabricación -->
+    <record id="view_mrp_production_filter_inherit" model="ir.ui.view">
+        <field name="name">view_mrp_production_filter_inherit</field>
+        <field name="model">mrp.production</field>
+        <field name="inherit_id" ref="mrp.view_mrp_production_filter"/>
+        <field name="arch" type="xml">
+            <field name="name" position="after">
+                <field name="xas_tracking_id"/>
+                <field name="xas_trip_number_id"/>
+            </field>
+            <xpath expr="//group" position="inside">
+                <filter string="Id de seguimiento" name="xas_tracking_id" domain="[]" context="{'group_by': 'xas_tracking_id'}"/>
+                <filter string="Código de embarque" name="xas_trip_number_id" domain="[]" context="{'group_by': 'xas_trip_number_id'}"/>
+            </xpath>
+        </field>
+    </record>
+</odoo>

@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<odoo>
+    <data noupdate="1">
+
+        <!-- Plantillas de productos -->
+        <record id="american_cargo_id" model="product.product">
+            <field name="name">FLETE AMERICANO</field>
+            <field name="xas_is_cost">True</field>
+            <field name="purchase_ok">True</field>
+            <field name="detailed_type">service</field>
+            <field name="default_code">FLEAME</field>
+        </record>
+
+        <record id="fruit_cost_id" model="product.product">
+            <field name="name">COSTO DE FRUTA</field>
+            <field name="xas_is_cost">True</field>
+            <field name="purchase_ok">True</field>
+            <field name="detailed_type">service</field>
+            <field name="default_code">COSFRU</field>
+        </record>
+
+        <record id="warehouse_maneuvers_id" model="product.product">
+            <field name="name">MANIOBRAS EN BODEGA</field>
+            <field name="xas_is_cost">True</field>
+            <field name="purchase_ok">True</field>
+            <field name="detailed_type">service</field>
+            <field name="default_code">WAREMAN</field>
+        </record>
+
+        <record id="customs_agency_id" model="product.product">
+            <field name="name">AGENCIA ADUANAL</field>
+            <field name="xas_is_cost">True</field>
+            <field name="purchase_ok">True</field>
+            <field name="detailed_type">service</field>
+            <field name="default_code">CUSAGE</field>
+        </record>
+
+        <record id="insurance_id" model="product.product">
+            <field name="name">SEGURO</field>
+            <field name="xas_is_cost">True</field>
+            <field name="purchase_ok">True</field>
+            <field name="detailed_type">service</field>
+            <field name="default_code">INSU</field>
+        </record>
+
+    </data>
+</odoo>

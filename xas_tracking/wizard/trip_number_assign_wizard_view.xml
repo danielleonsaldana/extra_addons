@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+
+    <!-- Vista del wizard -->
+    <record id="view_trip_number_assign_wizard" model="ir.ui.view">
+        <field name="name">view_trip_number_assign_wizard</field>
+        <field name="model">trip.number.assign</field>
+        <field name="arch" type="xml">
+            <form string="Asistente de asignación de número de viaje">
+                <group>
+                    <group>
+                        <field name="xas_partner_id"/>
+                        <field name="xas_trip_number_id"/>
+                    </group>
+                    <group>
+                        <field name="xas_count_trips" invisible="0"/>
+                        <field name="xas_purchase_id" invisible="1"/>
+                        <field name="xas_tracking_id" invisible="1"/>
+                    </group>
+                </group>
+                <footer>
+                    <button string="Asignar" invisible="xas_count_trips == 0 or xas_trip_number_id == False" type="object" name="action_assign" class="btn-primary"/>
+                    <button string="Crear nuevo" type="object" name="action_create" class="btn-info"/>
+                    <button string="Cancelar" class="btn-secondary" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+</odoo>

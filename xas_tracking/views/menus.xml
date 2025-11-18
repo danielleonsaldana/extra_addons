@@ -1,0 +1,140 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<odoo>
+    <data noupdate="0">
+
+        <!-- Acción para ver todos los seguimientos -->
+        <record id="action_tracking_general" model="ir.actions.act_window">
+            <field name="name">Todos los seguimientos</field>
+            <field name="res_model">tracking</field>
+            <field name="view_mode">kanban,tree,form</field>
+            <field name="domain">[]</field>
+            <field name="context">{'readonly_state': True}</field>
+            <field name="view_id" ref="xas_tracking.tracking_kanban_view"/>
+            <field name="search_view_id" ref="xas_tracking.tracking_search_view" />
+        </record>
+
+        <!-- Acción para ver los seguimientos maritimos -->
+        <record id="action_maritime" model="ir.actions.act_window">
+            <field name="name">Seguimientos Marítimos</field>
+            <field name="res_model">tracking</field>
+            <field name="view_mode">kanban,tree,form</field>
+            <field name="domain">[('xas_way','=','maritime')]</field>
+            <field name="context">{'readonly_state': True}</field>
+            <field name="view_id" ref="xas_tracking.tracking_kanban_view"/>
+            <field name="search_view_id" ref="xas_tracking.tracking_search_view" />
+        </record>
+
+        <!-- Acción para ver los seguimientos terrestres -->
+        <record id="action_terrestrial" model="ir.actions.act_window">
+            <field name="name">Seguimientos Terrestres</field>
+            <field name="res_model">tracking</field>
+            <field name="view_mode">kanban,tree,form</field>
+            <field name="domain">[('xas_way','=','terrestrial')]</field>
+            <field name="context">{'default_xas_way': 'terrestrial','readonly_state': True}</field> <!-- O el valor correspondiente -->
+            <field name="view_id" ref="xas_tracking.tracking_kanban_view"/>
+            <field name="search_view_id" ref="xas_tracking.tracking_search_view" />
+        </record>
+
+        <!-- Acción para ver los seguimientos aéreos -->
+        <record id="action_air" model="ir.actions.act_window">
+            <field name="name">Seguimientos Aéreos</field>
+            <field name="res_model">tracking</field>
+            <field name="view_mode">kanban,tree,form</field>
+            <field name="domain">[('xas_way','=','air')]</field>
+            <field name="context">{'readonly_state': True}</field>
+            <field name="view_id" ref="xas_tracking.tracking_kanban_view"/>
+            <field name="search_view_id" ref="xas_tracking.tracking_search_view" />
+        </record>
+
+        <!-- Acción para ver todos los números de viaje -->
+        <record id="action_trip_number_general" model="ir.actions.act_window">
+            <field name="name">Todos los números de viaje</field>
+            <field name="res_model">trip.number</field>
+            <field name="view_mode">tree,kanban</field>
+            <field name="domain">[]</field>
+            <field name="context">{'create': False}</field>
+            <field name="view_id" ref="xas_tracking.trip_number_tree_view"/>
+            <field name="search_view_id" ref="xas_tracking.trip_number_search_view" />
+        </record>
+
+        <record id="action_config_general" model="ir.actions.act_window">
+            <field name="name">Ajustes</field>
+            <field name="res_model">res.config.settings</field>
+            <field name="view_id" ref="xas_tracking.view_res_config_settings_inherit"/>
+            <field name="view_mode">form</field>
+            <field name="target">inline</field>
+            <field name="context">{'module' : 'xas_tracking', 'bin_size': False}</field>
+        </record>
+
+        <record id="action_config_incremental" model="ir.actions.act_window">
+            <field name="name">Incrementable</field>
+            <field name="res_model">incremental</field>
+            <field name="view_mode">tree,form</field>
+            <field name="domain">[]</field>
+            <field name="view_id" ref="xas_tracking.incremental_tree_view"/>
+            <field name="search_view_id" ref="xas_tracking.incremental_search_view" />
+        </record>
+
+        <record id="action_config_tracking_routes" model="ir.actions.act_window">
+            <field name="name">Rutas Flete Nacional</field>
+            <field name="res_model">tracking.routes</field>
+            <field name="view_mode">tree,form</field>
+            <field name="domain">[]</field>
+            <field name="view_id" ref="xas_tracking.tracking_routes_tree_view"/>
+            <field name="search_view_id" ref="xas_tracking.tracking_routes_search_view"/>
+        </record>
+
+        <!-- Menu raiz de seguimeintos -->
+        <menuitem id="tracking_menu_root"
+        name="Seguimientos"
+        active="True"
+        web_icon="xas_tracking,static/description/icon.png"
+        sequence="30"
+        action="action_tracking_general">
+
+            <menuitem id="tracking"
+                name="Seguimiento"
+                sequence="1">
+
+                <menuitem id="menu_all_tracking"
+                    action="action_tracking_general"
+                    sequence="1"/>
+
+                <menuitem id="menu_maritime"
+                    action="action_maritime"
+                    sequence="2"/>
+
+                <menuitem id="menu_terrestrial"
+                    action="action_terrestrial"
+                    sequence="3"/>
+
+                <menuitem id="menu_air"
+                    action="action_air"
+                    sequence="4"/>
+
+            </menuitem>
+            <menuitem id="travel_menu"
+                name="Número de viaje"
+                sequence="2"
+                action="action_trip_number_general">
+            </menuitem>
+            <menuitem id="configuration"
+                name="Configuración"
+                sequence="3">
+
+                <menuitem id="menu_all_tracking"
+                    action="action_config_general"
+                    sequence="1"/>
+                <menuitem id="menu_incremental"
+                    action="action_config_incremental"
+                    sequence="2"/>
+                <menuitem id="menu_tracking_routes"
+                    action="action_config_tracking_routes"
+                    sequence="3"/>
+
+            </menuitem>
+        </menuitem>
+
+    </data>
+</odoo>

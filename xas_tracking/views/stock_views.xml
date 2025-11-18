@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<odoo>
+    <data noupdate="0">
+
+        <record id="view_picking_form_inherit" model="ir.ui.view">
+            <field name="name">view_picking_form_inherit</field>
+            <field name="model">stock.picking</field>
+            <field name="inherit_id" ref="stock.view_picking_form"/>
+            <field name="arch" type="xml">
+                <xpath expr="//form[1]/sheet[1]/group[1]/group[1]/field[@name='location_dest_id'][2]" position="after">
+                    <field name="xas_picking_type_code" invisible="1"/>
+                    <!-- <field name="xas_tracking_id" readonly="xas_picking_type_code in ['incoming','outgoing']" force_save="1"/> --> <!-- Se comenta para permitir al usuario que seleccione -->
+                    <field name="xas_tracking_id" readonly="0" force_save="1"/>
+                    <field name="xas_trip_number_id" readonly="0" force_save="1"/>
+                </xpath>
+
+                <xpath expr="//field[@name='product_id']" position="after">
+                    <field optional="hide" name="xas_tracking_id" readonly="0" force_save="1"/>
+                    <field optional="show" name="xas_trip_number_id" readonly="0" force_save="1"/>
+                </xpath>
+            </field>
+        </record>
+
+        <record id="view_stock_quant_tree_inventory_editable_inherit" model="ir.ui.view">
+            <field name="name">view_stock_quant_tree_inventory_editable_inherit</field>
+            <field name="model">stock.quant</field>
+            <field name="inherit_id" ref="stock.view_stock_quant_tree_inventory_editable"/>
+            <field name="arch" type="xml">
+
+                <xpath expr="//field[@name='product_id']" position="after">
+                    <field optional="show" name="xas_tracking_id" readonly="0" force_save="1"/>
+                    <field optional="show" name="xas_trip_number_id" readonly="0" force_save="1"/>
+                </xpath>
+
+            </field>
+        </record>
+
+        <record id="view_move_line_tree_inherit" model="ir.ui.view">
+            <field name="name">view_move_line_tree_inherit</field>
+            <field name="model">stock.move.line</field>
+            <field name="inherit_id" ref="stock.view_move_line_tree"/>
+            <field name="arch" type="xml">
+
+                <xpath expr="//field[@name='product_id']" position="after">
+                    <field optional="hide" name="xas_tracking_id" readonly="1"/>
+                    <field optional="show" name="xas_trip_number_id" readonly="1"/>
+                </xpath>
+
+            </field>
+        </record>
+
+        <record id="view_stock_move_line_detailed_operation_tree_inherit" model="ir.ui.view">
+            <field name="name">view_stock_move_line_detailed_operation_tree_inherit</field>
+            <field name="model">stock.move.line</field>
+            <field name="inherit_id" ref="stock.view_stock_move_line_detailed_operation_tree"/>
+            <field name="arch" type="xml">
+
+                <xpath expr="//field[@name='product_id']" position="after">
+                    <field optional="hide" name="xas_tracking_id" readonly="1"/>
+                    <field optional="show" name="xas_trip_number_id" readonly="1"/>
+                </xpath>
+
+            </field>
+        </record>
+
+        <!-- Vista form para el desecho -->
+        <record id="view_stock_scrap_form_inherit_xas" model="ir.ui.view">
+            <field name="name">stock.scrap.form.inherit.xas</field>
+            <field name="model">stock.scrap</field>
+            <field name="inherit_id" ref="stock.stock_scrap_form_view"/>
+            <field name="arch" type="xml">
+                <xpath expr="//group" position="inside">
+                    <group string="Información de Seguimiento">
+                        <field name="xas_tracking_id"/>
+                        <field name="xas_trip_number_id"/>
+                    </group>
+                </xpath>
+            </field>
+        </record>
+
+        <!-- Vista tree para el desecho -->
+        <record id="view_stock_scrap_tree_inherit_xas" model="ir.ui.view">
+            <field name="name">stock.scrap.tree.inherit.xas</field>
+            <field name="model">stock.scrap</field>
+            <field name="inherit_id" ref="stock.stock_scrap_tree_view"/>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='product_id']" position="after">
+                    <field name="xas_tracking_id"/>
+                    <field name="xas_trip_number_id"/>
+                </xpath>
+            </field>
+        </record>
+
+        <!-- Herencia de vista busqueda para Recepciones -->
+        <record id="view_picking_internal_search_inherit" model="ir.ui.view">
+            <field name="name">view_picking_internal_search_inherit</field>
+            <field name="model">stock.picking</field>
+            <field name="inherit_id" ref="stock.view_picking_internal_search"/>
+            <field name="arch" type="xml">
+                <field name="name" position="after">
+                    <field name="xas_tracking_id"/>
+                    <field name="xas_trip_number_id"/>
+                </field>
+                <xpath expr="//group" position="inside">
+                    <filter string="Id de seguimiento" name="xas_tracking_id" domain="[]" context="{'group_by': 'xas_tracking_id'}"/>
+                    <filter string="Código de embarque" name="xas_trip_number_id" domain="[]" context="{'group_by': 'xas_trip_number_id'}"/>
+                </xpath>
+            </field>
+        </record>
+
+        <!-- Herencia de vista busqueda para Traslados por lote -->
+        <!--<record id="stock_picking_batch_filter_inherit" model="ir.ui.view">
+            <field name="name">stock_picking_batch_filter_inherit</field>
+            <field name="model">stock.picking.batch</field>
+            <field name="inherit_id" ref="stock_picking_batch.stock_picking_batch_filter"/>
+            <field name="arch" type="xml">
+                <field name="name" position="after">
+                    <field name="xas_tracking_id"/>
+                    <field name="xas_trip_number_id"/>
+                </field>
+                <xpath expr="//group" position="inside">
+                    <filter string="Id de seguimiento" name="xas_tracking_id" domain="[]" context="{'group_by': 'xas_tracking_id'}"/>
+                    <filter string="Código de embarque" name="xas_trip_number_id" domain="[]" context="{'group_by': 'xas_trip_number_id'}"/>
+                </xpath>
+            </field>
+        </record>-->
+
+    </data>
+</odoo>

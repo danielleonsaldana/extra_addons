@@ -1,0 +1,619 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<odoo>
+    <data noupdate="0">
+
+        <!-- Vista kanban de seguimientos -->
+        <record id="tracking_kanban_view" model="ir.ui.view">
+            <field name="name">tracking.kanban.view</field>
+            <field name="model">tracking</field>
+            <field name="arch" type="xml">
+                <!-- <kanban default_group_by="state" filter_states="['new', 'eta', 'arrival']" create="true" edit="true"> -->
+                <kanban default_group_by="state" create="True" edit="True" quick_create="False">
+                    <field name="name"/>
+                    <field name="state" readonly="context.get('readonly_state', False)"/>
+                    <field name="kanban_state"/>
+                    <field name="color"/>
+                    <field name="xas_way"/>
+                    <progressbar field="kanban_state" colors="{&quot;normal&quot;: &quot;200&quot;, &quot;done&quot;: &quot;success&quot;, &quot;blocked&quot;: &quot;danger&quot;}"/>
+                    <templates>
+                        <t t-name="kanban-box">
+                            <div t-attf-class="#{!selection_mode ? kanban_color(record.color.raw_value) : ''} oe_kanban_global_click">
+                                <div class="o_kanban_record_details">
+                                    <div class="o_kanban_record_top" name="kanban_top">
+                                        <div class="o_kanban_record_headings" name="kanban_headings">
+                                            <field name="is_priority" widget="boolean_favorite" nolabel="1"/>
+                                            <strong class="o_kanban_record_title" name="kanban_title">
+                                                <field name="name"/>
+                                            </strong>
+                                            <br/><br/>
+                                            <h6><field name="xas_trip_number"/></h6>
+                                            <field name="xas_way"/>
+                                            <h6 style="color:grey;"><field name="xas_main_partner_id"/></h6>
+                                            <br/><br/>
+                                        </div>
+                                        <div class="o_dropdown_kanban dropdown">
+                                            <a role="button" class="dropdown-toggle o-no-caret btn" data-bs-toggle="dropdown" data-display="static" href="#" aria-label="Menú desplegable" title="Menú desplegable">
+                                                <span class="fa fa-ellipsis-v"/>
+                                            </a>
+                                            <div class="dropdown-menu" role="menu">
+                                                <a t-if="widget.editable" role="menuitem" type="edit" class="dropdown-item">Editar</a>
+                                                <a t-if="widget.deletable" role="menuitem" type="delete" class="dropdown-item">Eliminar</a>
+                                                <ul class="oe_kanban_colorpicker" data-field="color"/>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="o_kanban_record_body" name="kanban_body">
+                                        <field name="xas_purchase_ids" widget="many2many_tags" invisible="not xas_purchase_ids"/>
+                                    </div>
+                                    <div class="o_kanban_record_bottom" name="kanban_bottom">
+                                        <div class="oe_kanban_bottom_left" name="kanban_bottom_left"/>
+                                        <div class="oe_kanban_bottom_right" name="kanban_bottom_right">
+                                            <field name="kanban_state" widget="state_selection"/>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </t>
+                    </templates>
+                </kanban>
+            </field>
+        </record>
+
+        <!-- Vista busqueda de seguimientos -->
+        <record id="tracking_search_view" model="ir.ui.view">
+            <field name="name">tracking_search_view</field>
+            <field name="model">tracking</field>
+            <field name="arch" type="xml">
+                <search string="Busqueda de seguimiento">
+                    <field name="name"/>
+                    <field name="xas_trip_number"/>
+                    <field name="xas_way"/>
+                    <field name="xas_main_partner_id"/> <!-- No se puede filtrar a menos que sea un campo almacenado -->
+
+                    <filter name="maritime_filter" string="Marítimo" domain="[('xas_way','=','maritime')]"/>
+                    <filter name="terrestrial_filter" string="Terrestre" domain="[('xas_way','=','terrestrial')]"/>
+                    <filter name="air_filter" string="Aéreo" domain="[('xas_way','=','air')]"/>
+                </search>
+            </field>
+        </record>
+
+        <!-- Vista tree de seguimientos -->
+        <record model='ir.ui.view' id='tracking_tree_view'>
+            <field name='name'>tracking_tree_view</field>
+            <field name='model'>tracking</field>
+            <field name='arch' type='xml'>
+                <tree string='Lista de seguimiento'>
+                    <field name='name'/>
+                    <field name="company_id"/>
+                    <field name="xas_main_partner_id"/>
+                    <field name="company_id"/>
+                    <field name="xas_trip_number"/>
+                    <field name="xas_tracking_route_id" string="Vía"/>
+                    <field name="xas_purchase_ids" widget="many2many_tags" string="Compras relacionadas"/>
+                    <field name="xas_partner_custom_id"/>
+                    <field name="xas_partner_nt_id"/>
+                    <field name="xas_partner_it_id"/>
+                    <field name="state" widget="badge"/>
+                </tree>
+            </field>
+        </record>
+
+        <!-- Vista form de seguimientos -->
+        <record model="ir.ui.view" id="tracking_form_view">
+            <field name="name">tracking_form_view</field>
+            <field name="model">tracking</field>
+            <field name="arch" type="xml">
+                <form string="Formulario de seguimiento">
+                    <header>
+                        <!-- Estado Marítimo -->
+                        <field name="state" widget="statusbar" statusbar_visible="new,eta,arrival,container,copies,guide,originals,sader_authorization,revalidation,appointment_request,to_transfer,to_review,sader_liberation,cert_in,deposit,request_pay,modulation,dispatch,vacuum_delivery,expense_receipt" invisible="xas_way != 'maritime'"/>
+                        <!-- Estado Terrestre -->
+                        <field name="state" widget="statusbar" statusbar_visible="new,notification_po,loading_confirmation,pickup,document_reception,dispatch2" invisible="xas_way != 'terrestrial'"/>
+                        <!-- Estado Aéreo -->
+                        <field name="state" widget="statusbar" statusbar_visible="new,notification_po,loading_confirmation,pickup,document_reception,dispatch2" invisible="xas_way != 'air'"/>
+                        <button name="send_email_custom" string="Correo agencia aduanal" type="object" icon="fa-envelope"/>
+                    </header>
+                    <sheet>
+                        <widget name="web_ribbon" text="Archivado" bg_color="text-bg-danger" invisible="active"/>
+                        <field name="kanban_state" widget="state_selection"/>
+                        <field name="active" invisible="1"/>
+                        <div class="oe_title">
+                            <h1>
+                                <field name="name" readonly="1"/>
+                            </h1>
+                        </div>
+                        <group>
+                            <group>
+                                <group>
+                                    <field name="xas_trip_number" options="{'no_create': True}" string="Código de embarque"/>
+                                </group>
+                                <group invisible="xas_trip_number != False">
+                                    <button name="add_trip_number" type="object" class="btn-primary oe_highlight" icon="fa-plus" help="Botón que permite agregar un número de viaje al seguimiento"/>
+                                </group>
+                            </group>
+                            <group>
+                                <field name="xas_way" onchange="1"/>
+                                <field name="xas_country"/>
+                                <field name="xas_main_partner_id"/>
+                                <field name="create_date" string="Fecha de creación"/>
+                            </group>
+                        </group>
+
+                        <group>
+                            <field name="xas_purchase_ids" widget="many2many_tags"/>
+                        </group>
+
+                        <notebook>
+                            <page string="Información general" class="oe_page_title" accesskey="I">
+                                <group>
+                                    <group>
+                                        <field name="xas_incoterm_id"/>
+                                        <field name="xas_currency_id"/>
+                                        <field name="xas_tracking_route_id"/>
+                                    </group>
+                                    <group>
+                                        <field name="xas_partner_id"/>
+                                        <field name="xas_plates"/>
+                                    </group>
+                                    <group>
+                                        <field name="xas_container"/>
+                                        <field name="xas_invoice"/>
+                                        <field name="xas_customs_id"/>
+                                        <field name="xas_customs_agent_id"/>
+                                        <field name="xas_entry_number"/>
+
+                                    </group>
+                                    <group>
+                                        <field name="xas_shipping_company_id"/>
+                                        <field name="xas_vessel"/>
+                                        <field name="xas_bl"/>
+                                        <field name="xas_inspection_point_id"/>
+                                        <field name="xas_supplier_id"/>
+                                        <field name="xas_trailer_number"/>
+                                    </group>
+                                </group>
+                            </page>
+
+                            <page string="Productos" class="oe_page_title" accesskey="P">
+                                    <field name="xas_purchase_order_line_ids" readonly="1" force_save="1">
+                                        <tree string="Purchase Order Lines" editable="bottom" readonly="1">
+                                            <control>
+                                                <create name="add_product_control" string="Add a product"/>
+                                                <create name="add_section_control" string="Add a section" context="{'default_display_type': 'line_section'}"/>
+                                                <create name="add_note_control" string="Add a note" context="{'default_display_type': 'line_note'}"/>
+                                                <button name="action_add_from_catalog" string="Catalog" type="object" class="px-4 btn-link" context="{'order_id': parent.id}"/>
+                                            </control>
+                                            <field name="tax_calculation_rounding_method" column_invisible="True"/>
+                                            <field name="display_type" column_invisible="True"/>
+                                            <field name="company_id" column_invisible="True"/>
+                                            <field name="currency_id" column_invisible="True"/>
+                                            <field name="state" column_invisible="True"/>
+                                            <field name="product_type" column_invisible="True"/>
+                                            <field name="product_uom" column_invisible="True" groups="!uom.group_uom"/>
+                                            <field name="product_uom_category_id" column_invisible="True"/>
+                                            <field name="invoice_lines" column_invisible="True"/>
+                                            <field name="sequence" widget="handle"/>
+                                            <field name="product_id" readonly="state in ('purchase', 'to approve', 'done', 'cancel')" required="not display_type" width="35%" force_save="1" domain="[('purchase_ok', '=', True)]"/>
+                                            <field name="name" widget="section_and_note_text"/>
+                                            <field name="date_planned" optional="hide" required="not display_type" force_save="1"/>
+                                            <field name="analytic_distribution" widget="analytic_distribution" optional="hide" groups="analytic.group_analytic_accounting" options="{'product_field': 'product_id', 'business_domain': 'purchase_order', 'amount_field': 'price_subtotal'}"/>
+                                            <field name="product_qty"/>
+                                            <field name="qty_received_manual" column_invisible="True"/>
+                                            <field name="qty_received_method" column_invisible="True"/>
+                                            <field name="qty_received" string="Received" column_invisible="parent.state not in ('purchase', 'done')" readonly="qty_received_method != 'manual'" optional="show"/>
+                                            <field name="qty_invoiced" string="Billed" column_invisible="parent.state not in ('purchase', 'done')" optional="show"/>
+                                            <field name="product_uom" string="UoM" groups="uom.group_uom" readonly="state in ('purchase', 'done', 'cancel')" required="not display_type" options="{'no_open': True}" force_save="1" optional="show"/>
+                                            <field name="product_packaging_qty" invisible="not product_id or not product_packaging_id" groups="product.group_stock_packaging" optional="show"/>
+                                            <field name="product_packaging_id" invisible="not product_id" context="{'default_product_id': product_id, 'tree_view_ref':'product.product_packaging_tree_view', 'form_view_ref':'product.product_packaging_form_view'}" groups="product.group_stock_packaging" optional="show"/>
+                                            <field name="price_unit" readonly="qty_invoiced != 0"/>
+                                            <!-- <button name="action_purchase_history" type="object" icon="fa-history" title="Purchase History" invisible="not id"/> -->
+                                            <field name="taxes_id" widget="many2many_tags" context="{'default_type_tax_use': 'purchase', 'search_view_ref': 'account.account_tax_view_search'}" options="{'no_create': True}" optional="show"/>
+                                            <field name="discount" string="Disc.%" readonly="qty_invoiced != 0" optional="hide"/>
+                                            <field name="price_subtotal" string="Tax excl."/>
+                                            <field name="price_total" string="Tax incl." optional="show"/>
+                                        </tree>
+                                    </field>
+
+                                    <button name="compute_purchase_order_lines" type="object" string="Calcular lineas" class="btn-primary"/>
+                            </page>
+
+                            <page string="Hojas de costos" class="oe_page_title" accesskey="I">
+                                <field name="xas_tracking_cost_line_ids">
+                                    <tree editable="bottom" create="1" delete="1" context="{'default_xas_lock_line': True}">
+                                        <field name="xas_lock_line" column_invisible="0" optional="hide"/>
+                                        <field name="xas_code" column_invisible="1" optional="hide"/>
+                                        <field name="xas_id"/>
+                                        <field name="xas_generate_invoice"/>
+                                        <field name="xas_currency_id" column_invisible="True" />
+                                        <field name="xas_company_currency_id" column_invisible="True" />
+                                        <field name="xas_partner_id"/>
+                                        <field name="xas_plan"/>
+                                        <field name="company_id" column_invisible="True"/>
+                                        <field name="xas_amount" sum="Total en USD" string="USD" readonly="xas_exchange_usd_mxn == True"/>
+                                        <field name="xas_exchange_usd_mxn" widget="boolean_toggle"/>
+                                        <field name="xas_total_amount" sum="Total en MXN" readonly="xas_exchange_usd_mxn == False"/>
+                                        <field name="xas_invoice_id"/>
+                                        <field name="xas_cost_x_box"/>
+                                    </tree>
+                                </field>
+                                <group name="note_group" col="6" class="mt-2 mt-md-0">
+                                    <group colspan="4">
+                                        <!-- <field colspan="2" name="note" nolabel="1" placeholder="Terms and conditions..."/> -->
+                                    </group>
+                                    <group class="oe_subtotal_footer" colspan="2" name="cost_total">
+                                        <field name="xas_total_cost_boxes" colspan="2" readonly="1"/>
+                                    </group>
+                                    <div class="clearfix"/>
+                                </group>
+                                <group>
+                                    <group>
+                                        <button name="compute_purchase_order_lines" type="object" string="Calcular lineas" class="btn-primary"/>
+                                    </group>
+                                    <group>
+                                        <button name="action_do_cost_invoices" type="object" string="Generar Facturas" class="btn-primary"/>
+                                    </group>
+                                </group>
+                                <group string="Tipo de cambio">
+                                    <group>
+                                        <field name="xas_user_edit_protection_exchange_rate" invisible="1"/>
+                                        <field name="xas_protection_exchange_rate" readonly="1" force_save="1"/>
+                                    </group>
+                                    <group>
+                                        <button invisible="state in ['dispatch','vacuum_delivery','expense_receipt','dispatch2']" name="set_latest_protection_exchange_rate" type="object" string="Actualizar" icon="fa-refresh" class="btn-primary" />
+                                    </group>
+                                </group>
+                                <group string="COSTOS DOBLES">
+                                    <field name="xas_total_cost_usd" invisible="1"/>
+                                    <field name="xas_purchase_order_line_ids" readonly="1" force_save="1" nolabel="1" colspan="2" invisible="not xas_purchase_order_line_ids">
+                                        <tree string="Purchase Order Lines" editable="bottom" readonly="1">
+                                            <control>
+                                                <create name="add_product_control" string="Add a product"/>
+                                                <create name="add_section_control" string="Add a section" context="{'default_display_type': 'line_section'}"/>
+                                                <create name="add_note_control" string="Add a note" context="{'default_display_type': 'line_note'}"/>
+                                                <button name="action_add_from_catalog" string="Catalog" type="object" class="px-4 btn-link" context="{'order_id': parent.id}"/>
+                                            </control>
+                                            <field name="tax_calculation_rounding_method" column_invisible="True"/>
+                                            <field name="product_id" width="35%" force_save="1" domain="[('purchase_ok', '=', True)]"/>
+                                            <field name="product_packaging_qty" string="Tarima"/>
+                                            <field name="product_qty" string="Cajas por tarima"/>
+                                            <!-- <field name="xas_boxes_per_pallet"/> -->
+                                            <field name="xas_cost_per_pallet"/>
+                                            <field name="xas_cost_per_box"/>
+                                        </tree>
+                                    </field>
+                                    <button name="compute_double_cost" type="object" string="Actualizar" icon="fa-refresh" class="btn-primary"/>
+                                </group>
+                                <group string="Otros">
+                                    <group>
+                                        <field name="xas_box"/>
+                                        <field name="xas_last_caliber_costed"/>
+                                    </group>
+                                    <group>
+                                        <field name="xas_custom_agency"/>
+                                    </group>
+                                </group>
+                            </page>
+
+                            <page string="Operación Marítima" class="oe_page_title" invisible="xas_way != 'maritime'" accesskey="m">
+                                <!--  <group> -->
+                                <group string="FASE DE LLEGADA Y DESCARGA">
+                                    <field name="xas_eta_date"  force_save="1"/>
+                                    <field name="xas_arrival_date" readonly="xas_eta_date == False"/>
+                                    <field name="xas_container_date" readonly="xas_arrival_date == False" force_save="1"/>
+                                </group>
+                                <group string="FASE DE DOCUMENTACIÓN">
+                                    <field name="xas_copies_date" readonly="xas_container_date == False" force_save="1"/>
+                                    <field name="xas_recop" readonly="xas_can_confirm_doc == False"/>
+                                    <field name="xas_document_line2_ids" context="{'default_xas_type': 'RECOP'}">
+                                        <tree editable="bottom">
+                                            <field name="xas_tracking_id" column_invisible="True"/>
+                                            <field name="xas_type" column_invisible="True"/>
+                                            <field name="company_id" column_invisible="True"/>
+                                            <field name="xas_file" filename="xas_file_name" widget="binary"/>
+                                            <field name="xas_file_name" column_invisible="True"/>
+                                            <field name="upload_date" force_save="1" readonly="1"/>
+                                        </tree>
+                                    </field>
+                                    <field name="xas_guide_date" readonly="xas_copies_date == False" force_save="1"/>
+                                    <field name="xas_regui" readonly="xas_can_confirm_doc == False"/>
+                                    <field name="xas_document_line3_ids" context="{'default_xas_type': 'REGUI'}">
+                                        <tree editable="bottom">
+                                            <field name="xas_tracking_id" column_invisible="True"/>
+                                            <field name="xas_type" column_invisible="False"/>
+                                            <field name="company_id" column_invisible="True"/>
+                                            <field name="xas_file" filename="xas_file_name" widget="binary"/>
+                                            <field name="xas_file_name" column_invisible="True"/>
+                                            <field name="upload_date" force_save="1" readonly="1"/>
+                                        </tree>
+                                    </field>
+                                    <field name="xas_originals_date" readonly="xas_guide_date == False" force_save="1"/>
+                                    <field name="xas_reori" readonly="xas_can_confirm_doc == False"/>
+                                    <field name="xas_document_line4_ids" context="{'default_xas_type': 'REORI'}">
+                                        <tree editable="bottom">
+                                            <field name="xas_tracking_id" column_invisible="True"/>
+                                            <field name="xas_type" column_invisible="False"/>
+                                            <field name="company_id" column_invisible="True"/>
+                                            <field name="xas_file" filename="xas_file_name" widget="binary"/>
+                                            <field name="xas_file_name" column_invisible="True"/>
+                                            <field name="upload_date" force_save="1" readonly="1"/>
+                                        </tree>
+                                    </field>
+                                </group>
+                                <group string="FASE DE TRÁMITES Y AUTORIZACIONES">
+                                    <field name="xas_sader_authorization_date" readonly="xas_originals_date == False" force_save="1"/>
+                                    <field name="xas_resad" readonly="xas_can_confirm_doc == False"/>
+                                    <field name="xas_document_line5_ids" context="{'default_xas_type': 'RESAD'}">
+                                        <tree editable="bottom">
+                                            <field name="xas_tracking_id" column_invisible="True"/>
+                                            <field name="xas_type" column_invisible="False"/>
+                                            <field name="company_id" column_invisible="True"/>
+                                            <field name="xas_file" filename="xas_file_name" widget="binary"/>
+                                            <field name="xas_file_name" column_invisible="True"/>
+                                            <field name="upload_date" force_save="1" readonly="1"/>
+                                        </tree>
+                                    </field>
+                                    <field name="xas_revalidation_date" readonly="xas_sader_authorization_date == False" force_save="1"/>
+                                    <field name="xas_rerev" readonly="xas_can_confirm_doc == False"/>
+                                    <field name="xas_document_line6_ids" context="{'default_xas_type': 'REREV'}">
+                                        <tree editable="bottom">
+                                            <field name="xas_tracking_id" column_invisible="True"/>
+                                            <field name="xas_type" column_invisible="False"/>
+                                            <field name="company_id" column_invisible="True"/>
+                                            <field name="xas_file" filename="xas_file_name" widget="binary"/>
+                                            <field name="xas_file_name" column_invisible="True"/>
+                                            <field name="upload_date" force_save="1" readonly="1"/>
+                                        </tree>
+                                    </field>
+                                    <field name="xas_appointment_request_date" readonly="xas_revalidation_date == False" force_save="1"/>
+                                    <field name="xas_resol" readonly="xas_can_confirm_doc == False"/>
+                                    <field name="xas_document_line7_ids" context="{'default_xas_type': 'RESOL'}">
+                                        <tree editable="bottom">
+                                            <field name="xas_tracking_id" column_invisible="True"/>
+                                            <field name="xas_type" column_invisible="False"/>
+                                            <field name="company_id" column_invisible="True"/>
+                                            <field name="xas_file" filename="xas_file_name" widget="binary"/>
+                                            <field name="xas_file_name" column_invisible="True"/>
+                                            <field name="upload_date" force_save="1" readonly="1"/>
+                                        </tree>
+                                    </field>
+                                </group>
+                                <group string="FASE DE REVISIÓN Y LIBERACIÓN">
+                                    <field name="xas_to_transfer_date" readonly="xas_appointment_request_date == False" force_save="1"/>
+                                    <field name="xas_to_review_date" readonly="xas_to_transfer_date == False" force_save="1"/>
+                                    <field name="xas_sader_liberation_date" readonly="xas_to_review_date == False" force_save="1"/>
+                                    <field name="xas_relib" readonly="xas_can_confirm_doc == False"/>
+                                    <field name="xas_document_line8_ids" context="{'default_xas_type': 'RELIB'}">
+                                        <tree editable="bottom">
+                                            <field name="xas_tracking_id" column_invisible="True"/>
+                                            <field name="xas_type" column_invisible="False"/>
+                                            <field name="company_id" column_invisible="True"/>
+                                            <field name="xas_file" filename="xas_file_name" widget="binary"/>
+                                            <field name="xas_file_name" column_invisible="True"/>
+                                            <field name="upload_date" force_save="1" readonly="1"/>
+                                        </tree>
+                                    </field>
+                                </group>
+                                <group string="FASE DE ENTREGA Y CIERRE">
+                                    <field name="xas_cert_in_date" readonly="xas_sader_liberation_date == False" force_save="1"/>
+                                    <field name="xas_recer" readonly="xas_can_confirm_doc == False"/>
+                                    <field name="xas_document_line9_ids" context="{'default_xas_type': 'RECER'}">
+                                        <tree editable="bottom">
+                                            <field name="xas_tracking_id" column_invisible="True"/>
+                                            <field name="xas_type" column_invisible="False"/>
+                                            <field name="company_id" column_invisible="True"/>
+                                            <field name="xas_file" filename="xas_file_name" widget="binary"/>
+                                            <field name="xas_file_name" column_invisible="True"/>
+                                            <field name="upload_date" force_save="1" readonly="1"/>
+                                        </tree>
+                                    </field>
+                                    <field name="xas_deposit_date" readonly="xas_cert_in_date == False" force_save="1"/>
+                                    <field name="xas_redep" readonly="xas_can_confirm_doc == False"/>
+                                    <field name="xas_document_line10_ids" context="{'default_xas_type': 'REDEP'}">
+                                        <tree editable="bottom">
+                                            <field name="xas_tracking_id" column_invisible="True"/>
+                                            <field name="xas_type" column_invisible="False"/>
+                                            <field name="company_id" column_invisible="True"/>
+                                            <field name="xas_file" filename="xas_file_name" widget="binary"/>
+                                            <field name="xas_file_name" column_invisible="True"/>
+                                            <field name="upload_date" force_save="1" readonly="1"/>
+                                        </tree>
+                                    </field>
+                                    <field name="xas_request_pay_date" readonly="xas_deposit_date == False" force_save="1"/>
+                                    <field name="xas_repag" readonly="xas_can_confirm_doc == False"/>
+                                    <field name="xas_document_line11_ids" context="{'default_xas_type': 'REPAG'}">
+                                        <tree editable="bottom">
+                                            <field name="xas_tracking_id" column_invisible="True"/>
+                                            <field name="xas_type" column_invisible="False"/>
+                                            <field name="company_id" column_invisible="True"/>
+                                            <field name="xas_file" filename="xas_file_name" widget="binary"/>
+                                            <field name="xas_file_name" column_invisible="True"/>
+                                            <field name="upload_date" force_save="1" readonly="1"/>
+                                        </tree>
+                                    </field>
+                                    <field name="xas_modulation_date" readonly="xas_request_pay_date == False" force_save="1"/>
+                                    <field name="xas_dispatch_date" readonly="xas_modulation_date == False" force_save="1"/>
+                                    <field name="xas_vacuum_delivery_date" readonly="xas_dispatch_date == False" force_save="1"/>
+                                    <field name="xas_expense_receipt_date" readonly="xas_vacuum_delivery_date == False" force_save="1"/>
+                                    <field name="xas_recue" readonly="xas_can_confirm_doc == False"/>
+                                    <field name="xas_document_line12_ids" context="{'default_xas_type': 'RECUE'}">
+                                        <tree editable="bottom">
+                                            <field name="xas_tracking_id" column_invisible="True"/>
+                                            <field name="xas_type" column_invisible="False"/>
+                                            <field name="company_id" column_invisible="True"/>
+                                            <field name="xas_file" filename="xas_file_name" widget="binary"/>
+                                            <field name="xas_file_name" column_invisible="True"/>
+                                            <field name="upload_date" force_save="1" readonly="1"/>
+                                        </tree>
+                                    </field>
+                                </group>
+                                <!-- </group> -->
+                            </page>
+
+                            <!-- Operación Terrestre -->
+                            <page string="Operación Terrestre" invisible="xas_way != 'terrestrial'" accesskey="t">
+                                <group string="Datos">
+                                    <group>
+                                        <field name="xas_notification_po_date" readonly="0" force_save="1"/>
+                                        <field name="xas_loading_confirmation_date" readonly="xas_notification_po_date == False" force_save="1"/>
+                                        <field name="xas_pickup_date" readonly="xas_loading_confirmation_date == False" force_save="1"/>
+                                    </group>
+                                    <group></group>
+                                </group>
+
+                                <group string="RECEPCIÓN DE DOCUMENTOS ">
+                                        <field name="xas_can_confirm_doc" invisible="1"/>
+                                        <field name="xas_document_reception_date" readonly="xas_pickup_date == False" force_save="1"/>
+                                        <field name="xas_redoc" readonly="xas_can_confirm_doc == False"/>
+                                        <field name="xas_document_line_ids" context="{'default_xas_type': 'REDOC'}">
+                                            <tree editable="bottom">
+                                                <field name="xas_tracking_id" column_invisible="True"/>
+                                                <field name="xas_type" column_invisible="False"/>
+                                                <field name="company_id" column_invisible="True"/>
+                                                <field name="xas_file" filename="xas_file_name" widget="binary"/>
+                                                <field name="xas_file_name" column_invisible="True"/>
+                                                <field name="upload_date" force_save="1" readonly="1"/>
+                                            </tree>
+                                        </field>
+                                </group>
+
+                                <group>
+                                    <group>
+                                        <field name="xas_dispatch2_date" readonly="xas_document_reception_date == False" force_save="1"/>
+                                    </group>
+                                    <group></group>
+                                </group>
+                            </page>
+
+                            <!-- Operación Aérea -->
+                            <page string="Operación Aérea" invisible="xas_way != 'air'" accesskey="a">
+                                <group string="Datos">
+                                    <group>
+                                        <field name="xas_notification_po_date" readonly="0" force_save="1"/>
+                                        <field name="xas_loading_confirmation_date" readonly="xas_notification_po_date == False" force_save="1"/>
+                                        <field name="xas_pickup_date" readonly="xas_loading_confirmation_date == False" force_save="1"/>
+                                    </group>
+                                    <group></group>
+                                </group>
+
+                                <group string="RECEPCIÓN DE DOCUMENTOS ">
+                                        <field name="xas_can_confirm_doc" invisible="1"/>
+                                        <field name="xas_document_reception_date" readonly="xas_pickup_date == False" force_save="1"/>
+                                        <field name="xas_redoc" readonly="xas_can_confirm_doc == False"/>
+                                        <field name="xas_document_line_ids" context="{'default_xas_type': 'REDOC'}">
+                                            <tree editable="bottom">
+                                                <field name="xas_tracking_id" column_invisible="True"/>
+                                                <field name="xas_type" column_invisible="False"/>
+                                                <field name="company_id" column_invisible="True"/>
+                                                <field name="xas_file" filename="xas_file_name" widget="binary"/>
+                                                <field name="xas_file_name" column_invisible="True"/>
+                                                <field name="upload_date" force_save="1" readonly="1"/>
+                                            </tree>
+                                        </field>
+                                </group>
+
+                                <group>
+                                    <group>
+                                        <field name="xas_dispatch2_date" readonly="xas_document_reception_date == False" force_save="1"/>
+                                    </group>
+                                    <group></group>
+                                </group>
+                            </page>
+                        </notebook>
+
+                    </sheet>
+                    <div class="oe_chatter" name="oe_chatter">
+                        <field name="message_follower_ids"/>
+                        <field name="message_ids"/>
+                        <field name="activity_ids"/>
+                    </div>
+                </form>
+            </field>
+        </record>
+
+        <!-- Vista busqueda de rutas -->
+        <record id="tracking_routes_search_view" model="ir.ui.view">
+            <field name="name">tracking_routes_search_view</field>
+            <field name="model">tracking.routes</field>
+            <field name="arch" type="xml">
+                <search string="Busqueda de rutas flete nacional">
+                    <field name="name"/>
+                    <!-- <group expand="0" string="Agrupar por">
+                        <filter string="Proveedor" name="xas_partner_id" domain="[]" context="{'group_by': 'xas_partner_id'}"/>
+                        <filter string="Producto" name="xas_product_id" domain="[]" context="{'group_by': 'xas_product_id'}"/>
+                        <filter string="Asignados" name="xas_to_apply_ids" domain="[]" context="{'group_by': 'xas_to_apply_ids'}"/>
+                    </group> -->
+                </search>
+            </field>
+        </record>
+
+        <!-- Vista tree de rutas -->
+        <record model='ir.ui.view' id='tracking_routes_tree_view'>
+            <field name='name'>tracking_routes_tree_view</field>
+            <field name='model'>tracking.routes</field>
+            <field name='arch' type='xml'>
+                <tree string='Lista de rutas flete nacional'>
+                    <field name="name"/>
+                </tree>
+            </field>
+        </record>
+
+        <!-- Vista form de rutas -->
+        <record model="ir.ui.view" id="tracking_routes_form_view">
+            <field name="name">tracking_routes_form_view</field>
+            <field name="model">tracking.routes</field>
+            <field name="arch" type="xml">
+                <form string="Formulario de ruta flete nacional">
+                    <header></header>
+                    <sheet>
+                        <div class="oe_title">
+                            <h1>
+                                <field name="name"/>
+                            </h1>
+                        </div>
+                        <group>
+                            <field name="xas_partner_id"/>
+                            <field name="xas_product_id"/>
+                            <field name="xas_price"/>
+                        </group>
+                        <group>
+                            <div class="o_row">
+                                <!-- Columna de checkbox sin etiquetas -->
+                                <div class="o_col_auto">
+                                    <field name="xas_iva_flag" nolabel="1"/>
+                                    <field name="xas_retention_flag" nolabel="1"/>
+                                </div>
+
+                                <!-- Columna de campos float con etiquetas personalizadas -->
+                                <div class="o_col_auto" style="margin-left: 10px;">
+                                    <div class="o_row">
+                                        <!-- IVA Label and Field -->
+                                        <div class="o_col">
+                                            <label for="xas_iva" class="o_form_label">IVA (%)</label>
+                                            <label for="xas_retention" style="margin-top: 5px !important;">Retención (%)</label>
+                                        </div>
+
+                                        <!-- Retention Label and Field -->
+                                        <div class="o_col" style="margin-left: 100px; width:200px !important;">
+                                            <field name="xas_iva" id="xas_iva"/>
+                                            <field name="xas_retention" id="xas_retention"/>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </group>
+                        <group>
+                            <field name="xas_total"/>
+                        </group>
+                    </sheet>
+                    <div class="oe_chatter" name="oe_chatter">
+                        <field name="message_follower_ids"/>
+                        <field name="message_ids"/>
+                        <field name="activity_ids"/>
+                    </div>
+                </form>
+            </field>
+        </record>
+
+    </data>
+</odoo>

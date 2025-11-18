@@ -1,0 +1,409 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <template id="report_informative_cost_document">
+        <t t-call="web.html_container">
+            <t t-set="o" t-value="doc"/>
+                <!-- Estilos CSS en línea -->
+                <style type="text/css">
+                    .acumen-title {
+                        float:left;
+                        border:1px solid black;
+                        text-align: center;
+                        font-size: 24px;
+                        font-weight: bold;
+                        background-color: #d9f0f2;
+                        padding: 10px;
+                        margin-bottom: 20px;
+                        width:30%;
+                    }
+                    .acumen-product-main {
+                        float:right;
+                        border:1px solid black;
+                        text-align: center;
+                        font-size: 24px;
+                        font-weight: bold;
+                        background-color: #e0e0e0;
+                        padding: 10px;
+                        margin-bottom: 20px;
+                        <!-- margin-left: 10%; -->
+                        <!-- width:60%; -->
+                    }
+                    .table-header {
+                        background-color: #e0e0e0;
+                        font-weight: bold;
+                        text-align: center;
+                    }
+                    .table-data td {
+                        padding: 5px;
+                        text-align: right;
+                    }
+                    .total-footer {
+                        text-align: right;
+                        font-weight: bold;
+                        margin-top: 20px;
+                    }
+                    .highlight {
+                        border: 1px solid red;
+                        padding: 2px;
+                    }
+                </style>
+
+                <div class="page">
+                    <!-- Encabezado -->
+                    <div class="acumen-title">
+                        <t t-esc="o.env.company.name"/>
+                    </div>
+
+                    <div class="acumen-product-main">
+                        <t t-esc="o.xas_purchase_order_line_ids[:1].product_id.name"/>
+                    </div>
+                    <br/>
+
+                    <!-- Tipo de cambio -->
+                    <div style="float:left; width:100%">
+                        <table class="table table-sm" style="width: 30%;">
+                            <tr style="border-bottom: 1px solid black !important;">
+                                <td colspan="3" style="text-align: center;">
+                                    <strong>TIPO DE CAMBIO</strong>
+                                </td>
+                            </tr>
+                            <tr style="width:30%;">
+                                <td colspan="3" style="text-align: center;">
+                                    <span>$ <t t-esc="o.xas_protection_exchange_rate"/> </span><br/>
+                                    <!-- <span class="highlight"> <t t-esc="o.get_current_exchange_rate()"/> </span> -->
+                                    <span class="highlight"> <t t-esc="round(o.xas_last_caliber_costed, 2)"/> </span>
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+
+                    <!-- Tabla de costos -->
+                    <table class="table table-sm" style="width:100%;">
+                        <thead>
+                            <tr>
+                                <th style="width: 50%;"></th>
+                                <th style="width: 25%; text-align: right;">COSTO U.S.D.</th>
+                                <th style="width: 25%; text-align: right;">COSTO M.N.</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <t t-set="vals" t-value="o._get_code_values(o.xas_tracking_cost_line_ids, o.xas_purchase_order_line_ids)"/>
+                            <!-- Fila 1 -->
+                            <tr>
+                                <td>CAJAS</td>
+                                <td style="text-align: right;"><t t-esc="o.xas_box"/></td>
+                                <td style="text-align: right;"><t t-esc="o.xas_box"/></td>
+                            </tr>
+                            <!-- Fila 2 -->
+                            <tr>
+                                <td>PRECIO FRUTA</td>
+                                <td style="text-align: right;">$<t t-esc="vals['fruit_price'][0]"/></td>
+                                <td style="text-align: right;">$<t t-esc="vals['fruit_price'][1]"/></td>
+                            </tr>
+                            <!-- Fila 3 -->
+                            <tr>
+                                <td>PRECIO FACTURADO</td>
+                                <td style="text-align: right;">$<t t-esc="vals['invoice_price'][0]"/></td>
+                                <td style="text-align: right;">$<t t-esc="vals['invoice_price'][1]"/></td>
+                            </tr>
+                            <!-- Fila 4 -->
+                            <tr>
+                                <td>FLETE AMERICANO</td>
+                                <td style="text-align: right;">$<t t-esc="vals['american_cargo'][0]"/></td>
+                                <td style="text-align: right;">$<t t-esc="vals['american_cargo'][1]"/></td>
+                         </tr>
+                            <!-- Fila separator -->
+                            <tr>
+                                <td></td>
+                                <td colspan="2" style="background-color:grey; color:grey;"></td>
+                            </tr>
+                            <!-- Fila 5 -->
+                            <tr>
+                                <td>COSTO FRUTA</td>
+                                <td style="text-align: right;">$<t t-esc="vals['fruit_cost'][0]"/></td>
+                                <td style="text-align: right;">$<t t-esc="vals['fruit_cost'][1]"/></td>
+                            </tr>
+                            <!-- Fila 6 -->
+                            <tr>
+                                <td>FLETE AMERICANO</td>
+                                <td style="text-align: right;">$<t t-esc="vals['american_cargo'][0]"/></td>
+                                <td style="text-align: right;">$<t t-esc="vals['american_cargo'][1]"/></td>
+                            </tr>
+                            <!-- Fila 7 -->
+                            <tr>
+                                <td>INCREMENTABLES</td>
+                                <td style="text-align: right;">$<t t-esc="vals['incremental'][0]"/></td>
+                                <td style="text-align: right;">$<t t-esc="vals['incremental'][1]"/></td>
+                            </tr>
+                            <!-- Fila 8 -->
+                            <tr>
+                                <td>INSPECCIÓN BCI</td>
+                                <td style="text-align: right;">$<t t-esc="vals['bci'][0]"/></td>
+                                <td style="text-align: right;">$<t t-esc="vals['bci'][1]"/></td>
+                            </tr>
+                            <!-- Fila 9 -->
+                            <tr>
+                                <td>FLETE A CD. DE MÉXICO</td>
+                                <td style="text-align: right;">$<t t-esc="vals['national_cargo'][0]"/></td>
+                                <td style="text-align: right;">$<t t-esc="vals['national_cargo'][1]"/></td>
+                            </tr>
+                            <!-- Fila 10 -->
+                            <tr>
+                                <td>MANIOBRAS EN BODEGA</td>
+                                <td style="text-align: right;">$<t t-esc="vals['warehouse_maneuvers'][0]"/></td>
+                                <td style="text-align: right;">$<t t-esc="vals['warehouse_maneuvers'][1]"/></td>
+                            </tr>
+                            <!-- Fila 11 -->
+                            <tr>
+                                <td>IMPUESTOS ADUANA 00.00%</td>
+                                <td style="text-align: right;">$<t t-esc="vals['custom_tax'][0]"/></td>
+                                <td style="text-align: right;">$<t t-esc="vals['custom_tax'][1]"/></td>
+                            </tr>
+                            <!-- Fila 12 -->
+                            <tr>
+                                <td>COMISIÓN 0.0</td>
+                                <td style="text-align: right;">$<t t-esc="vals['commission'][0]"/></td>
+                                <td style="text-align: right;">$<t t-esc="vals['commission'][1]"/></td>
+                            </tr>
+                            <!-- Fila 13 -->
+                            <tr>
+                                <td>AGENCIA ADUANAL</td>
+                                <td style="text-align: right;">$<t t-esc="vals['customs_agency'][0]"/></td>
+                                <td style="text-align: right;">$<t t-esc="vals['customs_agency'][1]"/></td>
+                            </tr>
+                            <!-- Fila 14 -->
+                            <tr>
+                                <td>SEGURO</td>
+                                <td style="text-align: right;">$<t t-esc="vals['insurance'][0]"/></td>
+                                <td style="text-align: right;">$<t t-esc="vals['insurance'][1]"/></td>
+                            </tr>
+                            <!-- Fila 15 -->
+                            <tr>
+                                <td>COSTO DEL EMBARQUE</td>
+                                <td style="text-align: right;">$<t t-esc="vals['travel_cost'][0]"/></td>
+                                <td style="text-align: right;">$<t t-esc="vals['travel_cost'][1]"/></td>
+                            </tr>
+                            <!-- Fila 16 -->
+                            <tr>
+                                <td>ÚLTIMO CALIBRE COSTEADO</td>
+                                <td style="text-align: right;">$<t t-esc="vals['last_caliber'][0]"/></td>
+                                <td style="text-align: right;">$<t t-esc="vals['last_caliber'][1]"/></td>
+                            </tr>
+
+                            <!-- Espacio vacio -->
+                            <tr style="color:white">
+                                <td colspan="3">BLANK SPACE</td>
+                            </tr>
+                            <!-- Fila de total -->
+                            <!-- <tr>
+                                <td colspan="2" style="text-align: right; font-weight: bold;">GASTOS x CAJA EN USD</td>
+                                <td style="text-align: right; font-weight: bold;">$3.222</td>
+                            </tr> -->
+                        </tbody>
+                    </table>
+
+
+                    <!-- Tabla de Resumen -->
+                    <table class="table table-sm" style="width: 100%; margin-top: 20px;">
+                        <thead>
+                            <tr class="table-header">
+                                <th style="text-align: center;">ETIQUETA</th>
+                                <th style="text-align: center;">CAJAS</th>
+                                <th style="text-align: center;">VARIEDAD</th>
+                                <th style="text-align: center;">CALIBRE</th>
+                                <th style="text-align: center;">PESO</th>
+                                <th style="text-align: center;">ENVASE</th>
+                                <th style="text-align: center;">EMPAQUE</th>
+                                <th style="text-align: center;">COSTO DLLS</th>
+                                <th style="text-align: center;">COSTO M.N.</th>
+                            </tr>
+                        </thead>
+                        <tbody class="table-data">
+                            <t t-foreach="o.xas_purchase_order_line_ids" t-as="product_line">
+                                <t t-set="line" t-value="o._get_attr_prod(product_line)"/>
+                                <tr>
+                                    <t t-set="ETIQUETA" t-value="line.get('ETIQUETA', 'N/A')"/>
+                                    <td style="text-align: center;" t-esc="line.get('ETIQUETA', 'N/A')"/>
+                                    <td style="text-align: center;" t-esc="line.get('CAJAS', 'N/A')"/>
+                                    <td style="text-align: center;" t-esc="line.get('VARIEDAD', 'N/A')"/>
+                                    <td style="text-align: center;" t-esc="line.get('CALIBRE', 'N/A')"/>
+                                    <td style="text-align: center;" t-esc="line.get('PESO', 'N/A')"/>
+                                    <td style="text-align: center;" t-esc="line.get('ENVASE', 'N/A')"/>
+                                    <td style="text-align: center;" t-esc="line.get('EMPAQUE', 'N/A')"/>
+                                    <td style="text-align: center;"> $<t t-esc="line.get('COSTO DLLS', 'N/A')"/></td>
+                                    <td style="text-align: center;"> $<t t-esc="line.get('COSTO M.N', 'N/A')"/></td>
+                                </tr>
+                            </t>
+                        </tbody>
+                    </table>
+
+                    <!-- Distribución informativa -->
+                    <t t-set="purchase_ids" t-value="o.xas_purchase_ids"/>
+                    <t t-if="purchase_ids">
+                        <t t-foreach="purchase_ids" t-as="purchase_id">
+                            <table class="table table-sm" style="width: 100%; margin-top: 20px;">
+                                <thead>
+                                    <tr class="table-header">
+                                        <th style="text-align: center;"><t t-esc="purchase_id.name" style="color:blue;"/></th>
+                                        <th style="text-align: center;">MAYNECKMAN</th>
+                                        <th style="text-align: center;">FRUITCORE</th>
+                                        <th style="text-align: center;">OUTLANDISH</th>
+                                        <th style="text-align: center;">FRUTAS MAYRA</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="table-data">
+                                    <t t-foreach="purchase_id.get_distribution_lines()" t-as="line">
+                                        <tr>
+                                            <td style="text-align: center;" t-esc="line.get('product_id', 'N/A')"/>
+                                            <td style="text-align: center;" t-esc="line.get('xas_maynekman', '0')"/>
+                                            <td style="text-align: center;" t-esc="line.get('xas_fruitcore', '0')"/>
+                                            <td style="text-align: center;" t-esc="line.get('xas_outlandish', '0')"/>
+                                            <td style="text-align: center;" t-esc="line.get('xas_frutas_mayra', '0')"/>
+                                        </tr>
+                                    </t>
+                                </tbody>
+                            </table>
+                        </t>
+                    </t>
+
+                    <!-- Tabla de distribución -->
+                    <!-- <t t-set="picking" t-value="o._get_trip_picking()"/>
+                    <t t-if="picking">
+                        <table class="table table-sm" style="width: 100%; margin-top: 20px;">
+                            <thead>
+                                <tr class="table-header">
+                                    <th style="text-align: center;"></th>
+                                    <th style="text-align: center;">MAYNECKMAN</th>
+                                    <th style="text-align: center;">FRUITCORE</th>
+                                    <th style="text-align: center;">OUTLANDISH</th>
+                                    <th style="text-align: center;">FRUTAS MAYRA</th>
+                                </tr>
+                            </thead>
+                            <tbody class="table-data">
+                                <t t-foreach="picking.move_ids_without_package" t-as="line">
+                                    <tr>
+                                        <td style="text-align: center;" t-esc="line.product_id.name"/>
+                                        <td style="text-align: center;" t-esc="line.xas_maynekman"/>
+                                        <td style="text-align: center;" t-esc="line.xas_fruitcore"/>
+                                        <td style="text-align: center;" t-esc="line.xas_outlandish"/>
+                                        <td style="text-align: center;" t-esc="line.xas_frutas_mayra"/>
+                                    </tr>
+                                </t>
+                            </tbody>
+                        </table>
+                    </t> -->
+
+                    <!-- Total -->
+                    <!-- <div class="total-footer">
+                        <strong>GASTOS x CAJA EN USD: $3.222</strong>
+                    </div> -->
+                </div>
+
+                <!-- Salto de página -->
+                <div style="page-break-after: always;"></div>
+
+                <div class="page">
+                    <!-- Título del Reporte -->
+                    <!-- <h2 style="text-align:center;">Reporte de Costo de Viaje</h2> -->
+
+                    <!-- Encabezado de Información Principal -->
+                    <table style="width: 100%; border: 1px solid black; text-align: center;">
+                        <tr>
+                            <td style="border: 1px solid black; width: 20%; background-color:yellow; text-align: center;"><t t-esc="o.xas_box"/></td>
+                            <td style="border: 1px solid black; width: 20%; background-color:yellow; text-align: center;">Cajas</td>
+                            <td style="color:white; width:20%; text-align: center;">.</td>
+                            <td style="border: 1px solid black; width: 20%; background-color:yellow; text-align: center;">Promedio del Viaje</td>
+                            <td style="border: 1px solid black; width: 20%; background-color:yellow; text-align: center;">N/A</td>
+                        </tr>
+                    </table>
+
+                    <!-- Información del Proveedor -->
+                    <table style="width: 100%; border: 1px solid black; margin-top: 10px; text-align: center;">
+                        <tr>
+                            <th style="border: 1px solid black; width: 20%; background-color:yellow; text-align: center;">Proveedor</th>
+                            <th style="border: 1px solid black; width: 20%; background-color:yellow; text-align: center;">Etiqueta</th>
+                            <th style="border: 1px solid black; width: 20%; background-color:yellow; text-align: center;">P.O.</th>
+                            <th style="border: 1px solid black; width: 20%; background-color:yellow; text-align: center;">Factura</th>
+                            <td style="color:white; width:10%; text-align: center;">.</td>
+                            <th style="border: 1px solid black; width: 10%; background-color:yellow; text-align: center;">Código</th>
+                        </tr>
+                        <tr>
+                            <td style="border: 1px solid black; width: 20%; text-align: center;"><t t-esc="o.xas_trip_number.xas_partner_id.name"/></td>
+                            <td style="border: 1px solid black; width: 20%; text-align: center;"><t t-esc="ETIQUETA"/></td>
+                            <td style="border: 1px solid black; width: 20%; text-align: center;"><t t-esc="o.xas_purchase_ids[0].name"/></td>
+                            <td style="border: 1px solid black; width: 20%; text-align: center;">N/A</td>
+                            <td style="color:white; width:10%; text-align: center;">.</td>
+                            <td style="border: 1px solid black; width:10%; text-align: center;"><t t-esc="o.xas_trip_number.name"/></td>
+                        </tr>
+                    </table>
+
+                    <!-- Información del Cliente e Importador -->
+                    <table style="width: 100%; border: 1px solid black; margin-top: 10px; text-align: center;">
+                        <tr>
+                            <th style="border: 1px solid black; background-color:yellow; text-align: center;">Comprador</th>
+                            <th style="border: 1px solid black; background-color:yellow; text-align: center;">Importador</th>
+                            <th style="border: 1px solid black; background-color:yellow; text-align: center;">Flete Americano</th>
+                            <th style="border: 1px solid black; background-color:yellow; text-align: center;">Agencia Aduanal</th>
+                        </tr>
+                        <tr>
+                            <td style="border: 1px solid black; text-align: center;">N/A</td>
+                            <td style="border: 1px solid black; text-align: center;"><t t-esc="o.company_id.name"/></td>
+                            <td style="border: 1px solid black; text-align: center;"><t t-esc="o.xas_tracking_cost_line_ids.filtered(lambda x: x.xas_code == 'FLEA').xas_partner_id.name"/></td>
+                            <td style="border: 1px solid black; text-align: center;"><t t-esc="o.xas_tracking_cost_line_ids.filtered(lambda x: x.xas_code == 'AGEN').xas_partner_id.name"/></td>
+                        </tr>
+                    </table>
+
+                    <!-- Detalles de la Logística -->
+                    <!-- <table style="width: 100%; border: 1px solid black; margin-top: 10px; text-align: center;">
+                        <tr>
+                            <th style="border: 1px solid black;">Salida de Frontera</th>
+                            <th style="border: 1px solid black;">En Guadalajara</th>
+                            <th style="border: 1px solid black;">Llega a Bodega</th>
+                            <th style="border: 1px solid black;">Frontera</th>
+                            <th style="border: 1px solid black;">Transporte Nacional</th>
+                            <th style="border: 1px solid black;">Chofer</th>
+                            <th style="border: 1px solid black;">Placas</th>
+                            <th style="border: 1px solid black;">Modelo</th>
+                        </tr>
+                        <tr>
+                            <td style="border: 1px solid black;">03-jun-24</td>
+                            <td style="border: 1px solid black;">05-jun-24</td>
+                            <td style="border: 1px solid black;">06-jun-24</td>
+                            <td style="border: 1px solid black;">Nogales</td>
+                            <td style="border: 1px solid black;">0</td>
+                            <td style="border: 1px solid black;">0</td>
+                            <td style="border: 1px solid black;">0</td>
+                            <td style="border: 1px solid black;">0</td>
+                        </tr>
+                    </table> -->
+
+                    <!-- Observaciones y Otros Detalles -->
+                    <!-- <table style="width: 100%; border: 1px solid black; margin-top: 10px; text-align: center;">
+                        <tr>
+                            <td style="border: 1px solid black;">Observaciones</td>
+                            <td style="border: 1px solid black;">&gt;&gt;</td>
+                        </tr>
+                        <tr>
+                            <td style="border: 1px solid black;">Orden de Compra</td>
+                            <td style="border: 1px solid black;"></td>
+                        </tr>
+                        <tr>
+                            <td style="border: 1px solid black;">Cuenta Gastos</td>
+                            <td style="border: 1px solid black;"></td>
+                            <td style="border: 1px solid black;">Sello Fiscal</td>
+                            <td style="border: 1px solid black;">In and Out</td>
+                        </tr>
+                    </table> -->
+                </div>
+        </t>
+    </template>
+
+    <template id="report_informative_cost">
+        <t t-call="web.html_container">
+            <t t-foreach="docs" t-as="doc">
+                <t t-call="xas_tracking.report_informative_cost_document"/>
+            </t>
+        </t>
+    </template>
+
+</odoo>

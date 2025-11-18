@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<odoo>
+    <data noupdate="0">
+
+        <!-- Vista busqueda de incrementales -->
+        <record id="incremental_search_view" model="ir.ui.view">
+            <field name="name">incremental_search_view</field>
+            <field name="model">incremental</field>
+            <field name="arch" type="xml">
+                <search string="Busqueda de incremental">
+                    <field name="xas_partner_id"/>
+                    <field name="xas_product_id"/>
+                    <field name="xas_to_apply_ids"/>
+
+                    <group expand="0" string="Agrupar por">
+                        <filter string="Proveedor" name="xas_partner_id" domain="[]" context="{'group_by': 'xas_partner_id'}"/>
+                        <filter string="Producto" name="xas_product_id" domain="[]" context="{'group_by': 'xas_product_id'}"/>
+                        <filter string="Asignados" name="xas_to_apply_ids" domain="[]" context="{'group_by': 'xas_to_apply_ids'}"/>
+                    </group>
+                </search>
+            </field>
+        </record>
+
+        <!-- Vista tree de incrementales -->
+        <record model='ir.ui.view' id='incremental_tree_view'>
+            <field name='name'>incremental_tree_view</field>
+            <field name='model'>incremental</field>
+            <field name='arch' type='xml'>
+                <tree string='Lista de incremental'>
+                    <field name="xas_partner_id"/>
+                    <field name="xas_product_id"/>
+                    <field name="xas_to_apply_ids" widget="many2many_tags"/>
+                </tree>
+            </field>
+        </record>
+
+        <!-- Vista form de incrementales -->
+        <record model="ir.ui.view" id="incremental_form_view">
+            <field name="name">incremental_form_view</field>
+            <field name="model">incremental</field>
+            <field name="arch" type="xml">
+                <form string="Formulario de incremental">
+                    <header></header>
+                    <sheet>
+                        <div class="oe_title">
+                            <h1>
+                                <field name="xas_partner_id" style="width:100%;"/>
+                            </h1>
+                        </div>
+                        <group>
+                            <group>
+                                <field name="xas_product_id"/>
+                            </group>
+                            <group>
+                                <field name="xas_to_apply_ids" widget="many2many_tags"/>
+                            </group>
+                        </group>
+                    </sheet>
+                    <div class="oe_chatter" name="oe_chatter">
+                        <field name="message_follower_ids"/>
+                        <field name="message_ids"/>
+                        <field name="activity_ids"/>
+                    </div>
+                </form>
+            </field>
+        </record>
+
+    </data>
+</odoo>

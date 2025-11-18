@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<odoo>
+    <data noupdate="0">
+
+        <!-- Configuraciones -->
+        <record id="view_res_config_settings_inherit" model="ir.ui.view">
+            <field name="name">res.config.settings.inherit.protection.exchange.rate</field>
+            <field name="model">res.config.settings</field>
+            <field name="inherit_id" ref="base.res_config_settings_view_form"/>
+            <field name="arch" type="xml">
+                <xpath expr="//form" position="inside">
+                    <app data-string="Tracking" string="Seguimientos" name="xas_tracking">
+                        <block title="Cambio de protección" id="exchange">
+                            <setting id="setting_protection_rate" class="w-100" string="Tipo de cambio de protección" help="Esta configuración permite agregar tipos de cambio de protección" groups="xas_tracking.group_xas_user_edit_protection_exchange_rate">
+                                <field name="xas_protection_exchange_rate_ids" class="w-100">
+                                    <tree editable="top" create="true" edit="true" delete="true">
+                                        <field name="xas_date"/>
+                                        <field name="xas_rate"/>
+                                    </tree>
+                                </field>
+                            </setting>
+                            <setting></setting>
+                        </block>
+                    </app>
+                </xpath>
+            </field>
+        </record>
+
+    </data>
+</odoo>

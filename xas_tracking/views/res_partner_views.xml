@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<odoo>
+    <data noupdate="0">
+
+        <record id="res_partner_view_form_inherit" model="ir.ui.view">
+            <field name="name">res_partner_view_form_inherit</field>
+            <field name="model">res.partner</field>
+            <field name="inherit_id" ref="base.view_partner_form"/>
+            <field eval="9" name="priority"/>
+            <field name="arch" type="xml">
+                <notebook>
+                    <page string="Código de embarque" class="oe_page_title" accesskey="N">
+                        <group>
+                            <group>
+                                <field name="xas_user_edit_prefix" invisible="1"/>
+                                <!-- <field name="xas_prefix_id" readonly="xas_user_edit_prefix == False" invisible="xas_user_edit_prefix == False"/> -->
+                                <field name="xas_full_prefix" string="Prefijo Completo" readonly="1"/>
+                                <field name="xas_generate_prefix_button_visible" invisible="1"/>
+                                <button name="action_generate_prefix" string="Generar Prefijo" type="object" invisible="xas_generate_prefix_button_visible == False"/>
+                            </group>
+                            <group>
+                                <field name="xas_number" readonly="xas_user_edit_prefix == False"/>
+                            </group>
+                        </group>
+                    </page>
+                </notebook>
+            </field>
+        </record>
+
+        <!-- Vista lista para el modelo contact.prefix -->
+        <record id="view_contact_prefix_tree" model="ir.ui.view">
+            <field name="name">contact.prefix.tree</field>
+            <field name="model">contact.prefix</field>
+            <field name="arch" type="xml">
+                <tree string="Prefijos de Contacto" create="True">
+                    <field name="name"/>
+                    <field name="xas_code"/>
+                    <field name="xas_full_prefix" string="Prefijo Completo"/>
+                </tree>
+            </field>
+        </record>
+
+        <!-- Vista formulario para editar prefijos -->
+        <record id="view_contact_prefix_form" model="ir.ui.view">
+            <field name="name">contact.prefix.form</field>
+            <field name="model">contact.prefix</field>
+            <field name="arch" type="xml">
+                <form string="Prefijo de Contacto" create="false">
+                    <sheet>
+                        <group>
+                            <field name="name"/>
+                            <field name="xas_code"/>
+                            <field name="xas_full_prefix" readonly="1"/>
+                        </group>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+        <!-- Acción para la vista lista de Prefijos -->
+        <record id="action_contact_prefix_list" model="ir.actions.act_window">
+            <field name="name">Prefijos de Contacto</field>
+            <field name="res_model">contact.prefix</field>
+            <field name="view_mode">tree,form</field>
+            <field name="view_id" ref="view_contact_prefix_tree"/>
+            <field name="help" type="html">
+                <p class="o_view_nocontent_smiling_face">
+                    Lista de prefijos personalizados para los contactos.
+                </p>
+            </field>
+        </record>
+
+        <!-- Menú dentro de Configuraciones de Contactos -->
+        <menuitem id="menu_contact_prefix_list"
+                  name="Prefijos de Contacto"
+                  parent="contacts.res_partner_menu_config"
+                  action="action_contact_prefix_list"
+                  sequence="10"/>
+
+    </data>
+</odoo>

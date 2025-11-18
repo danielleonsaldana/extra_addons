@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<odoo>
+    <data noupdate="0">
+
+       <!--  // se agregara el viaje desde qualityy_extend para mejorar la vista y el ordenamiento -->
+        <!-- <record id="quality_check_view_form_inherit" model="ir.ui.view">
+            <field name="name">quality_check_view_form_inherit</field>
+            <field name="model">quality.check</field>
+            <field name="inherit_id" ref="quality_control.quality_check_view_form"/>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='measure_on']" position="after">
+                    <field name="xas_trip_number_id"/>
+                </xpath>
+            </field>
+        </record> -->
+
+    </data>
+</odoo>
