@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- Categorias -->
+    <record id="xas_stock_extend.module_category_pricelist_mla" model="ir.module.category">
+        <field name="name">Visualización de listas de precios MLA</field>
+        <field name="parent_id" ref="base.module_category_hidden"/>
+        <field name="sequence">30</field>
+    </record>
+
+    <!-- Permisos -->
+    <!-- Listas de precios MlA -->
+    <record id="group_modify_specific_fields_pricelist_mla" model="res.groups">
+        <field name="name">Modificar listas de precios MLA</field>
+        <field name="category_id" ref="base.module_category_hidden"/>
+         <field name="share" eval="False"/>
+    </record>
+
+    <record id="group_modify_products" model="res.groups">
+        <field name="name">Modificaciones de productos</field>
+        <field name="category_id" ref="base.module_category_hidden"/>
+        <field name="implied_ids" eval="[(4, ref('base.group_user'))]"/>
+        <field name="users" eval="[(4, ref('base.user_root')), (4, ref('base.user_admin'))]"/>
+    </record>
+
+    <record id="group_enable_stock_moves_without_origin" model="res.groups">
+        <field name="name">Movimiento Recepción / Entrega sin origen</field>
+        <field name="category_id" ref="base.module_category_hidden"/>
+    </record>
+
+    <record id="group_user_pricelist_mla" model="res.groups">
+        <field name="name">Usuario</field>
+        <field name="category_id" ref="xas_stock_extend.module_category_pricelist_mla"/>
+    </record>
+
+    <record id="group_admin_pricelist_mla" model="res.groups">
+        <field name="name">Administrador</field>
+        <field name="category_id" ref="xas_stock_extend.module_category_pricelist_mla"/>
+        <field name="implied_ids" eval="[(4, ref('xas_stock_extend.group_modify_specific_fields_pricelist_mla')),
+            (4, ref('xas_stock_extend.group_user_pricelist_mla'))]"/>
+    </record>
+
+</odoo>

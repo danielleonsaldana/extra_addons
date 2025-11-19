@@ -1,0 +1,17 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_product_pricelist_mla_all,access_product_pricelist_mla_all,model_product_pricelist_mla,base.group_user,0,0,0,0
+access_product_pricelist_mla,access_product_pricelist_mla,model_product_pricelist_mla,xas_stock_extend.group_user_pricelist_mla,1,0,1,1
+access_product_pricelist_mla_edit,access_product_pricelist_mla_edit,model_product_pricelist_mla,xas_stock_extend.group_modify_specific_fields_pricelist_mla,1,1,1,1
+
+access_product_custom_mla,access_product_custom_mla,model_product_custom_mla,base.group_user,1,1,1,1
+access_scientific_variety_product,access_scientific_variety_product,model_scientific_variety_product,base.group_user,1,1,1,1
+access_commercial_variety_product,access_commercial_variety_product,model_commercial_variety_product,base.group_user,1,1,1,1
+access_tag_product,access_tag_product,model_tag_product,base.group_user,1,1,1,1
+access_quality_product,access_quality_product,model_quality_product,base.group_user,1,1,1,1
+access_caliber_product,access_caliber_product,model_caliber_product,base.group_user,1,1,1,1
+access_container_product,access_container_product,model_container_product,base.group_user,1,1,1,1
+access_package_product,access_package_product,model_package_product,base.group_user,1,1,1,1
+access_weight_mla,access_weight_mla,model_weight_mla,base.group_user,1,1,1,1
+access_existencias_actualizadas_wizard,access_existencias_actualizadas_wizard,model_existencias_actualizadas_wizard,,1,1,1,1
+
+access_wholesale_price_line_user,Wholesale price line,model_wholesale_price_line,base.group_user,1,1,1,1

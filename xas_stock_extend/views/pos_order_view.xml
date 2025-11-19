@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- Vista form -->
+    <record id="view_pos_form_inherit_xas_stock_extend" model="ir.ui.view">
+        <field name="name">pos.pos.form.inherit.analytica.space.stock.extend</field>
+        <field name="model">pos.order</field>
+        <field name="inherit_id" ref="point_of_sale.view_pos_pos_form"/>
+        <field name="arch" type="xml">
+            <!-- Lineas de orden -->
+            <xpath expr="//field[@name='lines']//field[@name='full_product_name']" position="after">
+                <field name="xas_tracking_id" optional="show"/>
+                <field name="xas_trip_number_id" optional="show"/>
+            </xpath>
+            <xpath expr="//field[@name='lines']/tree" position="inside">
+                <field name="xas_stock_lot_id" optional="show"/>
+            </xpath>
+            <xpath expr="//field[@name='lines']/tree/field[@name='pack_lot_ids']" position="attributes">
+                <attribute name="column_invisible">1</attribute>
+            </xpath>
+        </field>
+    </record>
+
+</odoo>

@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    
+    <!-- Vista Lista (Tree View) -->
+    <record id="view_product_custom_mla_tree" model="ir.ui.view">
+        <field name="name">product.custom.mla.tree</field>
+        <field name="model">product.custom.mla</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="name"/>
+                <field name="xas_code"/>
+                <field name="xas_is_invailable"/>
+            </tree>
+        </field>
+    </record>
+
+    <!-- Vista Formulario -->
+    <record id="view_product_custom_mla_form" model="ir.ui.view">
+        <field name="name">product.custom.mla.form</field>
+        <field name="model">product.custom.mla</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                    <group>
+                        <field name="name"/>
+                        <field name="xas_code"/>
+                        <field name="xas_is_invailable"/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- Acción -->
+    <record id="action_product_custom_mla" model="ir.actions.act_window">
+        <field name="name">Productos MLA</field>
+        <field name="res_model">product.custom.mla</field>
+        <field name="view_mode">tree,form</field>
+        <field name="view_id" ref="view_product_custom_mla_tree"/>
+        <field name="help" type="html">
+            <p>
+                Crea y gestiona los Productos MLA.
+            </p>
+        </field>
+    </record>
+</odoo>

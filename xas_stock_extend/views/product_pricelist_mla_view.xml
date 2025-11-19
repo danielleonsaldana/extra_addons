@@ -1,0 +1,146 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="view_product_pricelist_mla_tree" model="ir.ui.view">
+        <field name="name">product.pricelist.mla.tree</field>
+        <field name="model">product.pricelist.mla</field>
+        <field name="arch" type="xml">
+            <tree create="false" editable="bottom" decoration-muted="not active">
+                <field name="xas_reception_date" optional="show"/>
+                <field name="xas_trip_number_id" optional="show" string="CODIGO DE EMBARQUE"/>
+                <field name="xas_stock_lot_id" optional="show" string="SEGMENTADOR"/>
+                <field name="xas_product_id" column_invisible="True" optional="hide"/>
+                <field name="xas_product_custom_mla_id" optional="hide"/>
+                <field name="xas_scientific_variety_product_id" optional="hide"/>
+                <field name="xas_commercial_variety_product_id" optional="hide"/>
+                <field name="xas_tag_product_id" optional="hide"/>
+                <field name="xas_quality_product_id" optional="hide"/>
+                <field name="xas_caliber_product_id" optional="hide"/>
+                <field name="xas_container_product_id" optional="hide"/>
+                <field name="xas_package_product_id" optional="hide"/>
+                <field name="xas_weight_mla_id" optional="hide"/>
+                <field name="xas_product_name" optional="show"/>
+                <field name="xas_reference" optional="show"/>
+                <field name="active" optional="hide"/>
+
+                <!-- Cantidades -->
+                <field name="xas_available_qty" optional="show"/>
+                <field name="xas_reserved_qty" optional="show"/>
+                <field name="xas_entry_qty" optional="show" groups="xas_stock_extend.group_admin_pricelist_mla"/>
+                <field name="xas_out_qty" optional="show" groups="xas_stock_extend.group_admin_pricelist_mla"/>
+                <field name="xas_uom_id" optional="show"/>
+
+                <!-- Precios-->
+                <field name="xas_price_per_box" optional="show" widget="monetary" options="{'currency_field': 'currency_id'}" readonly="xas_available_qty == 0"/>
+                <field name="xas_mayority_price" optional="show" widget="monetary" options="{'currency_field': 'currency_id'}"/>
+                <field name="xas_boxes_by_pallet" optional="show" widget="monetary" options="{'currency_field': 'currency_id'}" readonly="xas_available_qty == 0"/>
+                <field name="xas_price_per_pallet" optional="show" widget="monetary" options="{'currency_field': 'currency_id'}" readonly="xas_available_qty == 0"/>
+                <field name="xas_mayority_affect_orders" optional="show"/>
+            </tree>
+        </field>
+    </record>
+
+    <!-- Vista de búsqueda para product.pricelist.mla -->
+    <record id="view_product_pricelist_mla_search" model="ir.ui.view">
+        <field name="name">product.pricelist.mla.search</field>
+        <field name="model">product.pricelist.mla</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="xas_reception_date" string="Fecha de Recepción"/>
+                <field name="xas_trip_number_id" string="Código de embarque"/>
+                <field name="xas_stock_lot_id" string="Segmentador"/>
+                <field name="xas_product_id" string="Producto"/>
+                <field name="xas_reference" string="Referencia"/>
+                <field name="xas_uom_id" string="Unidad"/>
+
+                <field name="xas_product_custom_mla_id" string="Producto MLA"/>
+                <field name="xas_scientific_variety_product_id" string="Variedad científica"/>
+                <field name="xas_commercial_variety_product_id" string="Variedad comercial"/>
+                <field name="xas_tag_product_id" string="Etiqueta"/>
+                <field name="xas_quality_product_id" string="Calidad"/>
+                <field name="xas_caliber_product_id" string="Calibre"/>
+                <field name="xas_container_product_id" string="Envase"/>
+                <field name="xas_package_product_id" string="Empaque"/>
+                <field name="xas_weight_mla_id" string="Peso"/>
+                
+                <!-- Filtro de archivado -->
+                <filter string="Archivados" name="inactive" domain="[('active', '=', False)]"/>
+
+                <!-- Filtros -->
+                <filter string="Fecha de Recepción" name="filter_reception_date" domain="[]"/>
+                <filter string="Código de embarque" name="filter_trip_number" domain="[]"/>
+                <filter string="Referencia" name="filter_reference" domain="[]"/>
+                <filter string="Unidad" name="filter_uom" domain="[]"/>
+                <filter string="Producto MLA" name="filter_product_mla" domain="[]"/>
+                <filter string="Variedad científica" name="filter_scientific_variety" domain="[]"/>
+                <filter string="Variedad comercial" name="filter_commercial_variety" domain="[]"/>
+                <filter string="Etiqueta" name="filter_tag_product" domain="[]"/>
+                <filter string="Calidad" name="filter_quality_product" domain="[]"/>
+                <filter string="Calibre" name="filter_caliber" domain="[]"/>
+                <filter string="Envase" name="filter_container" domain="[]"/>
+                <filter string="Empaque" name="filter_package" domain="[]"/>
+                <filter string="Peso" name="filter_weight" domain="[]"/>
+                <filter string="Producto" name="filter_product_id" domain="[]"/>
+                <filter string="Cantidad Disponible" name="filter_available_qty" domain="[]"/>
+                <filter string="Cantidad Reservada" name="filter_reserved_qty" domain="[]"/>
+                <filter string="Entrante" name="filter_entry_qty" domain="[]"/>
+                <filter string="Saliente" name="filter_out_qty" domain="[]"/>
+                <filter string="Precio por caja" name="filter_price_per_box" domain="[]"/>
+                <filter string="Precio mayoreo" name="filter_mayority_price" domain="[]"/>
+                <filter string="Cajas por pallet" name="filter_boxes_by_pallet" domain="[]"/>
+                <filter string="Precio por Pallet" name="filter_price_per_pallet" domain="[]"/>
+                <!--<field name="xas_tracking_id"/>-->
+                <field name="xas_trip_number_id"/>
+
+                <!-- Agrupaciones -->
+                <group expand="1" string="Agrupar por">
+                    <filter string="Referencia" name="group_reference" context="{'group_by':'xas_reference'}"/>
+                    <filter string="Producto MLA" name="group_product_mla" context="{'group_by':'xas_product_custom_mla_id'}"/>
+                    <filter string="Variedad científica" name="group_scientific_variety" context="{'group_by':'xas_scientific_variety_product_id'}"/>
+                    <filter string="Variedad comercial" name="group_commercial" context="{'group_by':'xas_commercial_variety_product_id'}"/>
+                    <filter string="Etiqueta" name="group_tag" context="{'group_by':'xas_tag_product_id'}"/>
+                    <filter string="Calidad" name="group_quality" context="{'group_by':'xas_quality_product_id'}"/>
+                    <filter string="Calibre" name="group_caliber" context="{'group_by':'xas_caliber_product_id'}"/>
+                    <filter string="Envase" name="group_container" context="{'group_by':'xas_container_product_id'}"/>
+                    <filter string="Empaque" name="group_package" context="{'group_by':'xas_package_product_id'}"/>
+                    <filter string="Peso" name="group_weight" context="{'group_by':'xas_weight_mla_id'}"/>
+                    <filter string="Fecha de Recepción" name="group_reception_date" context="{'group_by':'xas_reception_date'}"/>
+                    <filter string="Código de embarque" name="group_trip_number" context="{'group_by':'xas_trip_number_id'}"/>
+                    <filter string="Producto" name="group_product_id" context="{'group_by':'xas_product_id'}"/>
+                    <filter string="Unidad" name="group_uom" context="{'group_by':'xas_uom_id'}"/>
+                    <!--<filter string="Id de seguimiento" name="xas_tracking_id" domain="[]" context="{'group_by': 'xas_tracking_id'}"/>-->
+                    <filter string="Código de embarque" name="xas_trip_number_id" domain="[]" context="{'group_by': 'xas_trip_number_id'}"/>
+                </group>
+
+            </search>
+        </field>
+    </record>
+
+    <record id="action_product_pricelist_mla" model="ir.actions.act_window">
+        <field name="name">Lista de precios MLA</field>
+        <field name="res_model">product.pricelist.mla</field>
+        <field name="view_mode">tree</field>
+        <field name="view_id" ref="view_product_pricelist_mla_tree"/>
+        <field name="search_view_id" ref="view_product_pricelist_mla_search"/>
+        <field name="target">current</field>
+    </record>
+
+    <!-- Menú en Inventario -->
+    <menuitem 
+        id="menu_product_pricelist_mla_inventory"
+        name="Lista de Precios MLA"
+        groups="xas_stock_extend.group_user_pricelist_mla"
+        parent="stock.menu_stock_inventory_control"
+        action="action_product_pricelist_mla"
+        sequence="30"/>
+
+    <!-- Menú en Punto de Venta -->
+    <menuitem 
+        id="menu_product_pricelist_mla_pos"
+        name="Lista de Precios MLA"
+        groups="xas_stock_extend.group_user_pricelist_mla"
+        parent="point_of_sale.pos_config_menu_catalog"
+        action="action_product_pricelist_mla"
+        sequence="30"/>
+
+</odoo>

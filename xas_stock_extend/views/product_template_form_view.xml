@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="view_template_property_form_inherit" model="ir.ui.view">
+        <field name="name">product.template.tracking.inherit</field>
+        <field name="model">product.template</field>
+        <field name="inherit_id" ref="stock.view_template_property_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='tracking']" position="before">
+                <field name="xas_is_fruit" invisible="1"/>
+            </xpath>
+            <xpath expr="//field[@name='tracking']" position="attributes">
+                <attribute name="readonly">xas_is_fruit == True</attribute>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="view_product_template_form_xas_stock_extend" model="ir.ui.view">
+        <field name="name">product.template.form.analytica.space.stock.extend</field>
+        <field name="model">product.template</field>
+        <field name="inherit_id" ref="product.product_template_form_view"/>
+        <field name="arch" type="xml">
+
+            <xpath expr="//div[@name='button_box']" position="inside">
+                <button class="oe_stat_button" 
+                    name="action_open_pricelist_mla"
+                    type="object" icon="fa-server"
+                    groups="xas_stock_extend.group_user_pricelist_mla">
+                    <div class="o_field_widget o_stat_info">
+                        <span class="o_stat_value">
+                            <field name="xas_pricelist_mla_count"/>
+                        </span>
+                        <span class="o_stat_text">
+                            Listas de precios MLA
+                        </span>
+                    </div>
+                </button>
+            </xpath>
+
+            <xpath expr="//div[@name='options']" position="inside">
+                <span class="d-inline-flex" invisible="detailed_type != 'product'">
+                    <field name="xas_is_fruit"/>
+                    <label for="xas_is_fruit"/>
+                </span>
+            </xpath>
+
+            <xpath expr="//field[@name='name']" position="attributes">
+                <attribute name="readonly">xas_is_fruit == True</attribute>
+            </xpath>
+
+            <!-- Nuevos campos -->
+            <xpath expr="//group[@name='group_general']" position="inside">
+                <field name="xas_scientific_variety_product_id" invisible="xas_is_fruit == False" required="xas_is_fruit == True"/>
+                <field name="xas_commercial_variety_product_id" invisible="xas_is_fruit == False" required="xas_is_fruit == True"/>
+                <field name="xas_tag_product_id" invisible="xas_is_fruit == False" required="xas_is_fruit == True"/>
+                <field name="xas_package_product_id" invisible="xas_is_fruit == False" required="xas_is_fruit == True"/>
+            </xpath>
+
+            <xpath expr="//group[@name='group_standard_price']" position="inside">
+                <field name="xas_product_custom_mla_id" invisible="xas_is_fruit == False" required="xas_is_fruit == True"/>
+                <field name="xas_quality_product_id" invisible="xas_is_fruit == False" required="xas_is_fruit == True"/>
+                <field name="xas_caliber_product_id" invisible="xas_is_fruit == False" required="xas_is_fruit == True"/>
+                <field name="xas_container_product_id" invisible="xas_is_fruit == False" required="xas_is_fruit == True"/>
+                <field name="xas_weight_mla_id" invisible="xas_is_fruit == False" required="xas_is_fruit == True"/>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="product_template_only_form_view_inherit_xas_stock_extend" model="ir.ui.view">
+        <field name="name">product.product.form.inherit.analytica.space.stock.extend</field>
+        <field name="model">product.template</field>
+        <field name="inherit_id" ref="product.product_template_only_form_view"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='default_code']" position="before">
+                <field name="id" string="Id" />
+            </xpath>
+            <xpath expr="//field[@name='default_code']" position="attributes">
+                <attribute name="readonly">xas_is_fruit == True</attribute>
+            </xpath>
+            <xpath expr="//field[@name='barcode']" position="attributes">
+                <attribute name="readonly">xas_is_fruit == True</attribute>
+            </xpath>
+        </field>
+    </record>
+
+</odoo>

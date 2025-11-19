@@ -1,0 +1,37 @@
+<odoo>
+    <!-- Acción del servidor para actualizar las existencias -->
+    <record id="action_update_stock_views" model="ir.actions.server">
+        <field name="name">Actualizar Existencias</field>
+        <field name="model_id" ref="product.model_product_product"/>
+        <field name="state">code</field>
+        <field name="code">action = model.actualizar_existencias()</field>
+        <field name="binding_model_id" ref="product.model_product_product"/>
+        <field name="binding_type">action</field>
+        <field name="binding_view_types">list,form</field>
+    </record>
+
+    <!-- Vista para el wizard -->
+    <record id="view_update_stock_views_wizard_form" model="ir.ui.view">
+        <field name="name">existencias.actualizadas.wizard.form</field>
+        <field name="model">existencias.actualizadas.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Confirmación">
+                <group>
+                    <field name="mensaje"/>
+                </group>
+                <footer>
+                    <button string="Cerrar" type="object" name="confirmar" class="btn-primary"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <!-- Acción de ventana para el wizard -->
+    <record id="action_existencias_actualizadas_wizard" model="ir.actions.act_window">
+        <field name="name">Actualizar Existencias</field>
+        <field name="res_model">existencias.actualizadas.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+    </record>
+</odoo>
+

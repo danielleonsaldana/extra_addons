@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- Menú padre en Configuración de Inventario -->
+    <menuitem id="menu_configuration_stock_extension" name="Configuración Productos MLA" parent="stock.menu_stock_config_settings" sequence="10" groups="xas_stock_extend.group_modify_products"/>
+
+    <!-- Menús para cada modelo -->
+    <menuitem id="menu_product_custom_mla" name="Productos MLA" parent="menu_configuration_stock_extension" action="action_product_custom_mla" groups="xas_stock_extend.group_modify_products"/>
+    <menuitem id="menu_scientific_variety_product" name="Variedades Científicas" parent="menu_configuration_stock_extension" action="action_scientific_variety_product" groups="xas_stock_extend.group_modify_products"/>
+    <menuitem id="menu_commercial_variety_product" name="Variedades Comerciales" parent="menu_configuration_stock_extension" action="action_commercial_variety_product" groups="xas_stock_extend.group_modify_products"/>
+    <menuitem id="menu_tag_product" name="Etiquetas" parent="menu_configuration_stock_extension" action="action_tag_product" groups="xas_stock_extend.group_modify_products"/>
+    <menuitem id="menu_quality_product" name="Calidades" parent="menu_configuration_stock_extension" action="action_quality_product" groups="xas_stock_extend.group_modify_products"/>
+    <menuitem id="menu_caliber_product" name="Calibres" parent="menu_configuration_stock_extension" action="action_caliber_product" groups="xas_stock_extend.group_modify_products"/>
+    <menuitem id="menu_container_product" name="Envases" parent="menu_configuration_stock_extension" action="action_container_product" groups="xas_stock_extend.group_modify_products"/>
+    <menuitem id="menu_package_product" name="Empaques" parent="menu_configuration_stock_extension" action="action_package_product" groups="xas_stock_extend.group_modify_products"/>
+    <menuitem id="menu_weight_mla" name="Peso" parent="menu_configuration_stock_extension" action="action_weight_mla" groups="xas_stock_extend.group_modify_products"/>
+
+</odoo>

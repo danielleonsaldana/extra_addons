@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <!-- Vista Lista -->
+    <record id="view_caliber_product_tree" model="ir.ui.view">
+        <field name="name">caliber.product.tree</field>
+        <field name="model">caliber.product</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="name"/>
+                <field name="xas_code"/>
+                <field name="xas_is_invailable"/>
+            </tree>
+        </field>
+    </record>
+
+    <!-- Vista Formulario -->
+    <record id="view_caliber_product_form" model="ir.ui.view">
+        <field name="name">caliber.product.form</field>
+        <field name="model">caliber.product</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                    <group>
+                        <field name="name"/>
+                        <field name="xas_code"/>
+                        <field name="xas_is_invailable"/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- Acción -->
+    <record id="action_caliber_product" model="ir.actions.act_window">
+        <field name="name">Calibres</field>
+        <field name="res_model">caliber.product</field>
+        <field name="view_mode">tree,form</field>
+        <field name="view_id" ref="view_caliber_product_tree"/>
+        <field name="help" type="html">
+            <p>
+                Crea y gestiona los calibres de productos.
+            </p>
+        </field>
+    </record>
+</odoo>

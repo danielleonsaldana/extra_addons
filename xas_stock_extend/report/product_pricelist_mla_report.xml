@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <template id="report_pricelist_mla_pdf">
+        <t t-call="web.html_container">
+            <t t-set="company" t-value="env.company"/>
+            <t t-call="web.external_layout_standard">
+                <div class="page">
+                    <!-- Obtener la fecha y hora actual del servidor -->
+                    <t t-set="current_time" t-value="datetime.datetime.now()"/>
+                    <!-- Aplicar la diferencia horaria -->
+                    <t t-set="adjusted_time" t-value="current_time - datetime.timedelta(hours=6)"/>
+                    <!-- Formatear la fecha y hora ajustada -->
+                    <t t-set="local_time" t-value="adjusted_time.strftime('%d/%m/%Y %H:%M:%S')"/>
+                    <div class="row mb-2">
+                        <div class="col text-center">
+                            <img t-if="company.logo" t-att-src="image_data_uri(company.logo)" class="float-start" alt="Logo"
+                                t-att-width="65" t-att-height="75"/>
+                            <h2>Lista de Precios MLA</h2>
+                            <p>Fecha de impresión: <t t-esc="local_time"/></p>
+                        </div>
+                    </div>
+                    <style>
+                        table,td,th {
+                            border: 1px solid;
+                            border-color: black;
+                            border-collapse: collapse;
+                            font-size: 9px;
+                        }
+                        th{
+                            font-family: Arial, Helvetica, sans-serif;
+                            font-weight: bold;
+                        }
+                        td{
+                            padding: 1px 2px;
+
+                        }
+                    </style>
+                    <table>
+                        <thead style="background-color:#011183; color: white;">
+                            <tr>
+                                <th style="width: 105px;">Fecha de Recepción</th>
+                                <th style="width: 60px;">No. de Viaje</th>
+                                <th style="width: 320px;">Producto</th>
+                                <th style="width: 70px;">Cantidad Disponible</th>
+                                <th style="width: 70px;">Cantidad Reservada</th>
+                                <th style="width: 40px;">Entrante</th>
+                                <th style="width: 40px;">Saliente</th>
+                                <th style="width: 55px;">Precio por Caja</th>
+                                <th style="width: 55px;">Precio Menudeo</th>
+                                <th style="width: 60px;">Cajas por Pallet</th>
+                                <th style="width: 60px;">Precio por Pallet</th>
+                            </tr>
+                        </thead>
+                        <tbody class="text-sm">
+                            <t t-foreach="docs" t-as="o">
+                                <tr>
+                                    <td><t t-esc="o.xas_reception_date"/></td>
+                                    <td><t t-esc="o.xas_trip_number_id.name"/></td>
+                                    <td><t t-esc="o.xas_product_id.name"/></td>
+                                    <td class="text-end"><t t-esc="o.xas_available_qty"/></td>
+                                    <td class="text-end"><t t-esc="o.xas_reserved_qty"/></td>
+                                    <td class="text-end"><t t-esc="o.xas_entry_qty"/></td>
+                                    <td class="text-end"><t t-esc="o.xas_out_qty"/></td>
+                                    <td>
+                                        <table style="width: 100%; border: 0px; border-collapse: collapse;">
+                                            <tr>
+                                                <td style="text-align: left; width: 10%;border: 0px; border-collapse: collapse;">
+                                                    <span t-esc="o.currency_id.symbol"/>
+                                                </td>
+                                                <td style="text-align: right; width: 90%;border: 0px; border-collapse: collapse;">
+                                                    <span t-esc="o.xas_mayority_price"/>
+                                                </td>
+                                            </tr>
+                                        </table>
+                                    </td>
+                                    <td>
+                                        <table style="width: 100%; border: 0px; border-collapse: collapse;">
+                                            <tr>
+                                                <td style="text-align: left; width: 10%;border: 0px; border-collapse: collapse;">
+                                                    <span t-esc="o.currency_id.symbol"/>
+                                                </td>
+                                                <td style="text-align: right; width: 90%;border: 0px; border-collapse: collapse;">
+                                                    <span t-esc="o.xas_price_per_box"/>
+                                                </td>
+                                            </tr>
+                                        </table>
+                                    </td>
+                                    <td class="text-end"><t t-esc="o.xas_boxes_by_pallet"/></td>
+                                    <td>
+                                        <table style="width: 100%; border: 0px; border-collapse: collapse;">
+                                            <tr>
+                                                <td style="text-align: left; width: 10%;border: 0px; border-collapse: collapse;">
+                                                    <span t-esc="o.currency_id.symbol"/>
+                                                </td>
+                                                <td style="text-align: right; width: 90%;border: 0px; border-collapse: collapse;">
+                                                    <span t-esc="o.xas_price_per_pallet"/>
+                                                </td>
+                                            </tr>
+                                        </table>
+                                    </td>
+                                </tr>
+                            </t>
+                        </tbody>
+                    </table>
+                </div>
+            </t>
+        </t>
+    </template>
+
+    <record id="action_report_pricelist_mla" model="ir.actions.report">
+        <field name="name">Lista de precios MLA</field>
+        <field name="model">product.pricelist.mla</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">xas_stock_extend.report_pricelist_mla_pdf</field>
+        <field name="report_file">xas_stock_extend.report_pricelist_mla_pdf</field>
+        <field name="print_report_name">Lista_de_Precios_MLA_</field>
+        <field name="binding_model_id" ref="model_product_pricelist_mla"/>
+        <field name="binding_type">report</field>
+    </record>
+
+</odoo>

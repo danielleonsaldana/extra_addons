@@ -1,0 +1,147 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- Eliminamos la opción de crear producto en todas las vistas -->
+    <record id="view_product_template_form_xas_stock_extend_no_create" model="ir.ui.view">
+        <field name="name">product.template.form.analytica.space.stock.extend.no.create</field>
+        <field name="model">product.template</field>
+        <field name="inherit_id" ref="product.product_template_form_view"/>
+        <field name="arch" type="xml">
+            <xpath expr="//form" position="attributes">
+                <attribute name="create">false</attribute>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="product_template_tree_view_xas_stock_extend_no_create" model="ir.ui.view">
+        <field name="name">product.template.product.tree.analytica.space.stock.extend.no.create</field>
+        <field name="model">product.template</field>
+        <field name="inherit_id" ref="product.product_template_tree_view"/>
+        <field name="arch" type="xml">
+            <xpath expr="//tree" position="attributes">
+                <attribute name="create">false</attribute>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="product_template_kanban_view_xas_stock_extend_no_create" model="ir.ui.view">
+        <field name="name">Product.template.product.kanban.analytica.space.stock.extend.no.create</field>
+        <field name="model">product.template</field>
+        <field name="inherit_id" ref="product.product_template_kanban_view"/>
+        <field name="arch" type="xml">
+            <xpath expr="//kanban" position="attributes">
+                <attribute name="create">false</attribute>
+            </xpath>
+        </field>
+    </record>
+
+    <!-- Vista tree con posibilidad de crear -->
+    <record id="product_template_tree_view_create_custom" model="ir.ui.view">
+        <field name="name">product.template.product.tree</field>
+        <field name="model">product.template</field>
+        <field name="arch" type="xml">
+            <tree string="Product" multi_edit="1" sample="1">
+            <header>
+                <button string="Print Labels" type="object" name="action_open_label_layout"/>
+            </header>
+                <field name="product_variant_count" column_invisible="True"/>
+                <field name="sale_ok" column_invisible="True"/>
+                <field name="currency_id" column_invisible="True"/>
+                <field name="cost_currency_id" column_invisible="True"/>
+                <field name="priority" widget="priority" optional="show" nolabel="1"/>
+                <field name="id" string="Id" optional="show"/>
+                <field name="name" string="Product Name"/>
+                <field name="default_code" optional="show"/>
+                <field name="product_tag_ids" widget="many2many_tags" optional="show"/>
+                <field name="barcode" optional="hide" readonly="product_variant_count != 1"/>
+                <field name="company_id" options="{'no_create': True}"
+                    groups="base.group_multi_company" optional="hide"/>
+                <field name="list_price" string="Sales Price" widget='monetary' options="{'currency_field': 'currency_id'}" optional="show" decoration-muted="not sale_ok"/>
+                <field name="standard_price" widget='monetary' options="{'currency_field': 'cost_currency_id'}" optional="show" readonly="1"/>
+                <field name="categ_id" optional="hide"/>
+                <field name="detailed_type" optional="hide" readonly="1"/>
+                <field name="type" column_invisible="True"/>
+                <field name="uom_id" string="Unit" readonly="1" optional="show" groups="uom.group_uom"/>
+                <field name="active" column_invisible="True"/>
+                <field name="activity_exception_decoration" widget="activity_exception"/>
+            </tree>
+        </field>
+    </record>
+
+    <!-- Vista kanban con posibilidad de crear -->
+    <record id="product_template_kanban_view_create_custom" model="ir.ui.view">
+        <field name="name">Product.template.product.kanban</field>
+        <field name="model">product.template</field>
+        <field name="arch" type="xml">
+            <kanban sample="1">
+                <field name="id"/>
+                <field name="product_variant_count"/>
+                <field name="currency_id"/>
+                <field name="activity_state"/>
+                <field name="categ_id"/>
+                <progressbar field="activity_state" colors='{"planned": "success", "today": "warning", "overdue": "danger"}'/>
+                <templates>
+                    <t t-name="kanban-box">
+                        <div class="oe_kanban_card oe_kanban_global_click">
+                            <div class="o_kanban_image me-1">
+                                <img t-att-src="kanban_image('product.template', 'image_128', record.id.raw_value)" alt="Product" class="o_image_64_contain"/>
+                            </div>
+                            <div class="oe_kanban_details">
+                                <div class="o_kanban_record_top mb-0">
+                                    <div class="o_kanban_record_headings">
+                                        <strong class="o_kanban_record_title">
+                                            <field name="name"/>
+                                        </strong>
+                                    </div>
+                                    <field name="priority" widget="priority"/>
+                                </div>
+                                <t t-if="record.default_code.value">[<field name="default_code"/>]</t>
+                                <div t-if="record.product_variant_count.value &gt; 1" groups="product.group_product_variant">
+                                    <strong>
+                                        <t t-esc="record.product_variant_count.value"/> Variants
+                                    </strong>
+                                </div>
+                                <div name="product_lst_price" class="mt-1">
+                                    Price: <field name="list_price" widget="monetary" options="{'currency_field': 'currency_id', 'field_digits': True}"></field>
+                                </div>
+                                <div>
+                                    <field name="product_properties" widget="properties"/>
+                                </div>
+                            </div>
+                        </div>
+                    </t>
+                </templates>
+            </kanban>
+        </field>
+    </record>
+
+    <!-- Action modificada -->
+    <record id="product_template_creator_custom_action" model="ir.actions.act_window">
+        <field name="name">Productos</field>
+        <field name="res_model">product.template</field>
+        <field name="view_mode">kanban,tree,form</field>
+        <field name="view_ids" eval="[(5, 0, 0), 
+            (0, 0, {'view_mode': 'tree', 'view_id': ref('product_template_tree_view_create_custom')}),
+            (0, 0, {'view_mode': 'kanban', 'view_id': ref('product_template_kanban_view_create_custom')})]"/>
+        <field name="search_view_id" ref="stock.product_template_search_form_view_stock"/>
+        <field name="context">{'search_default_consumable': 1, 'default_detailed_type': 'product'}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Productos no encontrados, ¡crea uno!
+            </p>
+        </field>
+    </record>
+
+    <!-- Eliminamos el menuitem de productos original --> 
+    <record id="stock.menu_product_variant_config_stock" model="ir.ui.menu">
+        <field name="active">False</field>
+    </record>
+
+    <!-- Añadimos la versión original con capacidad de crear --> 
+    <menuitem id="menu_product_template_custom" 
+        name="Productos" 
+        parent="stock.menu_stock_inventory_control" 
+        sequence="1"
+        action="product_template_creator_custom_action"/>
+
+</odoo>

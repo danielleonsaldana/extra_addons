@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="res_config_settings_view_form_inherit_xas_pos_extend_sale_inherit_xas_stock_extend" model="ir.ui.view">
+        <field name="name">res.config.settings.view.form.inherit.xas.stock.extend.sale</field>
+        <field name="model">res.config.settings</field>
+        <field name="inherit_id" ref="xas_pos_extend.res_config_settings_view_form_inherit_xas_pos_extend_sale"/>
+        <field name="arch" type="xml">
+            <xpath expr="//setting[@id='show_margins']" position="after">
+                <setting id="xas_qty_to_mayority_price_pricelist_mla" string="Cantidad por mayoreo" help="Determina a partir de cuantos productos la venta considerara el precio de mayoreo.">
+                    <field name="xas_qty_to_mayority_price_pricelist_mla" class="o_light_label"/>
+                </setting>
+                <!-- Lineas de precios menudeo -->
+                <setting id="wholesale_price_lines" string="Precios menudeo" class="w-100" 
+                    help="Reglas para precios de menudeo, deje en ceros para indicar un rango hacia infinito.">
+                    <field name="xas_wholesale_price_line_ids">
+                        <tree editable="bottom" string="Rangos de precios">
+                            <field name="xas_min_price"/>
+                            <field name="xas_max_price"/>
+                            <field name="currency_id" column_invisible="1"/>
+                            <field name="xas_extra_amount" widget="monetary"/>
+                            <field name="xas_apply_to_other_products" widget="toggle"/>
+                        </tree>
+                    </field>
+                </setting>
+            </xpath>
+        </field>
+    </record>
+
+</odoo>
