@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="view_partner_property_form_inherit_xas_credit_approbation" model="ir.ui.view">
+        <field name="name">res.partner.property.form.inherit.inherit.xas.credit.approbation</field>
+        <field name="model">res.partner</field>
+        <field name="inherit_id" ref="account.view_partner_property_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//label[@for='use_partner_credit_limit']" position="replace">
+                <label for="xas_use_partner_credit_limit"/>
+            </xpath>
+            <xpath expr="//field[@name='use_partner_credit_limit']" position="replace">
+                <field name="xas_use_partner_credit_limit"/>
+            </xpath>
+            <xpath expr="//field[@name='credit_limit']" position="replace">
+                <field name="xas_credit_limit" class="oe_inline" invisible="not xas_use_partner_credit_limit"/>
+            </xpath>
+        </field>
+    </record>
+
+</odoo>

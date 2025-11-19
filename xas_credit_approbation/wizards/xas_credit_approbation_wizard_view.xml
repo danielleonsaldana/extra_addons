@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_xas_credit_approbation_wizard_form" model="ir.ui.view">
+        <field name="name">xas.credit.approbation.wizard.form</field>
+        <field name="model">xas.credit.approbation.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Solicitud en proceso">
+                <div class="text-center mb-3">
+                    <h3>Monto solicitado</h3>
+                    <h2>
+                        <field name="xas_credit_approbation_id" invisible="1"/>
+                        <field name="xas_amount_requested" widget="monetary"/>
+                    </h2>
+                </div>
+
+                <field name="xas_has_overdue_invoices" invisible="1"/>
+                <field name="xas_overdue_invoice_count" invisible="1"/>
+                <field name="xas_overdue_invoice_amount" invisible="1" widget="monetary"/>
+
+                <div class="alert alert-warning"
+                    invisible="not xas_has_overdue_invoices">
+                    <h4 class="mb-2">⚠️ ¡Cliente con facturas vencidas!</h4>
+                    <p>
+                        Facturas vencidas: <field name="xas_overdue_invoice_count" class="oe_inline"/>
+                    </p>
+                    <p>
+                        Importe vencido: $<field name="xas_overdue_invoice_amount" widget="monetary" class="oe_inline"/>
+                    </p>
+                    <p class="mt-1 small text-muted">
+                        Esta información es solo indicativa; puede continuar con la aprobación.
+                    </p>
+                </div>
+                <footer>
+                    <button string="Aprobar" name="action_confirm" type="object" class="btn-primary"/>
+                    <button string="Rechazar" special="cancel" class="btn-secondary"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_xas_credit_approbation_wizard" model="ir.actions.act_window">
+        <field name="name">Solicitud en proceso</field>
+        <field name="res_model">xas.credit.approbation.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+        <field name="view_id" ref="view_xas_credit_approbation_wizard_form"/>
+    </record>
+</odoo> 

@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="0">
+
+        <!-- Plantilla de correo para notificar al cliente sobre la aprobación del crédito -->
+        <record id="email_template_credit_approved_customer" model="mail.template">
+            <field name="name">Aprobación de Crédito: Notificación al Cliente</field>
+            <field name="model_id" ref="xas_credit_approbation.model_xas_credit_approbation"/>
+            <field name="subject">¡Su solicitud de crédito ha sido aprobada!</field>
+            <field name="email_to">{{ object.xas_customer_id.email_formatted if object.xas_customer_id else '' }}</field>
+            <field name="body_html"><![CDATA[
+<p>Estimado/a <t t-out="object.xas_customer_id.name if object.xas_customer_id else 'Cliente'"/>,</p>
+<p>Nos complace informarle que su solicitud de crédito con número <strong><t t-out="object.name"/></strong> ha sido aprobada.</p>
+<p>Detalles de la aprobación:</p>
+<ul>
+    <li>Monto Aprobado: <t t-out="object.xas_amount_added"/></li>
+    <li>Fecha de Aprobación: <t t-out="format_datetime(object.xas_date_approved)"/></li>
+</ul>
+<p>Si tiene alguna pregunta, no dude en ponerse en contacto con nosotros.</p>
+<p>Atentamente, sistema de Aprobaciones de Crédito</p>
+            ]]></field>
+            <field name="lang">{{ object.xas_customer_id.lang if object.xas_customer_id else user.lang }}</field>
+            <field name="auto_delete" eval="True"/>
+        </record>
+
+        <!-- Plantilla de correo para notificar al aprobador sobre la aprobación del crédito -->
+        <record id="email_template_credit_approved_approver" model="mail.template">
+            <field name="name">Aprobación de Crédito: Notificación al Aprobador</field>
+            <field name="model_id" ref="xas_credit_approbation.model_xas_credit_approbation"/>
+            <field name="subject">Confirmación: Aprobación de Crédito {{ object.name }}</field>
+            <field name="email_to">{{ (object.xas_approver_id.work_email or object.xas_approver_id.user_id.email_formatted) if object.xas_approver_id else '' }}</field>
+            <field name="body_html"><![CDATA[
+<p>Estimado/a <t t-out="object.xas_approver_id.name if object.xas_approver_id else 'Aprobador'"/>,</p>
+<p>Le informamos que ha aprobado la solicitud de crédito con número <strong><t t-out="object.name"/></strong> para el cliente <t t-out="object.xas_customer_id.name if object.xas_customer_id else 'N/A'"/>.</p>
+<p>Detalles de la aprobación:</p>
+<ul>
+    <li>Monto Aprobado: <t t-out="object.xas_amount_added"/></li>
+    <li>Fecha de Aprobación: <t t-out="format_datetime(object.xas_date_approved)"/></li>
+    <li>Solicitante: <t t-out="object.xas_vendor_id.name if object.xas_vendor_id else 'N/A'"/></li>
+</ul>
+<p>Esta es una notificación de confirmación de la acción realizada.</p>
+<p>Atentamente, sistema de Aprobaciones de Crédito</p>
+            ]]></field>
+            <field name="lang">{{ (object.xas_approver_id.user_id.lang or user.lang) if object.xas_approver_id else user.lang }}</field>
+            <field name="auto_delete" eval="True"/>
+        </record>
+
+        <!-- Plantilla de correo para notificar al cliente sobre el rechazo del crédito -->
+        <record id="email_template_credit_rejected_customer" model="mail.template">
+            <field name="name">Rechazo de Crédito: Notificación al Cliente</field>
+            <field name="model_id" ref="xas_credit_approbation.model_xas_credit_approbation"/>
+            <field name="subject">Información sobre su solicitud de crédito {{ object.name }}</field>
+            <field name="email_to">{{ object.xas_customer_id.email_formatted if object.xas_customer_id else '' }}</field>
+            <field name="body_html"><![CDATA[
+<p>Estimado/a <t t-out="object.xas_customer_id.name if object.xas_customer_id else 'Cliente'"/>,</p>
+<p>Lamentamos informarle que su solicitud de crédito con número <strong><t t-out="object.name"/></strong> ha sido rechazada.</p>
+<p>Si tiene alguna pregunta o desea conocer los motivos del rechazo, no dude en ponerse en contacto con nosotros.</p>
+<p>Atentamente, sistema de Aprobaciones de Crédito</p>
+            ]]></field>
+            <field name="lang">{{ object.xas_customer_id.lang if object.xas_customer_id else user.lang }}</field>
+            <field name="auto_delete" eval="True"/>
+        </record>
+
+        <!-- Plantilla de correo para notificar al usuario que rechazó sobre el rechazo del crédito -->
+        <record id="email_template_credit_rejected_notifier" model="mail.template">
+            <field name="name">Rechazo de Crédito: Notificación al Usuario</field>
+            <field name="model_id" ref="xas_credit_approbation.model_xas_credit_approbation"/>
+            <field name="subject">Confirmación: Rechazo de Crédito {{ object.name }}</field>
+            <field name="email_to">{{ (object.xas_approver_id.work_email or object.xas_approver_id.user_id.email_formatted) if object.xas_approver_id else user.email_formatted }}</field>
+            <field name="body_html"><![CDATA[
+<p>Estimado/a <t t-out="object.xas_approver_id.name if object.xas_approver_id else user.name"/>,</p>
+<p>Le informamos que ha rechazado la solicitud de crédito con número <strong><t t-out="object.name"/></strong> para el cliente <t t-out="object.xas_customer_id.name if object.xas_customer_id else 'N/A'"/>.</p>
+<p>Detalles de la solicitud rechazada:</p>
+<ul>
+    <li>Monto Solicitado: <t t-out="object.xas_amount_added"/></li>
+    <li>Fecha de Solicitud: <t t-out="format_datetime(object.xas_date)"/></li>
+    <li>Solicitante: <t t-out="object.xas_vendor_id.name if object.xas_vendor_id else 'N/A'"/></li>
+</ul>
+<p>Esta es una notificación de confirmación de la acción realizada.</p>
+<p>Atentamente, sistema de Aprobaciones de Crédito</p>
+            ]]></field>
+            <field name="lang">{{ (object.xas_approver_id.user_id.lang or user.lang) if object.xas_approver_id else user.lang }}</field>
+            <field name="auto_delete" eval="True"/>
+        </record>
+
+    </data>
+</odoo>

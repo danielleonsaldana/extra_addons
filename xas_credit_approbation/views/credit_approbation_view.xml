@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="view_action_xas_credit_approbation_tree" model="ir.ui.view">
+        <field name="name">xas.credit.approbation.tree</field>
+        <field name="model">xas.credit.approbation</field>
+        <field name="arch" type="xml">
+            <tree string="Aprobaciones de crédito" 
+                decoration-success="xas_state == 'approved'" 
+                decoration-danger="xas_state == 'rejected'"
+                decoration-warning="xas_state == 'waiting'"
+                create="false" edit="false">
+                <field name="xas_customer_id"/>
+                <field name="xas_vendor_id"/>
+                <field name="xas_date"/>
+                <field name="xas_time_passed" widget="float_time"/>
+                <field name="xas_date_approved"/>
+                <field name="xas_approver_id"/>
+                <field name="xas_state" widget="badge" 
+                    decoration-success="xas_state == 'approved'" 
+                    decoration-danger="xas_state == 'rejected'" 
+                    decoration-warning="xas_state == 'waiting'"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="view_action_xas_credit_approbation_form" model="ir.ui.view">
+        <field name="name">xas.credit.approbation.form</field>
+        <field name="model">xas.credit.approbation</field>
+        <field name="arch" type="xml">
+            <form create="false" string="Aprobación de crédito">
+                <header>
+                    <field name="xas_state" widget="statusbar" statusbar_visible="wating,approved,rejected"/>
+                    <button name="action_approve" string="Aprobar" type="object" 
+                            class="oe_highlight" 
+                            invisible="xas_state != 'wating'"/>
+                    <button name="action_reject" string="Rechazar" type="object" 
+                            class="btn-danger" 
+                            invisible="xas_state != 'wating'"/>
+                </header>
+                <sheet>
+                    <dv class="oe_title">
+                        <h1><field name="xas_customer_id"/></h1>
+                    </dv>
+                    <group string="LÍMITES DE CRÉDITO">
+                        <group>
+                            <field name="xas_total_to_collection"/>
+                            <field name="xas_dso"/>
+                            <label for="xas_credit_limit_available"/>
+                            <div class="o_row">
+                                <field name="xas_credit_limit_available"/>
+                                <field name="xas_credit_limit" class="oe_inline" invisible="not xas_credit_limit_available"/>
+                            </div>
+                            <field name="xas_validated" widget="boolean_toggle"/>
+                        </group>
+                        <group>
+                            <field name="xas_reference"/>
+                            <field name="xas_amount_added"/>
+                            <field name="xas_new_debt"/>
+                        </group>
+                    </group>
+                    <group string="HISTORIAL DE AUTORIZACIONES">
+                        <field name="xas_old_credit_approbations_ids" domain="[('xas_reference', '!=', False)]">
+                            <tree>
+                                <field name="xas_date_approved"/>
+                                <field name="xas_reference"/>
+                                <field name="xas_amount_added"/>
+                                <field name="xas_new_debt"/>
+                                <field name="xas_approver_id" string="Responsable"/>
+                                <field name="xas_state" widget="badge" 
+                                    decoration-success="xas_state == 'approved'" 
+                                    decoration-danger="xas_state == 'rejected'" 
+                                    decoration-warning="xas_state == 'waiting'"/>
+                                <field name="xas_payment_state" widget="badge" 
+                                    decoration-success="xas_payment_state == 'paid'" 
+                                    decoration-danger="xas_payment_state == 'overdue'" 
+                                    decoration-warning="xas_payment_state == 'partial'" 
+                                    decoration-info="xas_payment_state == 'open'"/>
+                            </tree>
+                        </field>
+                    </group>
+                    <div class="oe_chatter">
+                        <field name="message_follower_ids" widget="mail_followers"/>
+                        <field name="activity_ids" widget="mail_activity"/>
+                        <field name="message_ids" widget="mail_thread"/>
+                    </div>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_xas_credit_approbation_search" model="ir.ui.view">
+        <field name="name">xas.credit.approbation.search</field>
+        <field name="model">xas.credit.approbation</field>
+        <field name="arch" type="xml">
+            <search>
+            </search>
+        </field>
+    </record>
+
+    <record model="ir.actions.act_window" id="action_xas_credit_approbation">
+        <field name="name">Aprobación de Carga</field>
+        <field name="res_model">xas.credit.approbation</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+
+    <menuitem
+        id="model_xas_credit_approbation_menu"
+        name="Aprobación de Carga"
+        parent="account.menu_finance_receivables"
+        action="action_xas_credit_approbation"
+        sequence="25"/>
+
+</odoo>
