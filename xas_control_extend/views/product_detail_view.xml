@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+        <!-- Vista form de detalle de producto -->
+        <record model="ir.ui.view" id="product_detail_form_view">
+            <field name="name">product_detail_form_view</field>
+            <field name="model">product.detail</field>
+            <field name="arch" type="xml">
+                <form string="Formulario de detalle de producto">
+                    <!-- <header>
+                    </header> -->
+                    <sheet>
+                        <div class="oe_title">
+<!--                             <h1>
+                                <field name="name" readonly="1"/>
+                            </h1> -->
+                        </div>
+                        <notebook>
+                            <page string="Datos generales" class="oe_page_title" accesskey="g">
+                                <button name="do_lines" type="object" string="Generar lineas" class="btn-primary" invisible="1"/>
+                                <field name="xas_product_detail_line_ids" widget="section_and_note_one2many" mode="tree" context="{'default_display_type': False}">
+                                    <tree editable="bottom">
+                                        <control>
+                                            <create name="add_product_control" string="Agregar linea"/>
+                                            <create name="add_section_control" string="Agregar sección" context="{'default_display_type': 'line_section'}"/>
+                                            <create name="add_note_control" string="Agregar nota" context="{'default_display_type': 'line_note'}"/>
+                                        </control>
+                                        <field name="sequence" widget="handle"/>
+                                        <field name="display_type" column_invisible="1"/>
+                                        <field name="xas_characteristic_id"/>
+                                        <field name="name" string="Dato"/>
+                                        <!-- <field name="xas_data"/> -->
+                                        <field name="xas_image_ids" widget="many2many_binary" options="{'accepted_file_extensions': 'image/*'}"/>
+                                        <!-- <field name="xas_attachment" widget="image" filename="xas_attachment_name" string="Foto"/>
+                                        <field name="xas_attachment_name" column_invisible="1"/> -->
+                                        <field name="xas_note"/>
+                                    </tree>
+                                     <!-- <form string="Purchase Order Line">
+                                        <field name="display_type" invisible="1"/>
+                                        <label for="name" string="Section Name (eg. Products, Services)" invisible="display_type != 'line_section'"/>
+                                        <label for="name" string="Note" invisible="display_type != 'line_note'"/>
+                                        <field name="name" nolabel="1" invisible="not display_type"/>
+                                    </form> -->
+                                </field>
+                            </page>
+                            <page string="Otras notas">
+                                <group>
+                                    <field name="xas_note"/>
+                                </group>
+                            </page>
+
+                        </notebook>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+    </data>
+</odoo>

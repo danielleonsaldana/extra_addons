@@ -1,0 +1,13 @@
+<odoo>
+    <record id="group_quality_manager" model="res.groups">
+        <field name="name">Quality Manager</field>
+        <field name="category_id" ref="base.module_category_inventory"/>
+    </record>
+
+    <record id="product_quality_feature_rule" model="ir.rule">
+        <field name="name">Quality Feature Access</field>
+        <field name="model_id" ref="model_product_quality_feature"/>
+        <field name="groups" eval="[(4, ref('group_quality_manager'))]"/>
+    </record>
+
+</odoo>

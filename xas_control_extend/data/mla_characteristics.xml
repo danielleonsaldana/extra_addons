@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+        <!-- Plantillas de caracteristicas -->
+        <record id="xas_especie_id" model="product.custom.mla.characteristic">
+            <field name="name">Especie</field>
+        </record>
+
+        <record id="xas_especie_id" model="product.custom.mla.characteristic">
+            <field name="name">Especie</field>
+        </record>
+
+    </data>
+</odoo>

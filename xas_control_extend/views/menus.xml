@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+        <record id="action_config_general_quality" model="ir.actions.act_window">
+            <field name="name">Ajustes</field>
+            <field name="res_model">res.config.settings</field>
+            <field name="view_id" ref="xas_control_extend.view_res_config_settings_quality"/>
+            <field name="view_mode">form</field>
+            <field name="target">inline</field>
+            <field name="context">{'module' : 'xas_control_extend', 'bin_size': False}</field>
+        </record>
+
+        <menuitem name="Ajustes"
+                  sequence="1"
+                  parent="quality_control.menu_quality_configuration"
+                  id="menu_quality_configuration"
+                  action="action_config_general_quality"
+                  groups=""/>
+
+    </data>
+</odoo>

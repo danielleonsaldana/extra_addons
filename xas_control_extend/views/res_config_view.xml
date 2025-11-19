@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<odoo>
+    <data noupdate="0">
+
+        <!-- Configuraciones -->
+        <record id="view_res_config_settings_quality" model="ir.ui.view">
+            <field name="name">res.config.settings.quality</field>
+            <field name="model">res.config.settings</field>
+            <field name="inherit_id" ref="base.res_config_settings_view_form"/>
+            <field name="arch" type="xml">
+                <xpath expr="//form" position="inside">
+                    <app data-string="Quality" string="Calidad" name="xas_control_extend">
+                        <block title="Ubicaciones" id="locations">
+                            <setting id="setting_location_in" class="w-100" string="Ubicación de entrada" help="Esta configuración permite establecer la ubicación de entrada en los checks" groups="">
+                                <field name="xas_location_in_id"/>
+                            </setting>
+                            <setting id="setting_location_out" class="w-100" string="Ubicación de salida" help="Esta configuración permite establecer la ubicación de salida en los checks" groups="">
+                                <field name="xas_location_out_id"/>
+                            </setting>
+                        </block>
+                    </app>
+                </xpath>
+            </field>
+        </record>
+
+    </data>
+</odoo>

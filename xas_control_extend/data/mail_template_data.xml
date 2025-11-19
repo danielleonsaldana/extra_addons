@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <data noupdate="0">
+
+        <!-- Plantilla de correo para Control de calidad -->
+        <record id="mail_template_quality_check_notification" model="mail.template">
+            <field name="name">Correo de calidad</field>
+            <field name="model_id" ref="xas_control_extend.model_quality_check"/>
+            <field name="email_from">{{ user.email_formatted }}</field>
+            <!-- <field name="email_to">{{ object.xas_partner_custom_id.email_formatted }}</field> -->
+            <!-- <field name="partner_to">{{ object.xas_partner_custom_id.id }}</field> -->
+            <field name="subject">Resumen de pruebas de calidad: {{object.name}}</field>
+            <field name="description">Plantilla de correo que describe los resultados de las pruebas de calidad realizadas</field>
+            <field name="body_html" type="html">
+                <p>Hola,</p>
+                <p>Te envío el reporte de control de calidad, para su conocimiento e información.</p>
+
+                <!-- Encabezado -->
+                <div class="text-center">
+                    <h2>Control de calidad <span t-out="object.name"/></h2>
+                    <h3><span t-out="object.company_id.name"/></h3>
+                </div>
+
+                <!-- Información general -->
+                <table style="width: 100%; margin-bottom: 20px;">
+                    <tr>
+                        <td><strong>Punto de control:</strong> Recepción</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Responsable:</strong> <t t-esc="object.xas_responsible_id.name"/></td>
+                        <td><strong>Factura:</strong> <t t-esc="object.xas_invoice_ids.name"/></td>
+                    </tr>
+                    <tr>
+                        <td><strong>Transporte:</strong> <t t-esc="object.xas_transport.name"/></td>
+                        <td><strong>Viaje:</strong> <t t-esc="object.xas_trip_number_id.name"/></td>
+                    </tr>
+                    <tr>
+                        <td colspan="2"><strong>Fecha de recepción:</strong> <t t-esc="object.xas_reception_date"/></td>
+                    </tr>
+                </table>
+
+                <!-- Inicia el ciclo de cada producto -->
+                <t t-foreach="object.xas_product_ids" t-as="product_id">
+                    <!-- Tabla de detalles -->
+                    <table class="table table-bordered" style="width: 100%; border: 1px solid black; border-collapse: collapse;">
+                        <thead>
+                            <tr style="background-color: black; color: white; text-align: center;">
+                                <th>Característica</th>
+                                <th>Dato</th>
+                                <th>Evidencia fotográfica</th>
+                                <th>Nota adicional</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- Por cada muestra se crea una fila -->
+                            <t t-foreach="product_id.xas_product_detail_line_ids" t-as="sample_id" t-foreach-index="index">
+                                <!-- Si es sección -->
+                                <t t-if="sample_id.display_type == 'line_section'">
+                                    <tr>
+                                        <td colspan="4" style="background-color: black; color: white; text-align: center;">
+                                            <strong><span t-esc="sample_id.name"/></strong>
+                                        </td>
+                                    </tr>
+                                </t>
+                                <t t-if="sample_id.display_type == False">
+                                    <tr>
+                                        <td style="background-color: black; color: white;"><span t-esc="sample_id.xas_characteristic_id.name"/></td>
+                                        <td><span t-esc="sample_id.name"/></td>
+                                        <td>
+                                            <t t-if="sample_id.xas_image_ids">
+                                                <t t-foreach="sample_id.xas_image_ids" t-as="image">
+                                                    <img t-att-src="image_data_uri(image.datas)"
+                                                         style="max-height:100px; max-width:200px;"
+                                                         alt="Imagen no encontrada"/>
+                                                    <br/>
+                                                </t>
+                                            </t>
+                                            <!-- Si no hay imágenes -->
+                                            <t t-else="">
+                                                <span>No hay imágenes disponibles</span>
+                                            </t>
+                                        </td>
+                                        <td><span t-esc="sample_id.xas_note"/></td>
+                                    </tr>
+                                </t>
+                            </t>
+                        </tbody>
+                    </table>
+
+                    <!-- Otras notas -->
+                    <t t-if="product_id.xas_note">
+                        <table style="width: 100%; border: 1px solid black; border-collapse: collapse; margin-top: 20px;margin-bottom: 20px;">
+                            <thead>
+                                <tr style="background-color: black; color: white; text-align: left;">
+                                    <th>Otras notas</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>
+                                        <t t-esc="product_id.xas_note"/>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </t>
+                </t>
+
+                <br/><br/>
+                <p>Saludos cordiales,</p>
+                <t t-if="not is_html_empty(user.signature)">
+                    <br/><br/>
+                    <t t-out="user.signature or ''">--<br/>Mitchell Admin</t>
+                </t>
+            </field>
+            <field name="auto_delete" eval="True"/>
+        </record>
+    </data>
+</odoo>

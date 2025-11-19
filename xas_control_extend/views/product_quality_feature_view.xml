@@ -1,0 +1,30 @@
+
+<odoo>
+    <record id="view_product_quality_feature_tree" model="ir.ui.view">
+        <field name="name">product.quality.feature.tree</field>
+        <field name="model">product.quality.feature</field>
+        <field name="arch" type="xml">
+            <tree string="Calidad">
+                <field name="xas_characteristics"/>
+                <field name="xas_type_calidad"/>
+                <field name="xas_product_tmpl_id"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="view_product_quality_feature_form" model="ir.ui.view">
+        <field name="name">product.quality.feature.form</field>
+        <field name="model">product.quality.feature</field>
+        <field name="arch" type="xml">
+            <form string="Calidad">
+                <sheet>
+                    <group>
+                        <field name="xas_characteristics"/>
+                        <field name="xas_type_calidad"/>
+                        <field name="xas_product_tmpl_id"/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+</odoo>

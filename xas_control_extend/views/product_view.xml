@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+        <!-- Heredamos vista form de productos MLA -->
+        <record id="view_product_custom_mla_form_inh" model="ir.ui.view">
+            <field name="name">view_product_custom_mla_form_inh</field>
+            <field name="model">product.custom.mla</field>
+            <field name="inherit_id" ref="xas_stock_extend.view_product_custom_mla_form"/>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='xas_code']" position="after">
+                    <field name="characteristics_ids" widget="many2many_tags"/>
+                </xpath>
+            </field>
+        </record>
+
+    </data>
+</odoo>

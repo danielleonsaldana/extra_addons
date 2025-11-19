@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_custom_quality_check_form" model="ir.ui.view">
+        <field name="name">quality.check.form.inherit</field>
+        <field name="model">quality.check</field>
+        <field name="inherit_id" ref="quality_control.quality_check_view_form"/>
+        <field name="arch" type="xml">
+
+            <!-- Ocultamos los botónes de aprobado o rechazado originales -->
+            <xpath expr="//form[1]/header[1]/button[@name='do_pass']" position="attributes">
+                <attribute name="invisible">True</attribute>
+            </xpath>
+            <xpath expr="//form[1]/header[1]/button[@name='do_fail']" position="attributes">
+                <attribute name="invisible">True</attribute>
+            </xpath>
+
+            <!-- Heredamos el header -->
+            <xpath expr="//header" position="inside">
+                <button name="start_inspection" type="object" class="btn-info" invisible="quality_state != 'none'" string="Iniciar Inspección" data-hotkey="i"/>
+
+                <button name="do_pass" type="object" class="btn-primary" invisible="quality_state != 'in_process'" string="Aprobado" data-hotkey="q"/>
+                <button name="do_fail" type="object" class="btn-primary" invisible="quality_state != 'in_process'" string="Falllido" data-hotkey="w"/>
+                <button name="send_email" type="object" class="btn-warning" invisible="quality_state not in  ['pass','fail']" string="Enviar" data-hotkey="s"/>
+            </xpath>
+
+            <!-- Sección de smart buttons -->
+            <xpath expr="//div[@name='button_box']" position="inside">
+                <!-- Smart Button de pickings-->
+                <button name="action_view_xas_pickings"
+                        type="object"
+                        class="oe_stat_button"
+                        icon="fa-truck"
+                        invisible="xas_picking_count == 0">
+                    <field name="xas_picking_count" widget="statinfo"/>
+                </button>
+            </xpath>
+
+            <!-- Usamos xpath para insertar campos en el primer grupo -->
+            <xpath expr="//form//sheet//group//group[1]" position="inside">
+                <field name="xas_invoice_ids" string="Factura" widget="many2many_tags"/>
+                <field name="xas_transport" string="Transporte"/>
+                <field name="xas_trip_number_id"/>
+                <field name="xas_reception_date" string="Fecha de Recepción"/>
+                <field name="xas_container" string="Contenedor"/>
+                <field name="xas_is_claim" string="¿Es Reclamo?"/>
+            </xpath>
+
+            <xpath expr="//form//sheet//group//group[2]//field[@name='point_id']" position="after">
+                <field name="xas_responsible_id" string="Responsable"/>
+            </xpath>
+
+            <xpath expr="//form//sheet//group//group[2]" position="inside">
+                <field name="picking_ids" readonly="1" force_save="1" widget="many2many_tags" invisible="1"/>
+            </xpath>
+
+            <!-- Agregar un notebook si no está presente -->
+            <xpath expr="//form//notebook" position="inside">
+                <page string="Productos" name="products">
+                    <!-- Tabla -->
+                    <field name="xas_product_ids">
+                        <tree editable="bottom">
+                            <field name="xas_quality_check_id" column_invisible="1"/>
+                            <field name="xas_product_id" string="Producto"/>
+                            <field name="xas_boxes" string="Cajas"/>
+                            <field name="xas_samples" string="Muestras" readonly="xas_quality_check_id.quality_state == 'none'"/>
+                            <field name="xas_responsible" string="Responsable"/>
+                            <field name="xas_status" string="Estatus"/>
+                            <field name="xas_end_date" string="Fecha de Termino"/>
+                            <button name="open_quality_check_form" string="Abrir Wizard" type="object" class="btn-primary"/>
+                            <!-- <button name="%(action_open_wizard_quality_check)d" string="Abrir Wizard" type="action" class="btn-primary"/> -->
+                        </tree>
+                    </field>
+                </page>
+            </xpath>
+        </field>
+    </record>
+    <!-- Herencia de vista busqueda para Controles de calidad -->
+    <record id="quality_check_view_search_inherit" model="ir.ui.view">
+        <field name="name">quality_check_view_search_inherit</field>
+        <field name="model">quality.check</field>
+        <field name="inherit_id" ref="quality_control.quality_check_view_search"/>
+        <field name="arch" type="xml">
+            <field name="product_id" position="after">
+                <field name="xas_tracking_id"/>
+                <field name="xas_trip_number_id"/>
+            </field>
+            <xpath expr="//group" position="inside">
+                <filter string="Id de seguimiento" name="xas_tracking_id" domain="[]" context="{'group_by': 'xas_tracking_id'}"/>
+                <filter string="Código de embarque" name="xas_trip_number_id" domain="[]" context="{'group_by': 'xas_trip_number_id'}"/>
+            </xpath>
+        </field>
+    </record>
+</odoo>

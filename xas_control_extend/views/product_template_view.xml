@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="product_template_quality_features_form" model="ir.ui.view">
+        <field name="name">product.template.quality.features.form</field>
+        <field name="model">product.template</field>
+        <field name="inherit_id" ref="product.product_template_only_form_view"/>
+        <field name="arch" type="xml">
+            <xpath expr="//page[@name='general_information']" position="after">
+                <page string="Calidad">
+                    <field name="xas_quality_feature_ids">
+                        <tree string="Calidad" editable="bottom">
+                            <!-- Campo para mover las filas manualmente -->
+                            <field name="xas_sequence" widget="handle" />
+                            <field name="xas_characteristics" />
+                            <field name="xas_type_calidad" />
+                        </tree>
+                    </field>
+                </page>
+            </xpath>
+        </field>
+    </record>
+</odoo>

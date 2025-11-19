@@ -1,0 +1,12 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_product_quality_feature,access_product_quality_feature,model_product_quality_feature,base.group_user,1,1,1,1
+access_product_detail,access_product_detail,model_product_detail,,1,1,1,1
+access_product_detail_line,access_product_detail_line,model_product_detail_line,,1,1,1,1
+access_product_custom_mla_characteristic,access.product.custom.mla.characteristic,model_product_custom_mla_characteristic,,1,1,1,1
+access_product_custom_characteristic,access.product.custom.characteristic,model_product_custom_characteristic,,1,1,1,1
+
+access_detail_defect,access_detail_defect,model_detail_defect,,1,1,1,1
+access_defect,access_defect,model_defect,,1,1,1,1
+
+access_wizard_quality_check,access_wizard_quality_check,model_wizard_quality_check,base.group_user,1,1,1,0
+access_wizard_quality_check_line,access.wizard.quality.check.line,model_wizard_quality_check_line,base.group_user,1,1,1,1
