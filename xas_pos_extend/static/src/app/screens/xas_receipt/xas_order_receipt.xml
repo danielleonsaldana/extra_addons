@@ -1,0 +1,493 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates id="template" xml:space="preserve">
+    <t t-name="xas_pos_extend.XasOrderReceipt">
+        <div class="pos-receipt">
+            <t t-set="printable" t-value="doc.check_pos_order_status_to_print()"/>
+            <t t-set="company_name" t-value="doc.company_id.name"/>
+            <t t-set="client" t-value="doc.partner_id"/>
+            <t t-set="trackingNumber" t-value="doc.tracking_number"/> 
+            <t t-set="cashier" t-value="doc.user_id"/>
+            <t t-set="total_amount" t-value="doc.amount_total"/>
+            <t t-set="order_lines" t-value="doc.lines"/>
+            <t t-set="header" t-value="doc.config_id.receipt_header"/>
+            <t t-set="number_box" t-value="doc.config_id.xas_pos_number_box"/>
+            <t t-set="footer" t-value="doc.config_id.receipt_footer"/>
+
+            <!-- Intentar obtener información de pago -->
+            <t t-set="paymentDate" t-value="doc.payment_ids and doc.payment_ids[0].payment_date and doc.payment_ids[0].payment_date.strftime('%d/%m/%Y %H:%M') or ''"/>
+            <t t-set="paymentMethod" t-value="doc.payment_ids and doc.payment_ids[0].payment_method_id and doc.payment_ids[0].payment_method_id.name or ''"/>
+
+            <!-- Extraer solo el nombre del método de pago sin el código -->
+            <t t-set="paymentMethodName" t-value="paymentMethod.split(' ')[0]"/>
+
+            <!-- Ticket 2 -->
+            <div style="font-family: Arial, sans-serif; color: #000000; margin: 20px; position: relative;">
+                <div style="text-align: center; margin-top: 100px; position: relative;">
+                    <t t-set="company" t-value="env.user.company_id"/>
+                    <img t-if="company.logo" t-att-src="image_data_uri(company.logo)" alt="Logo"
+                            style="max-width: 150px; max-height: 150px;"/>
+                    <div style="position: absolute; right: -20; top: 0; font-size: 18px; font-weight: bold;">
+                        RESPALDO
+                    </div>
+                </div>
+
+                <!-- Datos básicos: Compañía, Vendedor, Cliente, Fecha y Número de Orden -->
+                <div style="text-align: center; margin-bottom: 30px;">
+                    <div style="font-weight: bold; color: #000000; margin-bottom: 10px;">
+                        <span t-if="company_name" t-esc="company_name"/>
+                    </div>
+
+                    <div style="margin-bottom: 10px;">
+                        <div>
+                            <span style="font-weight: bold; color: #000000; font-size: 14px;"></span>
+                            <span style="color: #000000; text-transform: uppercase;">
+                                <t t-esc="header"/>
+                            </span>
+                        </div>
+                    </div>
+
+                    <div style="margin-bottom: 10px;">
+                        <div t-if="number_box">
+                            <span style="font-weight: bold; color: #000000; font-size: 14px;">CAJA:</span>
+                            <span style="color: #000000; text-transform: uppercase;">
+                                <t t-esc="number_box"/>
+                            </span>
+                        </div>
+                    </div>
+
+                    <div style="margin-bottom: 10px;">
+                        <div>
+                            <span style="font-weight: bold; color: #000000; font-size: 14px;">VENDEDOR:</span>
+                            <span style="color: #000000;text-transform: uppercase;">
+                                <t t-esc="cashier.barcode"/>
+                            </span>
+                        </div>
+                    </div>
+
+                    <div style="margin-bottom: 10px;">
+                        <div>
+                            <span style="font-weight: bold; color: #000000; font-size: 14px;">CLIENTE:</span>
+                            <span style="color: #000000; text-transform: uppercase;">
+                                <t t-esc="client.name"/>
+                            </span>
+                        </div>
+                    </div>
+
+                    <!-- Mostrar Fecha de Orden -->
+                    <div style="margin-bottom: 10px;">
+                        <div>
+                            <span style="font-weight: bold; color: #000000; font-size: 14px;">FECHA:</span>
+                            <span style="color: #000000; text-transform: uppercase;">
+                                <t t-esc="doc.date_order.strftime('%d/%m/%Y %H:%M')"/>
+                            </span>
+                        </div>
+                    </div>
+
+                    <!-- Mostrar Número de Orden -->
+                    <div style="margin-bottom: 10px;">
+                        <div>
+                            <span style="color: #000000; font-size: 20px; font-weight: bold;">
+                                <t t-esc="trackingNumber"/>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Lista de artículos -->
+                <div>
+                    <table style="width: 100%; font-size: 14px;">
+                        <tbody>
+                            <t t-foreach="order_lines" t-as="line">
+                                <tr>
+                                    <td style="text-align: left; padding: 5px; vertical-align: top; font-weight: bold;">
+                                        <t t-esc="line.product_id.name"/>
+                                        <t t-if="line.xas_sale_condition_state_id">
+                                            <span>Condición: <t t-esc="line.xas_sale_condition_state_id.code"/> - <t t-esc="line.xas_sale_condition_state_id.name"/></span>
+                                        </t>
+                                    </td>
+                                    <td style="text-align: right; padding: 5px; vertical-align: top; font-weight: bold;">
+                                        <span t-esc="'$%.2f' % line.price_subtotal"/>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td colspan="2" style="text-align: left; padding: 5px;">
+                                        <div>
+                                            <span t-esc="'%d CAJA x $%.2f / CAJA' % (line.qty, line.price_unit)"/>
+                                        </div>
+                                        <div>
+                                            <span style="font-weight: bold;">NO. VIAJE: </span> <t t-esc="line.xas_trip_number_id.name"/>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </t>
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Información total y de pago -->
+                <div style="margin-top: 20px;">
+                    <hr/>
+                    <div style="display: flex; justify-content: space-between; align-items: center; font-weight: bold;">
+                        <div>
+                        <span style="font-size: 18px;">
+                            TOTAL:
+                            </span>
+                        </div>
+                        <div style="text-align: right; margin-top:-20px;">
+                            <span style="font-size: 22px;">
+                                $<t t-esc="'%.2f' % total_amount"/>
+                            </span>
+                        </div>
+                    </div>
+
+                    <!-- Firma y línea debajo del total -->
+                    <div style="text-align: center; margin-top: 180px;">
+                        <!-- Línea de color azul marino y más corta -->
+                        <hr style="border: 1px solid #003366; width: 50%;" />
+                        <!-- Firma -->
+                        <span style="font-size: 18px; text-transform: uppercase; font-weight: bold;">Firma</span>
+                    </div>
+
+
+                    <!-- Contenedor centrado para número de recibo, método de pago y fecha de pago -->
+                    <div style="text-align: center; margin-top: 30px;">
+                        <div>
+                            <span style="font-weight: bold; font-size: 14px;">NÚMERO DE RECIBO:</span>
+                            <t t-esc="doc.pos_reference[5:]"/> 
+                        </div>
+                        <div>
+                            <span style="font-weight: bold; font-size: 14px;">MÉTODO DE PAGO:</span>
+                            <t t-esc="paymentMethodName"/>
+                        </div>
+                        <div>
+                            <span style="font-weight: bold; font-size: 14px;">FECHA DE PAGO:</span>
+                            <t t-esc="paymentDate"/>
+                        </div>
+                    </div>
+                    <div style="text-align: center; margin-top: 20px; font-size: 13px; font-weight: bold;">
+                        <t t-esc="footer"/>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Page Break -->
+            <div style="page-break-before: always;"></div>
+
+            <!-- Ticket 3 -->
+            <div style="font-family: Arial, sans-serif; color: #000000; margin: 20px; position: relative;">
+                <div style="text-align: center; margin-top: 100px; position: relative;">
+                    <t t-set="company" t-value="env.user.company_id"/>
+                    <img t-if="company.logo" t-att-src="image_data_uri(company.logo)" alt="Logo"
+                            style="max-width: 150px; max-height: 150px;"/>
+                    <div style="position: absolute; right: -20; top: 0; font-size: 18px; font-weight: bold;">
+                        CLIENTE
+                    </div>
+                </div>
+
+                <!-- Datos básicos: Compañía, Vendedor, Cliente, Fecha y Número de Orden -->
+                <div style="text-align: center; margin-bottom: 30px;">
+                    <div style="font-weight: bold; color: #000000; margin-bottom: 10px;">
+                        <span t-if="company_name" t-esc="company_name"/>
+                    </div>
+
+                    <div style="margin-bottom: 5px;">
+                        <div>
+                            <span style="font-weight: bold; color: #000000; font-size: 13px;"></span>
+                            <span style="color: #000000;">
+                                <span style="text-transform: uppercase; font-size: 13px;">
+                                    <t t-esc="header"/>
+                                </span>
+                            </span>
+                        </div>
+                    </div>
+
+                    <div style="margin-bottom: 5px;">
+                        <div>
+                            <span style="font-weight: bold; color: #000000; font-size: 13px;">CAJA:</span>
+                            <span style="color: #000000;">
+                                <span style="text-transform: uppercase; font-size: 13px; font-weight: bold;">
+                                    <t t-esc="number_box"/>
+                                </span>
+                            </span>
+                        </div>
+                    </div>
+
+                    <div style="margin-bottom: 5px;">
+                        <div>
+                            <span style="font-weight: bold; color: #000000; font-size: 13px;">VENDEDOR:</span>
+                            <span style="color: #000000;">
+                                <span style="text-transform: uppercase; font-size: 13px;">
+                                    <t t-esc="cashier.barcode"/>
+                                </span>
+                            </span>
+                        </div>
+                    </div>
+
+                    <div t-if="client.name" style="margin-bottom: 5px;">
+                        <div>
+                            <span style="font-weight: bold; color: #000000; font-size: 13px;">CLIENTE:</span>
+                            <span style="color: #000000;">
+                                <span style="text-transform: uppercase; font-size: 13px;">
+                                    <t t-esc="client.name"/>
+                                </span>
+                            </span>
+                        </div>
+                    </div>
+
+                    <!-- Mostrar Fecha de Orden -->
+                    <div style="margin-bottom: 5px;">
+                        <div>
+                            <span style="font-weight: bold; color: #000000; font-size: 13px;">FECHA:</span>
+                            <span style="color: #000000;">
+                                <span style="text-transform: uppercase; font-size: 13px;">
+                                    <t t-esc="doc.date_order.strftime('%d/%m/%Y %H:%M')"/>
+                                </span>
+                            </span>
+                        </div>
+                    </div>
+
+                    <!-- Mostrar Número de Orden -->
+                    <div style="margin-bottom: 5px;">
+                        <div>
+                            <span style="color: #000000; font-weight: bold;">
+                                <t t-esc="trackingNumber"/>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Lista de artículos -->
+                <div>
+                    <table style="width: 100%; font-size: 14px;">
+                        <tbody>
+                            <t t-foreach="order_lines" t-as="line">
+                                <tr>
+                                    <!-- Celda del nombre del producto -->
+                                    <td style="text-align: left; padding: 5px; vertical-align: top; font-weight: bold;">
+                                        <t t-esc="line.product_id.name"/>
+                                        <t t-if="line.xas_sale_condition_state_id">
+                                            <span>Condición: <t t-esc="line.xas_sale_condition_state_id.code"/> - <t t-esc="line.xas_sale_condition_state_id.name"/></span>
+                                        </t>
+                                    </td>
+                                    <!-- Celda del precio subtotal, ajustada para estar a la misma altura -->
+                                    <td style="text-align: right; padding: 5px; vertical-align: top; font-weight: bold;">
+                                        <span t-esc="'$%.2f' % line.price_subtotal"/>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td colspan="2" style="text-align: left;">
+                                        <div>
+                                            <span t-esc="'%d CAJA x $%.2f / CAJA' % (line.qty, line.price_unit)"/>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </t>
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Información total y de pago -->
+                <div style="margin-top: 20px;">
+                    <hr/>
+                    <div style="display: flex; justify-content: space-between; align-items: center; font-weight: bold;">
+                        <div style="flex: 1;">
+                            TOTAL:
+                        </div>
+                        <div style="flex: 1; text-align: right;">
+                            <span style="font-size: 22px;">
+                                $<t t-esc="'%.2f' % total_amount"/>
+                            </span>
+                        </div>
+                    </div>
+
+                    <!-- Contenedor centrado para número de recibo, método de pago y fecha de pago -->
+                    <div style="text-align: center; margin-top: 10px;">
+                        <div style="font-weight: bold; font-size: 13px;">NÚMERO DE RECIBO: 
+                            <span style="font-weight: normal; font-size: 13px;"><t t-esc="doc.pos_reference[5:]"/></span>
+                        </div>
+                        <div style="font-weight: bold; font-size: 13px;">MÉTODO DE PAGO: 
+                            <span style="font-weight: normal; font-size: 13px;"><t t-esc="paymentMethodName"/></span>
+                        </div>
+                        <div style="font-weight: bold; font-size: 13px;">FECHA DE PAGO: 
+                            <span style="font-weight: normal; font-size: 13px;"><t t-esc="paymentDate"/></span>
+                        </div>
+                    </div>
+                    <div style="text-align: center; margin-top: 20px; font-size: 13px; font-weight: bold;">
+                        <t t-esc="footer"/>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Page Break -->
+            <div style="page-break-before: always;"></div>
+
+            <!-- Ticket 4 -->
+            <div style="font-family: Arial, sans-serif; color: #000000; margin: 20px; position: relative;">
+                <div style="text-align: center; margin-top: 100px; position: relative;">
+                    <t t-set="company" t-value="env.user.company_id"/>
+                    <img t-if="company.logo" t-att-src="image_data_uri(company.logo)" alt="Logo"
+                            style="max-width: 150px; max-height: 150px;"/>
+                    <div style="position: absolute; right: -20; top: 0; font-size: 18px; font-weight: bold;">
+                        ADUANA
+                    </div>
+                </div>
+
+                <!-- Datos básicos: Compañía, Vendedor, Cliente, Fecha y Número de Orden -->
+                <div style="text-align: center; margin-bottom: 30px;">
+                    <div style="font-weight: bold; color: #000000; margin-bottom: 10px;">
+                        <span t-if="company_name" t-esc="company_name"/>
+                    </div>
+
+                    <div style="margin-bottom: 5px;">
+                        <div>
+                            <span>
+                                <span style="text-transform: uppercase; font-size: 13px;">
+                                    <t t-esc="header"/>
+                                </span>
+                            </span>
+                        </div>
+                    </div>
+
+                    <div style="margin-bottom: 5px;">
+                        <div>
+                            <span style="font-weight: bold; color: #000000; font-size: 13px;">CAJA:</span>
+                            <span>
+                                <span style="text-transform: uppercase; font-size: 13px;">
+                                    <t t-esc="number_box"/>
+                                </span>
+                            </span>
+                        </div>
+                    </div>
+
+                    <div style="margin-bottom: 5px;">
+                        <div>
+                            <span style="font-weight: bold; color: #000000; font-size: 13px;">CAJERO:</span>
+                            <span>
+                                <span style="text-transform: uppercase; font-size: 13px;">
+                                    <t t-esc="doc.xas_cashier_id.barcode"/>
+                                </span>
+                            </span>
+                        </div>
+                    </div>
+
+                    <div style="margin-bottom: 5px;">
+                        <div>
+                            <span style="font-weight: bold; color: #000000; font-size: 13px;">VENDEDOR:</span>
+                            <span>
+                                <span style="text-transform: uppercase; font-size: 13px;">
+                                    <t t-esc="doc.xas_saler_id.barcode"/>
+                                </span>
+                            </span>
+                        </div>
+                    </div>
+
+                    <div t-if="client.name" style="margin-bottom: 5px;">
+                        <div>
+                            <span style="font-weight: bold; color: #000000; font-size: 13px;">CLIENTE:</span>
+                            <span style="color: #000000;">
+                                <span style="text-transform: uppercase; font-size: 13px;">
+                                    <t t-esc="client.name"/>
+                                </span>
+                            </span>
+                        </div>
+                    </div>
+
+                    <!-- Mostrar Fecha de Orden -->
+                    <div style="margin-bottom: 5px;">
+                        <div>
+                            <span style="font-weight: bold; color: #000000; font-size: 13px;">FECHA:</span>
+                            <span style="color: #000000;">
+                                <span style="text-transform: uppercase; font-size: 13px;">
+                                    <t t-esc="doc.date_order.strftime('%d/%m/%Y %H:%M')"/>
+                                </span>
+                            </span>
+                        </div>
+                    </div>
+
+                    <!-- Mostrar Número de Orden y código qr -->
+                    <div style="margin-bottom: 10px;">
+                        <div>
+                            <span style="color: #000000; font-size: 20px; font-weight: bold;">
+                                <t t-esc="trackingNumber"/>
+                            </span>
+                        </div>
+                    </div>
+                    <div style="margin-bottom: 5px;">
+                        <div>
+                            <img t-if="doc.qr_code"
+                                t-att-src="'data:image/png;base64,' + doc.qr_code.decode('utf-8')"
+                                style="width:200px;height:200px;"
+                                alt="Código QR"/>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Lista de artículos -->
+                <div>
+                    <table style="width: 100%; font-size: 14px;">
+                        <tbody>
+                            <t t-foreach="order_lines" t-as="line">
+                                <tr>
+                                    <!-- Celda del nombre del producto -->
+                                    <td style="text-align: left; padding: 5px; vertical-align: top; font-weight: bold;">
+                                        <t t-esc="line.product_id.name"/>
+                                        <t t-if="line.xas_sale_condition_state_id">
+                                            <span>Condición: <t t-esc="line.xas_sale_condition_state_id.code"/> - <t t-esc="line.xas_sale_condition_state_id.name"/></span>
+                                        </t>
+                                    </td>
+                                    <!-- Celda del precio subtotal, ajustada para estar a la misma altura -->
+                                    <td style="text-align: right; padding: 5px; vertical-align: top; font-weight: bold;">
+                                        <span t-esc="'$%.2f' % line.price_subtotal"/>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td colspan="2" style="text-align: left;">
+                                        <div>
+                                            <span t-esc="'%d CAJA x $%.2f / CAJA' % (line.qty, line.price_unit)"/>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td style="text-align: left; padding: 5px; vertical-align: top;">
+                                        <span style="font-weight: bold;">NO. VIAJE: </span> <t t-esc="line.xas_trip_number_id.name"/>
+                                    </td>
+                                </tr>
+                            </t>
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Información total y de pago -->
+                <div style="margin-top: 20px;">
+                    <hr/>
+                     <div style="display: flex; justify-content: space-between; align-items: center; font-weight: bold;">
+                        <div style="flex: 1;">
+                            TOTAL:
+                        </div>
+                        <div style="flex: 1; text-align: right;">
+                            <span style="font-size: 22px;">
+                                $<t t-esc="'%.2f' % total_amount"/>
+                            </span>
+                        </div>
+                    </div>
+
+                    <!-- Contenedor centrado para número de recibo, método de pago y fecha de pago -->
+                    <div style="text-align: center; margin-top: 10px;">
+                        <div style="font-weight: bold; font-size: 13px;">NÚMERO DE RECIBO: 
+                            <span style="font-weight: normal; font-size: 13px;"><t t-esc="doc.pos_reference[5:]"/></span>
+                        </div>
+                        <div style="font-weight: bold; font-size: 13px;">MÉTODO DE PAGO: 
+                            <span style="font-weight: normal; font-size: 13px;"><t t-esc="paymentMethodName"/></span>
+                        </div>
+                        <div style="font-weight: bold; font-size: 13px;">FECHA DE PAGO: 
+                            <span style="font-weight: normal; font-size: 13px;"><t t-esc="paymentDate"/></span>
+                        </div>
+                    </div>
+                    <div style="text-align: center; margin-top: 20px; font-size: 13px; font-weight: bold;">
+                        <t t-esc="footer"/>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </t>
+</templates>

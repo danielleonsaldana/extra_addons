@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates id="template" xml:space="preserve">
+
+    <t t-inherit="point_of_sale.ProductScreen" t-inherit-mode="extension">
+
+        <xpath expr="//div[@class='rightpane overflow-auto d-flex flex-grow-1 flex-column bg-300 w-60']" position="attributes">
+            <attribute name="t-att-class">{'d-none': isVisibleRightPanel}</attribute>
+        </xpath>
+
+        <xpath expr="//i[@t-if='line.get_product().isTracked()']" position="attributes">
+            <attribute name="class">d-none</attribute>
+        </xpath>
+
+        <xpath expr="//ul[@t-if='line.pack_lot_lines']" position="attributes">
+            <attribute name="class">d-none</attribute>
+        </xpath>
+
+    </t>
+
+</templates>

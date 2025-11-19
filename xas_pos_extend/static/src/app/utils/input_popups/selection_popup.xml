@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates id="template" xml:space="preserve">
+    <t t-name="xas_pos_extend.SelectionPopup">
+        <div class="popup popup-selectionpopup">
+            <div class="modal-header">
+                <h4 class="modal-title"><t t-esc="props.title" /></h4>
+            </div>
+            <div class="modal-body">
+                <div class="selection-options">
+                    <div t-foreach="props.options" t-as="option" t-key="option.id" class="selection-option">
+                        <label t-attf-class="xas-option-label #{state.optionSelected == option.id ? 'selected' : ''}">
+                            <input type="radio" name="selection" t-att-value="option.id" t-model="state.optionSelected" class="me-2"/>
+                            <span><t t-esc="option.code" /></span>
+                            <span> - </span>
+                            <span><t t-esc="option.name" /></span>
+                        </label>
+                    </div>
+                </div>
+            </div>
+            <div class="footer footer-flex modal-footer">
+                <div class="button confirm highlight btn btn-lg btn-primary" t-on-click="confirm">
+                    <t t-esc="props.confirmText" />
+                </div>
+                <div class="button cancel btn btn-lg btn-secondary" t-on-click="cancel">
+                    <t t-esc="props.cancelText" />
+                </div>
+            </div>
+        </div>
+    </t>
+</templates>

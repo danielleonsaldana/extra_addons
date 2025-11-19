@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- Plantillas de validación Cliente/Gerente -->
+    <template id="customer_confirmed" name="Cliente confirmado">
+        <t t-call="web.basic_layout"/>
+        <div class="container">
+            <h3>Gracias, el cliente ha confirmado el crédito con éxito.</h3>
+        </div>
+    </template>
+
+    <template id="manager_confirmed" name="Gerente confirmado">
+        <t t-call="web.basic_layout"/>
+        <div class="container">
+            <h3>Gracias, el gerente ha confirmado el crédito con éxito.</h3>
+        </div>
+    </template>
+
+</odoo>

@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates id="template" xml:space="preserve">
+
+    <t t-inherit="point_of_sale.Navbar" t-inherit-mode="extension">
+        <xpath expr="//li[@class='menu-item navbar-button'][a[t[contains(text(), 'Show Product Images')] or t[contains(text(), 'Hide Product Images')]]]" position="before">
+            <li class="menu-item navbar-button" t-att-class="{'d-none': isVisibleSaleConditionState}" t-on-click="saleConditionStatePopup">
+                <a class="dropdown-item py-2">
+                    Condiciones de producto
+                </a>
+            </li>
+        </xpath>
+        <xpath expr="//li[@class='menu-item navbar-button'][a[t[contains(text(), 'Show Product Images')] or t[contains(text(), 'Hide Product Images')]]]" position="attributes">
+            <attribute name="t-att-class">{'d-none': isVisibleProductImage}</attribute>
+        </xpath>
+        <xpath expr="//li[@class='menu-item navbar-button'][a[t[contains(text(), 'Show Category Images')] or t[contains(text(), 'Hide Category Images')]]]" position="attributes">
+            <attribute name="t-att-class">{'d-none': isVisibleCategoryImage}</attribute>
+        </xpath>
+    </t>
+
+</templates>

@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates id="template" xml:space="preserve">
+
+    <t t-inherit="point_of_sale.ActionpadWidget" t-inherit-mode="extension">
+
+        <!-- Cambio en los botones de pago/cierre de orden -->
+        <xpath expr="//button[@class='pay validation pay-order-button btn-primary']" position="replace">
+
+            <!-- Ventas -->
+            <button class="pay validation pay-order-button btn-primary button btn d-flex flex-fill align-items-center justify-content-center fw-bolder btn-lg rounded-0"
+            t-att-class="{ 'with-more-button': props.onClickMore and ui.isSmall }" 
+            t-on-click="props.actionToTrigger ? this.props.actionToTrigger : () => pos.get_order().pay()">
+                <div class="pay-circle d-flex align-items-center justify-content-center pt-1 mb-1">
+                    <i role="img" aria-label="Pay" title="Pay" />
+                </div>
+                <t class="text-white">Cerrar Orden</t>
+            </button>
+        </xpath>
+    </t>
+
+</templates>

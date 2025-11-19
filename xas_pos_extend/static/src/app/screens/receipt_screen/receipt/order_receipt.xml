@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="utf-8"?>
+<templates id="template" xml:space="preserve">
+    <!-- Ticket 1 -->
+    <t t-inherit="point_of_sale.OrderReceipt" t-inherit-mode="extension">
+
+        <!-- OrderWidget Eliminación de lineas degloce de cotización -->
+        <xpath expr="//OrderWidget" position="replace">
+
+            <!-- Agregar el QR personalizado -->
+            <div t-if="customQRCodeSrc">
+                <img id="customPosQRCode" t-att-src="customQRCodeSrc" class="xas-pos-receipt-qr-custom"/>
+            </div>
+
+            <!-- Contenedor de información -->
+            <div class="xas-pos-receipt-contact">
+
+                <!-- Número del recibo -->
+                <div t-if="props.data.name">
+                    <div>
+                        <span class="xas-pos-receipt-text-dark xas-pos-receipt-text-bold">Número de recibo: </span>
+                        <span class="xas-pos-receipt-text-blue">
+                            <t t-esc="props.data.name"/>
+                        </span>
+                    </div>
+                </div>
+
+                <!-- Monto del recibo -->
+                <span class="xas-pos-receipt-text-dark xas-pos-receipt-text-big xas-pos-receipt-text-bold">Total</span>
+                <br/>
+                <span class="xas-pos-receipt-text-blue xas-pos-receipt-text-big">
+                    $<t t-esc="props.data.amount_total" />
+                </span>
+
+                <!-- Terminos y condiciones -->
+                <div t-if="props.data.footer">
+                    <div>
+                        <span class="xas-pos-receipt-text-dark xas-pos-receipt-text-bold">
+                            Términos y condiciones: 
+                        </span>
+                        <span class="xas-pos-receipt-text-blue xas-pos-receipt-text-transform-none">
+                            <t t-esc="props.data.footer"/>
+                        </span>
+                    </div>
+                </div>
+
+            </div>
+
+        </xpath>
+
+        <!-- Eliminación de información -->
+        <xpath expr="//div[@class='pos-receipt-right-align']" position="replace">
+        </xpath>
+        <xpath expr="//div[@class='pos-receipt-amount']" position="replace">
+        </xpath>
+        <xpath expr="//div[@class='paymentlines']" position="replace">
+        </xpath>
+        <xpath expr="//div[@class='pos-receipt-amount receipt-change mt-2']" position="replace">
+        </xpath>
+        <xpath expr="//t[@t-if='props.data.total_discount']" position="replace">
+        </xpath>
+        <xpath expr="//div[@class='pos-receipt-taxes']" position="replace">
+        </xpath>
+        <xpath expr="//div[@class='pos-receipt-order-data mb-2']" position="replace">
+        </xpath>
+        <xpath expr="//img[@id='posqrcode']" position="replace">
+        </xpath>
+        <xpath expr="(//div[@class='pos-receipt-order-data'])[1]" position="replace">
+        </xpath>
+        <xpath expr="//div[@class='pos-receipt-center-align']" position="replace">
+        </xpath>
+        <xpath expr="//div[@class='after-footer']" position="replace">
+        </xpath>
+        <xpath expr="//t[@t-if='props.data.shippingDate']" position="replace">
+        </xpath>
+        <xpath expr="(//div[@class='pos-receipt-order-data'])[2]" position="replace">
+        </xpath>
+    </t>
+</templates>

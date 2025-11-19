@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<templates id="template" xml:space="preserve">
+    <t t-inherit="point_of_sale.ReceiptHeader" t-inherit-mode="extension">
+
+        <!-- Logo -->
+        <xpath expr="//img[@class='pos-receipt-logo']" position="replace">
+            <img 
+                t-attf-src="/web/image?model=res.company&amp;id={{props.data.company.id}}&amp;field=logo"
+                alt="Logo"
+                class="xas-pos-receipt"/>
+        </xpath>
+
+        <!-- Titulo desconocido -->
+        <xpath expr="//h1" position="replace">
+        </xpath>
+
+        <!-- Datos básicos compañia, vendedor, cliente, fecha y numero de orden -->
+        <xpath expr="//div[@class='pos-receipt-contact']" position="replace">
+            <div class="xas-pos-receipt-contact">
+                <div class="xas-pos-receipt-text-bold xas-pos-receipt-text-blue" 
+                    t-if="props.data.company.partner_id?.[1]"
+                    t-esc="props.data.company.partner_id[1]" />
+                <div t-if="props.data.cashier">
+                    <div>
+                        <span class="xas-pos-receipt-text-dark xas-pos-receipt-text-bold">Vendedor: </span>
+                        <span class="xas-pos-receipt-text-blue">
+                            <t t-esc="xas_cashier.barcode" />
+                        </span>
+                    </div>
+                </div>
+                <div t-if="client">
+                    <div>
+                        <span class="xas-pos-receipt-text-dark xas-pos-receipt-text-bold">Cliente: </span>
+                        <span class="xas-pos-receipt-text-blue">
+                            <t t-esc="client.name" />
+                        </span>
+                    </div>
+                </div>
+                <div t-if="formattedDate">
+                    <div>
+                        <span class="xas-pos-receipt-text-dark xas-pos-receipt-text-bold">Fecha: </span>
+                        <span class="xas-pos-receipt-text-blue">
+                            <t t-esc="formattedDate" />
+                        </span>
+                    </div>
+                </div>
+                <div class="xas-pos-receipt-text-blue xas-pos-receipt-text-bold xas-pos-receipt-text-big" t-if="props.data.trackingNumber and !props.data.bigTrackingNumber">
+                    <span class="fs-2" t-esc="props.data.trackingNumber" />
+                </div>
+            </div>
+        </xpath>
+    </t>
+</templates>

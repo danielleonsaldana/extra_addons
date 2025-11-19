@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates id="template" xml:space="preserve">
+
+    <t t-inherit="point_of_sale.TicketScreen" t-inherit-mode="extension">
+        <xpath expr="//div[@class='buttons d-flex gap-2']/button[@class='highlight btn btn-lg btn-primary']" position="attributes">
+            <attribute name="t-att-class">{'d-none': isVisibleNewOrderButton}</attribute>
+        </xpath>
+        <xpath expr="//button[@class='discard btn btn-lg btn-light']" position="attributes">
+            <attribute name="t-att-class">{'d-none': isVisibleNewOrderButton}</attribute>
+        </xpath>
+
+        <!-- ▸ Desktop -->
+        <xpath expr="//div[contains(@class,'order-row')]/div[contains(@class,'col narrow p-2')]" position="replace">
+            <div class="col narrow p-2">
+                <div class="d-flex align-items-center justify-content-start">
+                <!-- Texto de estado original -->
+                <div class="me-2">
+                    <t t-esc="getStatus(order)"/>
+                </div>
+                <!-- Badge de cobranza SOLO si es marcado -->
+                <span
+                    t-if="_get_xas_mark_as_paid(order, order.server_id) and order.xas_mark_as_paid"
+                    class="badge bg-info text-white d-inline-flex align-items-center"
+                    style="font-size:0.75rem; padding:0.2em 0.4em;"
+                >
+                    <i class="fa fa-check-circle me-1" aria-hidden="true" style="font-size:0.85rem;"/>
+                    <t>Cobranza</t>
+                </span>
+                <!-- <span
+                    t-if="getXasMarkAsPaid(order) and isVisibleNewOrderButton"
+                    class="badge bg-info text-white d-inline-flex align-items-center"
+                    style="font-size:0.75rem; padding:0.2em 0.4em;"
+                >
+                    <i class="fa fa-check-circle me-1" aria-hidden="true" style="font-size:0.85rem;"/>
+                    <t>Cobranza</t>
+                </span> -->
+                </div>
+            </div>
+        </xpath>
+
+        <!-- ▸ Mobile -->
+        <xpath expr="//div[contains(@class,'mobileOrderList')]//div[contains(@class,'orderStatus')]" position="inside">
+            <t t-if="getXasMarkAsPaid(order)">
+                <span class="badge bg-info text-white d-inline-flex align-items-center" style="font-size:0.75rem; padding:0.2em 0.4em;">
+                    <i class="fa fa-check-circle me-1" aria-hidden="true" style="font-size:0.85rem;"/>
+                    <t>Cobranza</t>
+                </span>
+            </t>
+        </xpath>
+    </t>
+
+</templates>

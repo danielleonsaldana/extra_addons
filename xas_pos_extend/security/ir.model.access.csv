@@ -1,0 +1,3 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_sale_condition_state_salesman,sale_condition_state.salesman,model_sale_condition_state,xas_pos_extend.group_condition_sale_state_pos_salesman,1,0,0,0
+access_sale_condition_state_admin,sale_condition_state.admin,model_sale_condition_state,xas_pos_extend.group_condition_sale_state_pos_admin,1,1,1,1

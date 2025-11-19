@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <!-- Plantilla de correo para cliente -->
+        <record id="email_template_customer_confirmation" model="mail.template">
+            <field name="name">Confirmación de crédito por cliente</field>
+            <field name="model_id" ref="point_of_sale.model_pos_order" />
+            <field name="subject">Por favor confirme el crédito</field>
+            <field name="email_from">{{ object.company_id.email_formatted or user.email_formatted }}</field>
+            <field name="body_html">
+                <![CDATA[
+                <p>Hola.</p>
+                <p>Su orden <b t-out="object.name"/> con un importe de $ <b t-out="object.amount_paid"/> requiere su confirmación para ser pagada con crédito.</p>
+                <p>Agradecemos su confianza.</p><br/>
+                <p>Monto disponible: $ <t t-out="object.xas_available_amount"/></p>
+                <p>Monto a emplearse: $ <t t-out="object.amount_paid"/></p>
+
+                <p><strong>Productos en la orden:</strong></p>
+                <t t-foreach="object.lines" t-as="l">
+                    <p>
+                        • <t t-out="l.full_product_name"/>
+                        – $ <t t-out="l.price_subtotal_incl"/>
+                    </p>
+                </t>
+
+                <p>Por favor confirme el crédito haciendo clic en el siguiente botón:</p>
+                <p>
+                    <a t-att-href="'%s/customer_confirm/%s' % (object.get_base_url(), object.id)"
+                       style="padding: 10px; background-color: #4CAF50; color: white; text-decoration: none;">
+                       Confirmar
+                    </a>
+                </p>
+                <p>No dude en ponerse en contacto con nosotros si tiene alguna pregunta.</p>
+                <p>Gracias.</p>
+                ]]>
+            </field>
+        </record>
+
+        <!-- Plantilla de correo para gerente -->
+        <record id="email_template_manager_confirmation" model="mail.template">
+            <field name="name">Confirmación de crédito por gerente</field>
+            <field name="model_id" ref="point_of_sale.model_pos_order" />
+            <field name="subject">Por favor confirme el crédito</field>
+            <field name="email_from">{{ object.company_id.email_formatted or user.email_formatted }}</field>
+            <field name="email_to">{{ object.xas_gerente }}</field>
+            <field name="body_html">
+                <![CDATA[
+                <p>Hola.</p>
+                <p>La orden de su cliente con identificación <b t-out="object.name"/> con un importe de $ <b t-out="object.amount_paid"/> requiere su confirmación para ser pagada con crédito.</p>
+
+                <t t-if="ctx.get('xas_has_overdue_invoices')">
+                    <div style="background:#FFF3CD;border:1px solid #FFECB5;padding:12px;margin:16px 0;">
+                        <p style="margin:0 0 6px 0;"><strong>⚠ El cliente tiene facturas vencidas</strong></p>
+                        <p style="margin:0;">Facturas vencidas: <t t-esc="ctx.get('xas_overdue_invoice_count')"/></p>
+                        <p style="margin:0;">Importe vencido: $ <t t-esc="ctx.get('xas_overdue_invoice_amount')"/></p>
+                    </div>
+                </t>
+
+                <p>
+                    <a t-att-href="'%s/web#id=%s&model=pos.order&view_type=form' % (object.get_base_url(), object.id)"
+                    style="text-decoration: none; color: #0A6EBF;">
+                        Ver orden en Backend
+                    </a>
+                </p>
+                <p>Agradecemos su confianza.</p><br/>
+                <p>Monto disponible: $ <t t-out="object.xas_available_amount"/></p>
+                <p>Monto a emplearse: $ <t t-out="object.amount_paid"/></p>
+                <p>Por favor confirme el crédito haciendo clic en el siguiente botón:</p>
+                <p>
+                    <a t-att-href="'%s/manager_confirm/%s' % (object.get_base_url(), object.id)"
+                       style="padding: 10px; background-color: #2196F3; color: white; text-decoration: none;">
+                       Confirmar
+                    </a>
+                </p>
+                <p>Gracias.</p>
+                ]]>
+            </field>
+        </record>
+
+    </data>
+</odoo>

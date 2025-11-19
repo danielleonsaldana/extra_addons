@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- Heredamos el menuitem existente -->
+
+    <!-- POS>Ordenes>Pagos -->
+    <record id="point_of_sale.menu_pos_payment" model="ir.ui.menu">
+        <field name="groups_id" eval="[(6, 0, [ref('xas_pos_extend.group_user_pos_rol_cashier')])]"/>
+    </record>
+
+    <!-- POS>Ordenes>Impresoras de preparación -->
+    <record id="point_of_sale.menu_pos_preparation_printer" model="ir.ui.menu">
+        <field name="action" eval="False"/>
+    </record>
+
+    <!-- POS>Ordenes>Preparation Display pos_preparation_display modulo enterprise -->
+    <record id="point_of_sale.menu_pos_preparation_display" model="ir.ui.menu">
+        <field name="action" eval="False"/>
+    </record>
+
+    <!-- POS>Productos>Sets de productos -->
+    <record id="point_of_sale.menu_pos_combo" model="ir.ui.menu">
+        <field name="action" eval="False"/>
+    </record>
+
+    <!-- POS>Productos>Listas de precios -->
+    <record id="point_of_sale.pos_config_menu_action_product_pricelist" model="ir.ui.menu">
+        <field name="action" eval="False"/>
+    </record>
+
+    <!-- Menu items nuevos -->
+    <menuitem
+        id="xas_pos_extend.pos_products_sale_condition_state"
+        name="Condiciones de producto"
+        parent="point_of_sale.pos_config_menu_catalog"
+        action="xas_pos_extend.action_sale_condition_state" sequence="25"/>
+
+</odoo>

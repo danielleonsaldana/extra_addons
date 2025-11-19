@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- Modulo de ventas -->
+    <record id="res_config_settings_view_form_inherit_xas_pos_extend_sale" model="ir.ui.view">
+        <field name="name">res.config.settings.view.form.inherit.analytica.space.pos.extend.sale</field>
+        <field name="model">res.config.settings</field>
+        <field name="inherit_id" ref="sale.res_config_settings_view_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//block[@id='pricing_setting_container']" position="after">
+                <block title="Opciones generales POS" name="general_pos_settings" id="pos">
+                    <setting id="lifetime_pos_order" string="Vigencia automática del 1er Ticket" help="Determina el tiempo de vida que tiene una orden de punto de venta, pasado ese tiempo la orden se cancelara.">
+                        <p>Ingrese el tiempo en formato Horas:Minutos</p>
+                        <field name="xas_lifetime_pos_order" class="o_light_label" widget="float_time"/>
+                    </setting>
+                    <setting id="lifetime_pos_order_cron_action" string="Vigencia semi automáticadel 1er Ticket" help="Determina el tiempo de ejecución de la limpieza de ordenes del punto de venta cuya vigencia ha terminado. En caso de ser cero, no se ejecutara el planificador.">
+                        <p>Ingrese el tiempo en formato Horas:Minutos</p>
+                        <field name="xas_lifetime_pos_order_cron_action" class="o_light_label" widget="float_time"/>
+                    </setting>
+                </block>
+            </xpath>
+        </field>
+    </record>
+
+    <!-- Modulo de punto de venta -->
+     <record id="res_config_settings_view_form_xas_pos_extend_point_of_sale" model="ir.ui.view">
+        <field name="name">res.config.settings.view.form.inherit.point_of_sale.inherit.pos.extend</field>
+        <field name="model">res.config.settings</field>
+        <field name="inherit_id" ref="point_of_sale.res_config_settings_view_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//setting[@id='is_order_shared']" position="after">
+                <setting string="Definición de rol del punto de venta" id="xas_pos_role_settings">
+                    <field name="xas_pos_role"/>
+                </setting>
+                <setting id="pos_related_ids" string="Puntos de venta relacionados" invisible="xas_pos_role != 'for_cashier'">
+                    <field name="xas_pos_related_ids" widget="many2many_tags"/>
+                </setting>
+                <setting id="number_box">
+                    <field name="xas_pos_number_box"/>
+                </setting>
+            </xpath>
+        </field>
+     </record>
+
+</odoo>

@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+        <record id="view_picking_form_inherit_xas_reservation" model="ir.ui.view">
+            <field name="name">stock.picking.form.inherit.xas_reservation</field>
+            <field name="model">stock.picking</field>
+            <field name="inherit_id" ref="stock.view_picking_form" />
+            <field name="arch" type="xml">
+                <!-- Se muestra la validación proveniente del movimiento de pos enlazado -->
+                <xpath expr="//sheet/group/group[2]" position="inside">
+                    <field name="pos_order_id" invisible="1"/>
+                    <field name="xas_reservation_authorized" invisible="pos_order_id == False"/>
+                    <field name="xas_pos_reference" invisible="pos_order_id == False"/>
+                </xpath>
+            </field>
+        </record>
+
+        <record id="view_picking_internal_search_inherit_xas_pos_reference" model="ir.ui.view">
+            <field name="name">stock.picking.internal.search.inherit.xas_pos_reference</field>
+            <field name="model">stock.picking</field>
+            <field name="inherit_id" ref="stock.view_picking_internal_search"/>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='name']" position="before">
+                    <field name="xas_pos_reference" string="Número de recibo"/>
+                </xpath>
+            </field>
+        </record>
+
+    </data>
+</odoo>

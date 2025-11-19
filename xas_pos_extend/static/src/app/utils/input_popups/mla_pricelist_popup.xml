@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates id="template" xml:space="preserve">
+    <t t-name="xas_pos_extend.MlaPricelistPopup">
+        <div class="popup popup-mla-pricelist">
+            <div class="modal-header">
+                <h4 class="modal-title"><t t-esc="props.title" /></h4>
+                <div class="btn" t-on-click="cancel">
+                    <i class="fa fa-times" aria-hidden="true"></i>
+                </div>
+            </div>
+            <div class="body modal-body overflow-auto modal-body">
+
+                <div class="section-product-info-title d-flex flex-column flex-sm-row text-start gap-3 text-info bg-opacity-25 mx-n3 mt-n3 mb-3 p-3 bg-info">
+                    <div class="d-flex flex-column flex-grow-1 text-start w-100 w-sm-25">
+                        <span t-esc="props.product.display_name" class="global-info-title fs-2 fw-bolder text-truncate"/>
+                        <span class="fs-3">
+                            <t t-if="props.product.default_code" t-esc="props.product.default_code"/> <t t-if="props.product.default_code and props.product.barcode"> - </t> <t t-if="props.product.barcode" t-esc="props.product.barcode"/>
+                        </span>
+                    </div>
+                    <div class="d-flex flex-column justify-content-center text-start text-sm-end w-100 w-sm-25">
+                        <span class="global-info-title fs-2 fw-bolder" />
+                        <span class="fs-3">
+                        </span>
+                    </div>
+                </div>
+
+                <table>
+                    <thead class="mt-3 table-header-pricelist-popup">
+                        <tr>
+                            <th>Fecha de recepción</th>
+                            <th>Código de embarque</th>
+                            <th>Segmentador</th>
+                            <th>Cantidad disponible</th>
+                            <th>Cantidad reservada</th>
+                            <th>Precio menudeo</th>
+                            <th>Precio mayoreo</th>
+                            <th>Cajas por pallet</th>
+                            <th>Precio por pallet</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr t-foreach="props.travelOptions" t-as="travel" t-key="travel.xas_mla_id">
+                            <t t-if="travel.xas_available_qty &gt; 0 and travel.xas_mayority_price &gt; 0">
+                                <td>
+                                    <td t-esc="travel.xas_reception_date" />
+                                </td>
+                                <td>
+                                    <t t-esc="travel.xas_trip_number_name" />
+                                </td>
+                                <td>
+                                    <t t-if="travel.xas_stock_lot_name" t-esc="travel.xas_stock_lot_name"/>
+                                </td>
+                                <td>
+                                    <t t-esc="travel.xas_available_qty" />
+                                </td>
+                                <td>
+                                    <t t-esc="travel.xas_reserved_qty" />
+                                </td>
+                                <td>
+                                    <t t-esc="travel.xas_price_per_box" />
+                                </td>
+                                <td>
+                                    <t t-esc="travel.xas_mayority_price" />
+                                </td>
+                                <td>
+                                    <t t-esc="travel.xas_boxes_by_pallet" />
+                                </td>
+                                <td>
+                                    <t t-esc="travel.xas_price_per_pallet" />
+                                </td>
+                                <td>
+                                    <div class="input-group">
+                                        <div class="input-group-prepend xas-quantities-state-button">
+                                            <button class="btn btn-outline-secondary pb-2 xas-btn-group-prepend" type="button" t-on-click="() => this.decreaseQuantity(travel.xas_mla_id)">-</button>
+                                        </div>
+                                        <input type="number" class="form-control text-center" t-model="state.quantities[travel.xas_mla_id]" min="0"/>
+                                        <div class="input-group-append xas-quantities-state-button">
+                                            <button type="button" class="btn btn-outline-secondary pb-2 xas-btn-group-append" t-on-click="() => this.increaseQuantity(travel.xas_mla_id)">+</button>
+                                        </div>
+                                    </div>
+                                </td>
+                            </t>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="modal-footer footer-flex d-flex justify-content-between align-items-center">
+                <div class="order-summary">
+                    <h5>Orden</h5>
+                    <p>precio total sin impuestos: 
+                        <span t-esc="env.utils.formatCurrency(state.totalPrice)"/>
+                    </p>
+                </div>
+                <div class="button confirm highlight btn btn-lg btn-primary" t-on-click="confirm">
+                    <t t-esc="props.confirmText"/>
+                </div>
+            </div>
+        </div>
+    </t>
+</templates>

@@ -1,0 +1,55 @@
+/* Personalización para botón selection */
+.xas-option-label {
+    display: block;
+    position: relative;
+    cursor: pointer;
+    border: 1px solid #ccc;
+    border-radius: 8px; /* Bordes redondeados */
+    padding: 15px;
+    margin-bottom: 10px;
+    text-align: left;
+    /* Ajustar tamaño de texto */
+    font-size: 1.2em;
+    /* Transición para el efecto hover */
+    transition: background-color 0.2s, border-color 0.2s;
+}
+.xas-option-label:hover {
+    background-color: #f0f0f0;
+    border-color: #aaa;
+}
+.xas-option-label input[type="radio"] {
+    display: none; /* Oculta el radio button */
+}
+.xas-option-label.selected {
+    background-color: #714B67; /* Color de fondo cuando está seleccionado */
+    color: white; /* Color de texto cuando está seleccionado */
+    border-color: #714B67;
+}
+.xas-option-label.selected:hover {
+    background-color: #714B67;
+    border-color: #714B67;
+}
+.popup-mla-pricelist {
+    max-width: 1000px !important;
+
+    .modal-body {
+        max-height: 70vh;
+    }
+}
+.table-header-pricelist-popup{
+    background-color: #714B67;
+    color: white;
+}
+.xas-quantities-state-button{
+    background-color: #714B67;
+    color: white;
+    border-radius: .25rem;
+}
+.xas-btn-group-prepend{
+    border-radius: .25rem 0rem 0rem .25rem;
+    color: white;
+}
+.xas-btn-group-append{
+    border-radius: 0rem .25rem .25rem 0rem;
+    color: white;
+}

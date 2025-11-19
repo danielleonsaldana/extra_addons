@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- Vista Lista -->
+    <record id="view_sale_condition_state_tree" model="ir.ui.view">
+        <field name="name">sale.condition.state.tree</field>
+        <field name="model">sale.condition.state</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="name"/>
+                <field name="code"/>
+            </tree>
+        </field>
+    </record>
+
+    <!-- Vista Formulario -->
+    <record id="view_sale_condition_state_form" model="ir.ui.view">
+        <field name="name">sale.condition.state.form</field>
+        <field name="model">sale.condition.state</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                    <group>
+                        <field name="name"/>
+                        <field name="code"/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- Acción -->
+    <record id="action_sale_condition_state" model="ir.actions.act_window">
+        <field name="name">Condiciones de producto</field>
+        <field name="res_model">sale.condition.state</field>
+        <field name="view_mode">tree,form</field>
+        <field name="view_id" ref="view_sale_condition_state_tree"/>
+        <field name="help" type="html">
+            <p>
+                Crea y gestiona las condiciones de producto.
+            </p>
+        </field>
+    </record>
+</odoo>

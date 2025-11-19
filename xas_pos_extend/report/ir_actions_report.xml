@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- Ticket 2 y 3 -->
+    <record id="action_report_pos_order_ticket_2_3" model="ir.actions.report">
+        <field name="name">Imprimir Ticket(POS 2,3)</field>
+        <field name="model">pos.order</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">xas_pos_extend.report_combined_ticket_template_2_3</field>
+        <field name="report_file">xas_pos_extend.report_combined_ticket_template_2_3</field>
+        <field name="print_report_name">'POS Order - %s' % (object.name)</field>
+        <field name="binding_model_id" ref="point_of_sale.model_pos_order"/>
+        <field name="binding_type">report</field>
+        <field name="paperformat_id" ref="xas_pos_extend.paperformat_ticket_combined"/>
+    </record>
+
+    <!-- Ticket 2, 3 y 4 -->
+    <record id="action_report_pos_order" model="ir.actions.report">
+        <field name="name">Imprimir Ticket(POS 2,3,4)</field>
+        <field name="model">pos.order</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">xas_pos_extend.report_combined_ticket_template</field>
+        <field name="report_file">xas_pos_extend.report_combined_ticket_template</field>
+        <field name="print_report_name">'POS Order - %s' % (object.name)</field>
+        <field name="binding_model_id" ref="point_of_sale.model_pos_order"/>
+        <field name="binding_type">report</field>
+        <field name="paperformat_id" ref="xas_pos_extend.paperformat_ticket_combined"/>
+    </record>
+
+</odoo>

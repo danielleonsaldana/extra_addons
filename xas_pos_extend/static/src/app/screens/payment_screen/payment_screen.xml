@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates id="template" xml:space="preserve">
+
+    <t t-inherit="point_of_sale.PaymentScreenButtons" t-inherit-mode="extension">
+        <!-- Reemplazamos el botón "Ship Later" por nada -->
+        <xpath expr="//button[@t-if='pos.config.ship_later']" position="replace">
+        </xpath>
+        <xpath expr="//button[@class='button js_invoice btn btn-light py-3 text-start rounded-0 border-bottom']" position="replace">
+            <!-- Boton es facturable para vendedor -->
+            <button t-if="pos.config.xas_pos_role === 'for_saler'"
+                class="button js_xas_is_invoiceable btn btn-light py-3 text-start rounded-0 border-bottom"
+                t-att-class="{ 'highlight text-bg-primary': currentOrder.get_xas_is_invoiceable() }" 
+                t-on-click="do_invoiceable">
+                <i class="fa fa-file-text-o me-2" />Orden Facturable
+            </button>
+            <!-- Boton factura para cajero -->
+            <span t-if="pos.config.xas_pos_role === 'for_cashier' and currentOrder.get_xas_is_invoiceable()"
+                class="button highlight text-bg-primary btn btn-light py-3 text-start rounded-0 border-bottom">
+                <i class="fa fa-file-text-o me-2" />Orden Facturable
+            </span>
+            <button t-if="pos.config.xas_pos_role === 'for_cashier' and currentOrder.get_xas_is_invoiceable()"
+                class="button js_invoice btn btn-light py-3 text-start rounded-0 border-bottom"
+                t-att-class="{ 'highlight text-bg-primary': currentOrder.is_to_invoice() }" 
+                t-on-click="toggleIsToInvoice">
+                <i class="fa fa-file-text-o me-2" />Invoice
+            </button>
+        </xpath>
+    </t>
+
+    <t t-inherit="point_of_sale.PaymentScreenMethods" t-inherit-mode="extension">
+        <xpath expr="//div[@class='button paymentmethod btn btn-light rounded-0 border-bottom']" position="attributes">
+            <attribute name="t-att-class">{
+                'button paymentmethod btn btn-light rounded-0 border-bottom': true,
+                'disabled': paymentMethod.xas_locked_for_cashier and pos.config.xas_pos_role === 'for_cashier',
+            }</attribute>
+        </xpath>
+    </t>
+
+</templates>

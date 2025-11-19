@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- Categorias -->
+    <record id="xas_pos_extend.module_category_pos_rol" model="ir.module.category">
+        <field name="name">Definición de rol en punto de venta</field>
+        <field name="sequence">30</field>
+    </record>
+
+    <record id="xas_pos_extend.module_category_condition_sale_state" model="ir.module.category">
+        <field name="name">Edición de condiciones de venta</field>
+        <field name="sequence">30</field>
+    </record>
+
+    <!-- Permisos -->
+    <!-- Roles de punto de venta -->
+    <record id="group_user_pos_rol_salesman" model="res.groups">
+        <field name="name">Rol Vendedor</field>
+        <field name="category_id" ref="xas_pos_extend.module_category_pos_rol"/>
+    </record>
+    <record id="group_user_pos_rol_cashier" model="res.groups">
+        <field name="name">Rol Cajero</field>
+        <field name="category_id" ref="xas_pos_extend.module_category_pos_rol"/>
+    </record>
+    <record id="group_enable_edit_product_price_pos" model="res.groups">
+        <field name="name">Habilitar edición de precios de venta</field>
+        <field name="category_id" ref="base.module_category_hidden"/>
+    </record>
+    <record id="group_condition_sale_state_pos_salesman" model="res.groups">
+        <field name="name">Vendedor</field>
+        <field name="category_id" ref="xas_pos_extend.module_category_condition_sale_state"/>
+    </record>
+    <record id="group_condition_sale_state_pos_admin" model="res.groups">
+        <field name="name">Administrador</field>
+        <field name="category_id" ref="xas_pos_extend.module_category_condition_sale_state"/>
+    </record>
+    <record id="group_panamerican_payment" model="res.groups">
+        <field name="name">Entregas a panamericanas</field>
+        <field name="category_id" ref="base.module_category_hidden"/>
+    </record>
+
+</odoo>

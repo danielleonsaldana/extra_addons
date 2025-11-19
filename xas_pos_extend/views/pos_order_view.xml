@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- Vista form -->
+    <record id="view_pos_form_inherit_xas_pos_extend" model="ir.ui.view">
+        <field name="name">pos.pos.form.inherit.analytica.space.pos.extend</field>
+        <field name="model">pos.order</field>
+        <field name="inherit_id" ref="point_of_sale.view_pos_pos_form"/>
+        <field name="arch" type="xml">
+
+            <xpath expr="//button[@name='action_pos_order_invoice']" position="after">
+                <button name="action_print_ticket_23"
+                        string="Imprimir ticket 2, 3 y 4"
+                        type="object"
+                        class="btn btn-secondary"
+                        invisible="state not in ('paid','done','invoiced')"
+                />
+            </xpath>
+
+            <!-- Agregamos datos para validación de credito -->
+            <xpath expr="//group" position="inside">
+                <field name="xas_is_credit" invisible="xas_is_credit == False"/>
+                <field name="xas_credit_consumption_approved" invisible="xas_is_credit == False"/>
+                <field name="xas_auth_apartment" widget="boolean_toggle" invisible="xas_is_credit == False"/>
+                <field name="xas_credit_approbation_id" invisible="xas_is_credit == False" widget="many2one"/>
+                <field name="xas_gerente" invisible="1"/>
+                <field name="xas_approved_by_customer" invisible="1" />
+                <field name="xas_approved_by_manager" invisible="1" />
+                <field name="xas_need_bank_workflow" invisible="1"/>
+                <field name="xas_mark_as_paid" invisible="not xas_need_bank_workflow" />
+            </xpath>
+
+            <xpath expr="//field[@name='partner_id']" position="after">
+                <field name="xas_saler_id" widget="many2one_avatar_employee"/>
+                <field name="xas_cashier_id" widget="many2one_avatar_employee"/>
+            </xpath>
+
+            <!-- Botones -->
+            <xpath expr="//button[contains(@class, 'oe_highlight')]" position="attributes">
+                <attribute name="invisible">
+                    (state != 'draft') or (xas_is_credit == True and xas_credit_consumption_approved == False)
+                </attribute>
+            </xpath>
+            <xpath expr="//button[@name='action_view_invoice']" position="attributes">
+                <attribute name="invisible">
+                    False
+                </attribute>
+            </xpath>
+
+            <!-- Botones de plantillas de correo -->
+            <xpath expr="//header" position="inside">
+                <field name="xas_is_credit" invisible="1" />
+                <!-- Botónes para enviar correos -->
+                <button name="send_email_wizard" 
+                    string="Correo Cliente" 
+                    type="object" 
+                    class="btn-primary" 
+                    context="{'email_type': 'customer'}" 
+                    invisible="(state != 'draft') or (xas_is_credit == False) or (xas_is_credit == True and xas_credit_consumption_approved == True)"/>
+                <button name="send_email_wizard"
+                    string="Correo Gerente" 
+                    type="object" 
+                    class="btn-primary" 
+                    context="{'email_type': 'manager'}" 
+                    invisible="(state != 'draft') or (xas_is_credit == False) or (xas_is_credit == True and xas_credit_consumption_approved == True)"/>
+            </xpath>
+
+            <xpath expr="//field[@name='pricelist_id']" position="after">
+                <field name="xas_cancel_by_lifetime_over"/>
+            </xpath>
+
+            <!-- Agregamos el chatter al final del formulario -->
+            <xpath expr="//sheet" position="after">
+                <div class="oe_chatter">
+                    <field name="message_follower_ids" widget="mail_followers"/>
+                    <field name="activity_ids" widget="mail_activity"/>
+                    <field name="message_ids" widget="mail_thread"/>
+                </div>
+            </xpath>
+
+            <!-- Condiciones de producto -->
+            <xpath expr="//field[@name='lines']/tree" position="inside">
+                <field name="xas_sale_condition_state_id" optional="hide"/>
+                <field name="xas_mayority_affect_orders" optional="show"/>
+            </xpath>
+
+        </field>
+    </record>
+
+    <!-- Desaparecemos el campo cajero -->
+    <record id="pos_order_form_inherit_inherit_xas_pos_extend" model="ir.ui.view">
+        <field name="name">pos.order.form.inherit.inherit.analytica.space.pos.extend</field>
+        <field name="model">pos.order</field>
+        <field name="inherit_id" ref="pos_hr.pos_order_form_inherit"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='employee_id']" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </xpath>
+            <xpath expr="//field[@name='user_id']" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </xpath>
+        </field>
+    </record>
+
+    <!-- Vista lista -->
+    <record id="view_pos_order_tree_inherit_xas_pos_extend" model="ir.ui.view">
+        <field name="name">pos.order.tree.inherit.analytica.space.pos.extend</field>
+        <field name="model">pos.order</field>
+        <field name="inherit_id" ref="point_of_sale.view_pos_order_tree"/>
+        <field name="arch" type="xml">
+            <!-- Campos vendido por/cobrado por -->
+            <xpath expr="//field[@name='partner_id']" position="after">
+                <field name="xas_saler_id" optional="show" widget="many2one_avatar_employee"/>
+                <field name="xas_cashier_id" optional="show" widget="many2one_avatar_employee"/>
+            </xpath>
+        </field>
+    </record>
+
+    <!-- Desaparecemos el campo anterior de cajero -->
+    <record id="view_pos_order_tree_inherit_inherit_xas_pos_extend" model="ir.ui.view">
+        <field name="name">pos.order.tree.inherit.inherit.analytica.space.pos.extend</field>
+        <field name="model">pos.order</field>
+        <field name="inherit_id" ref="pos_hr.view_pos_order_tree_inherit"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='employee_id']" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </xpath>
+        </field>
+    </record>
+</odoo>

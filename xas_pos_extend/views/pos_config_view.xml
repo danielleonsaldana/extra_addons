@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="pos_config_view_form_inherit_xas_pos_extend" model="ir.ui.view">
+        <field name="name">pos.config.view.form.inherit.analytica.space.pos.extend</field>
+        <field name="model">pos.config</field>
+        <field name="inherit_id" ref="point_of_sale.pos_config_view_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//div[@id='restaurant_on_create']" position="after">
+                <div class="row mt16 o_settings_container" id="xas_pos_role_settings">
+                    <setting title="Definición de rol del punto de venta">
+                        <field name="xas_pos_role"/>
+                    </setting>
+                </div>
+            </xpath>
+            <xpath expr="//setting[@id='other_devices']" position="after">
+                <setting id="number_box">
+                    <field name="xas_pos_number_box"/>
+                </setting>
+                <setting id="pos_related_ids" invisible="xas_pos_role != 'for_cashier'">
+                    <label string="Puntos de venta relacionados" for="xas_pos_related_ids"/>
+                    <field name="xas_pos_related_ids" widget="many2many_tags"/>
+                </setting>
+            </xpath>
+        </field>
+    </record>
+
+</odoo>

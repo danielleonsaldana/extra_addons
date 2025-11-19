@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates id="template" xml:space="preserve">
+    <t t-inherit="point_of_sale.Orderline" t-inherit-mode="extension">
+        <!-- Elegimos el lugar después de las cantidades para insertar el nuevo campo -->
+        <xpath expr="//li[@t-if='line.internalNote']" position="after">
+            <li t-if="line.xas_sale_condition_state_name">
+                <strong>Condición:</strong> <t t-esc="line.xas_sale_condition_state_name" />
+            </li>
+        </xpath>
+        <!-- Insertar el nuevo campo xas_trip_number después de la nota interna -->
+        <xpath expr="//li[@t-if='line.internalNote']" position="after">
+            <li t-if="line.xas_trip_number" class="trip-number w-100 p-2 my-1 rounded text-bg-info text-info bg-opacity-25 text-break">
+                <i class="fa fa-info-circle me-1" role="img" aria-label="Número de viaje" title="Número de viaje"/>
+                <strong>CODIGO DE EMBARQUE:</strong> <t t-esc="line.xas_trip_number"/>
+                <t t-if="line.xas_stock_lot_name">
+                    <span class="ms-2"><strong>SEGMENTADOR:</strong> <t t-esc="line.xas_stock_lot_name"/></span>
+                </t>
+            </li>
+        </xpath>
+    </t>
+</templates>

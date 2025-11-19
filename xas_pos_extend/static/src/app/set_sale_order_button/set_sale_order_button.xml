@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates id="template" xml:space="preserve">
+
+    <t t-inherit="pos_sale.SetSaleOrderButton" t-inherit-mode="extension">
+        <xpath expr="//div[contains(@class, 'control-button o_sale_order_button btn btn-light rounded-0 fw-bolder')]" position="replace">
+            <!-- Se borra el botón original para añadir uno personalizado con una función personalizada -->
+        </xpath>
+    </t>
+
+</templates>

@@ -1,0 +1,42 @@
+/* Personalización de clases para ticket 1 personalizado en punto de venta */
+.xas-pos-receipt{
+    width: 40%;
+    height: 40%;
+    display: block;
+    margin: 0 auto;
+}
+
+/* Contenedor de la cabecera */
+.xas-pos-receipt-contact{
+    text-align: center;
+    font-size: 12px;
+    text-transform: uppercase;
+}
+
+/* Código qr */
+.xas-pos-receipt-qr-custom{
+    width: 70%;
+    height: auto;
+    display: block;
+    margin: 0 auto;
+}
+/* Texto */
+.xas-pos-receipt-text-blue {
+    color: blue;
+}
+
+.xas-pos-receipt-text-dark {
+    color: black;
+}
+
+.xas-pos-receipt-text-bold {
+    font-weight: bold;
+}
+
+.xas-pos-receipt-text-big {
+    font-size: 20px;
+}
+
+.xas-pos-receipt-text-transform-none {
+    text-transform: none;
+}

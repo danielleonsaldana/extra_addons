@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates id="template" xml:space="preserve">
+
+    <t t-name="xas_pos_extend.CustomPrintBillButton">
+        <span class="control-button order-printbill btn btn-light rounded-0 fw-bolder" t-att-class="{'disabled': _isDisabled(),'d-none': isVisible}" t-on-click="click">
+            <i class="fa fa-print me-1"/>
+            <span> </span>
+            <span>Cotización</span>
+        </span>
+    </t>
+
+</templates>

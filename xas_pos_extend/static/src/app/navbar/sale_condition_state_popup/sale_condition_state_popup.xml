@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates id="template" xml:space="preserve">
+    <t t-name="xas_pos_extend.SaleConditionStatePopup">
+        <div class="popup popup-selectionpopup">
+            <div class="modal-header">
+                <h4 class="modal-title"><t t-esc="props.title" /></h4>
+            </div>
+            <div class="modal-body">
+                <div class="selection-options">
+                    <div t-foreach="props.options" t-as="option" t-key="option.id" class="selection-option">
+                        <label class="xas-option-label">
+                            <span><t t-esc="option.id" /></span>
+                            <span> - </span>
+                            <span><t t-esc="option.label" /></span>
+                        </label>
+                    </div>
+                </div>
+            </div>
+            <div class="footer footer-flex modal-footer">
+                <div class="button confirm highlight btn btn-lg btn-primary" t-on-click="confirm">
+                    <t t-esc="props.confirmText" />
+                </div>
+            </div>
+        </div>
+    </t>
+</templates>
