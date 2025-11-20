@@ -1,0 +1,25 @@
+<?xml version='1.0' encoding='utf-8'?>
+<odoo>
+    
+    <!-- Inherit standard -->
+    <record id="sh_mail_activity_schedule_view_form_inherit" model="ir.ui.view">
+        <field name="name">sh.mail.activity.inherit.view.form</field>
+        <field name="model">mail.activity.schedule</field>
+        <field name="inherit_id" ref="mail.mail_activity_schedule_view_form"/>
+        <field name="arch" type="xml">
+            <field name="summary" position="after">
+                <field name="sh_create_individual_activity" invisible="sh_user_ids in []"/>
+                <field name="supervisor_id" widget="many2one_avatar_user" />
+                <field name="sh_activity_tags" widget="many2many_tags" options="{'color_field': 'color', 'no_create_edit': True}" />
+            </field>
+            <field name="activity_user_id" position="after">
+                <field name="sh_display_multi_user" invisible="1" />
+                <field name="company_id"/>
+                <field name="sh_user_ids" widget="many2many_tags" invisible="sh_display_multi_user == False"/>
+            </field>
+            
+        </field>
+    </record>
+
+
+</odoo>

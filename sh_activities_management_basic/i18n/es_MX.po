@@ -1,0 +1,753 @@
+#. module: sh_activities_management_basic
+#: model_terms:ir.ui.view,arch_db:sh_activities_management_basic.sh_mail_activity_view_form
+msgid "<strong>Recommended Activities</strong>"
+msgstr "<strong>Actividades recomendadas</strong>"
+
+#. module: sh_activities_management_basic
+#. odoo-javascript
+#: code:addons/sh_activities_management_basic/static/src/xml/dashboard_components/table_component.xml:0
+#, python-format
+msgid "Action"
+msgstr "Acción"
+
+#. module: sh_activities_management_basic
+#: model:ir.model.fields,field_description:sh_activities_management_basic.field_mail_activity__active
+msgid "Active"
+msgstr "Activo"
+
+#. module: sh_activities_management_basic
+#. odoo-javascript
+#: code:addons/sh_activities_management_basic/static/src/js/dashboard_components/cards_component.js:0
+#: model_terms:ir.ui.view,arch_db:sh_activities_management_basic.sh_mail_schedule_activity_view_tree
+#, python-format
+msgid "Activities"
+msgstr "Actividades"
+
+#. module: sh_activities_management_basic
+#. odoo-javascript
+#: code:addons/sh_activities_management_basic/static/src/xml/dashboard_components/table_component.xml:0
+#: model:ir.model,name:sh_activities_management_basic.model_mail_activity
+#: model:ir.ui.menu,name:sh_activities_management_basic.sh_activity
+#: model_terms:ir.ui.view,arch_db:sh_activities_management_basic.sh_mail_activity_view_form
+#: model_terms:ir.ui.view,arch_db:sh_activities_management_basic.sh_mail_activity_view_search
+#, python-format
+msgid "Activity"
+msgstr "Actividad"
+
+#. module: sh_activities_management_basic
+#: model:ir.model.fields,field_description:sh_activities_management_basic.field_mail_activity__activity_cancel
+msgid "Activity Cancel"
+msgstr "Cancelar actividad"
+
+#. module: sh_activities_management_basic
+#. odoo-javascript
+#: code:addons/sh_activities_management_basic/static/src/xml/dashboard_components/main_component.xml:0
+#: model:ir.actions.client,name:sh_activities_management_basic.sh_action_activity_dashboard
+#: model:ir.model,name:sh_activities_management_basic.model_activity_dashboard
+#: model:ir.module.category,description:sh_activities_management_basic.module_activity_category
+#: model:ir.module.category,name:sh_activities_management_basic.module_activity_category
+#: model:ir.ui.menu,name:sh_activities_management_basic.sh_activity_dashboard
+#, python-format
+msgid "Activity Dashboard"
+msgstr "Panel de actividades"
+
+#. module: sh_activities_management_basic
+#: model:ir.model.fields,field_description:sh_activities_management_basic.field_mail_activity__activity_done
+msgid "Activity Done"
+msgstr "Actividad completada"
+
+#. module: sh_activities_management_basic
+#. odoo-javascript
+#: code:addons/sh_activities_management_basic/static/src/xml/dashboard_components/table_component.xml:0
+#: model:ir.actions.act_window,name:sh_activities_management_basic.feedback_wizard_action
+#: model:ir.actions.act_window,name:sh_activities_management_basic.mark_as_done_feedback_wizard_action
+#: model:ir.model,name:sh_activities_management_basic.model_activity_feedback
+#: model_terms:ir.ui.view,arch_db:sh_activities_management_basic.feedback_wizard_view
+#: model_terms:ir.ui.view,arch_db:sh_activities_management_basic.mark_as_done_feedback_wizard_view
+#, python-format
+msgid "Activity Feedback"
+msgstr "Comentarios de actividad"
+
+#. module: sh_activities_management_basic
+#: model_terms:ir.ui.view,arch_db:sh_activities_management_basic.sh_res_config_settings_mail_activity_form_inherit
+msgid "Activity Management"
+msgstr "Gestión de actividades"
+
+#. module: sh_activities_management_basic
+#: model:res.groups,name:sh_activities_management_basic.group_activity_manager
+msgid "Activity Manager"
+msgstr "Gestor de actividades"
+
+#. module: sh_activities_management_basic
+#: model:ir.model,name:sh_activities_management_basic.model_mail_activity_mixin
+msgid "Activity Mixin"
+msgstr "Mixin de la actividad"
+
+#. module: sh_activities_management_basic
+#: model:res.groups,name:sh_activities_management_basic.group_activity_supervisor
+msgid "Activity Supervisor"
+msgstr "Supervisor de actividades"
+
+#. module: sh_activities_management_basic
+#: model:ir.actions.act_window,name:sh_activities_management_basic.sh_activity_tags_action
+msgid "Activity Tag"
+msgstr "Etiqueta de actividad"
+
+#. module: sh_activities_management_basic
+#: model:ir.model,name:sh_activities_management_basic.model_sh_activity_tags
+#: model:ir.model.fields,field_description:sh_activities_management_basic.field_mail_activity__sh_activity_tags
+#: model:ir.model.fields,field_description:sh_activities_management_basic.field_mail_activity_schedule__sh_activity_tags
+#: model:ir.ui.menu,name:sh_activities_management_basic.sh_activity_tags
+#: model_terms:ir.ui.view,arch_db:sh_activities_management_basic.sh_mail_activity_view_search
+msgid "Activity Tags"
+msgstr "Etiquetas de actividad"
+
+#. module: sh_activities_management_basic
+#: model:res.groups,name:sh_activities_management_basic.group_activity_user
+msgid "Activity User"
+msgstr "Usuario de actividad"
+
+#. module: sh_activities_management_basic
+#: model:ir.model,name:sh_activities_management_basic.model_mail_activity_schedule
+msgid "Activity schedule plan Wizard"
+msgstr "Asistente para planificar actividades"
+
+#. module: sh_activities_management_basic
+#: model:ir.actions.act_window,name:sh_activities_management_basic.sh_all_activity_action
+#: model:ir.actions.act_window,name:sh_activities_management_basic.sh_reporting_action
+#: model:ir.model.fields,field_description:sh_activities_management_basic.field_res_config_settings__sh_display_all_activities_table
+#: model:ir.ui.menu,name:sh_activities_management_basic.all_activity
+msgid "All Activities"
+msgstr "Todas las actividades"
+
+#. module: sh_activities_management_basic
+#: model:ir.model.fields,field_description:sh_activities_management_basic.field_res_config_settings__sh_display_all_activities_counter
+msgid "All Activities "
+msgstr "Todas las actividades "
+
+#. module: sh_activities_management_basic
+#: model:ir.model.fields,field_description:sh_activities_management_basic.field_res_config_settings__sh_all_table
+msgid "All Activities Table Limit"
+msgstr "Límite de tabla de todas las actividades"
+
+#. module: sh_activities_management_basic
+#. odoo-python
+#: code:addons/sh_activities_management_basic/models/mail_activity.py:0
+#, python-format
+msgid ""
+"All contacts must have the same email. Only the Administrator can merge "
+"contacts with different emails."
+msgstr "Todos los contactos deben tener el mismo correo electrónico. Solo el Administrador puede fusionar contactos con correos diferentes."
+
+#. module: sh_activities_management_basic
+#: model_terms:ir.ui.view,arch_db:sh_activities_management_basic.sh_mail_activity_view_form
+msgid "Archived"
+msgstr "Archivado"
+
+#. module: sh_activities_management_basic
+#: model_terms:ir.ui.view,arch_db:sh_activities_management_basic.sh_mail_activity_view_search
+msgid "Archived Activities"
+msgstr "Actividades archivadas"
+
+#. module: sh_activities_management_basic
+#: model:ir.model.fields,field_description:sh_activities_management_basic.field_mail_activity__sh_user_ids
+#: model:ir.model.fields,field_description:sh_activities_management_basic.field_mail_activity_schedule__sh_user_ids
+msgid "Assign Multi Users"
+msgstr "Asignar a múltiples usuarios"
+
+#. module: sh_activities_management_basic
+#: model_terms:ir.ui.view,arch_db:sh_activities_management_basic.sh_mail_activity_view_search
+msgid "Assign To"
+msgstr "Asignar a"
+
+#. module: sh_activities_management_basic
+#: model_terms:ir.ui.view,arch_db:sh_activities_management_basic.sh_mail_activity_view_search
+msgid "Assigned Multi Users"
+msgstr "Usuarios múltiples asignados"
+
+#. module: sh_activities_management_basic
+#. odoo-javascript
+#: code:addons/sh_activities_management_basic/static/src/xml/dashboard_components/table_component.xml:0
+#, python-format
+msgid "Assigned To"
+msgstr "Asignado a"
+
+#. module: sh_activities_management_basic
+#. odoo-python
+#: code:addons/sh_activities_management_basic/models/mail_activity.py:0
+#, python-format
+msgid ""
+"Assigned user %s has no access to the document and is not able to handle "
+"this activity."
+msgstr "El usuario asignado %s no tiene acceso al documento y no puede atender esta actividad."
+
+#. module: sh_activities_management_basic
+#. odoo-javascript
+#: code:addons/sh_activities_management_basic/static/src/xml/dashboard_components/table_component.xml:0
+#: model:ir.actions.server,name:sh_activities_management_basic.sh_cancel_activity_action
+#: model_terms:ir.ui.view,arch_db:sh_activities_management_basic.feedback_wizard_view
+#: model_terms:ir.ui.view,arch_db:sh_activities_management_basic.mark_as_done_feedback_wizard_view
+#: model_terms:ir.ui.view,arch_db:sh_activities_management_basic.sh_mail_activity_view_form
+#, python-format
+msgid "Cancel"
+msgstr "Cancelar"
+
+#. module: sh_activities_management_basic
+#: model:ir.model.fields.selection,name:sh_activities_management_basic.selection__mail_activity__sh_state__cancel
+#: model:ir.model.fields.selection,name:sh_activities_management_basic.selection__mail_activity__state__cancel
+msgid "Cancelled"
+msgstr "Cancelado"
+
+#. module: sh_activities_management_basic
+#: model:ir.model.fields,field_description:sh_activities_management_basic.field_res_config_settings__sh_display_cancelled_activities_table
+#: model_terms:ir.ui.view,arch_db:sh_activities_management_basic.sh_mail_activity_view_search
+msgid "Cancelled Activities"
+msgstr "Actividades canceladas"
+
+#. module: sh_activities_management_basic
+#: model:ir.model.fields,field_description:sh_activities_management_basic.field_res_config_settings__sh_display_cancelled_activities_counter
+msgid "Cancelled Activities "
+msgstr "Actividades canceladas "
+
+#. module: sh_activities_management_basic
+#: model:ir.model.fields,field_description:sh_activities_management_basic.field_res_config_settings__sh_cancel_table
+msgid "Cancelled Activities Table Limit"
+msgstr "Límite de tabla de actividades canceladas"
+
+#. module: sh_activities_management_basic
+#: model:ir.model.fields,field_description:sh_activities_management_basic.field_res_users__check_user_activity
+msgid "Checl User Activity"
+msgstr "Verificar actividad del usuario"
+
+#. module: sh_activities_management_basic
+#. odoo-javascript
+#: code:addons/sh_activities_management_basic/static/src/xml/dashboard_components/table_component.xml:0
+#, python-format
+msgid "Close"
+msgstr "Cerrar"
+
+#. module: sh_activities_management_basic
+#: model:ir.model.fields,field_description:sh_activities_management_basic.field_sh_activity_tags__color
+msgid "Color"
+msgstr "Color"
+
+#. module: sh_activities_management_basic
+#: model:ir.model.fields,field_description:sh_activities_management_basic.field_mail_activity__color
+msgid "Color Index"
+msgstr "Índice de color"
+
+#. module: sh_activities_management_basic
+#: model:ir.model,name:sh_activities_management_basic.model_res_company
+msgid "Companies"
+msgstr "Empresas"
+
+#. module: sh_activities_management_basic
+#: model:ir.model.fields,field_description:sh_activities_management_basic.field_mail_activity__company_id
+msgid "Company"
+msgstr "Empresa"
+
+#. module: sh_activities_management_basic
+#: model:ir.model.fields,field_description:sh_activities_management_basic.field_res_config_settings__sh_display_completed_activities_table
+#: model_terms:ir.ui.view,arch_db:sh_activities_management_basic.sh_mail_activity_view_search
+msgid "Completed Activities"
+msgstr "Actividades completadas"
+
+#. module: sh_activities_management_basic
+#: model:ir.model.fields,field_description:sh_activities_management_basic.field_res_config_settings__sh_display_completed_activities_counter
+msgid "Completed Activities "
+msgstr "Actividades completadas "
+
+#. module: sh_activities_management_basic
+#: model:ir.model.fields,field_description:sh_activities_management_basic.field_res_config_settings__sh_completed_table
+msgid "Completed Activities Table Limit"
+msgstr "Límite de tabla de actividades completadas"
+
+#. module: sh_activities_management_basic
+#: model:ir.model.fields,field_description:sh_activities_management_basic.field_mail_activity__date_done
+msgid "Completed Date"
+msgstr "Fecha completada"
+
+#. module: sh_activities_management_basic
+#: model:ir.model,name:sh_activities_management_basic.model_res_config_settings
+msgid "Config Settings"
+msgstr "Ajustes de configuración"
+
+#. module: sh_activities_management_basic
+#: model:ir.ui.menu,name:sh_activities_management_basic.menu_config
+msgid "Configuration"
+msgstr "Configuración"
+
+#. module: sh_activities_management_basic
+#: model_terms:ir.ui.view,arch_db:sh_activities_management_basic.sh_res_config_settings_mail_activity_form_inherit
+msgid "Counter"
+msgstr "Contador"
+
+#. module: sh_activities_management_basic
+#: model_terms:ir.actions.act_window,help:sh_activities_management_basic.sh_activity_tags_action
+msgid "Create a new Tag"
+msgstr "Crear una nueva etiqueta"
+
+#. module: sh_activities_management_basic
+#: model:ir.model.fields,field_description:sh_activities_management_basic.field_activity_dashboard__create_uid
+#: model:ir.model.fields,field_description:sh_activities_management_basic.field_activity_feedback__create_uid
+#: model:ir.model.fields,field_description:sh_activities_management_basic.field_sh_activity_tags__create_uid
+#: model:ir.model.fields,field_description:sh_activities_management_basic.field_sh_mark_as_done__create_uid
+msgid "Created by"
+msgstr "Creado por"
+
+#. module: sh_activities_management_basic
+#: model:ir.model.fields,field_description:sh_activities_management_basic.field_activity_dashboard__create_date
+#: model:ir.model.fields,field_description:sh_activities_management_basic.field_activity_feedback__create_date
+#: model:ir.model.fields,field_description:sh_activities_management_basic.field_sh_activity_tags__create_date
+#: model:ir.model.fields,field_description:sh_activities_management_basic.field_sh_mark_as_done__create_date
+msgid "Created on"
+msgstr "Creado el"
+
+#. module: sh_activities_management_basic
+#. odoo-javascript
+#: code:addons/sh_activities_management_basic/static/src/xml/dashboard_components/main_component.xml:0
+#, python-format
+msgid "Current Month"
+msgstr "Mes actual"
+
+#. module: sh_activities_management_basic
+#. odoo-javascript
+#: code:addons/sh_activities_management_basic/static/src/xml/dashboard_components/main_component.xml:0
+#, python-format
+msgid "Current Week"
+msgstr "Semana actual"
+
+#. module: sh_activities_management_basic
+#. odoo-javascript
+#: code:addons/sh_activities_management_basic/static/src/xml/dashboard_components/main_component.xml:0
+#, python-format
+msgid "Current Year"
+msgstr "Año actual"
+
+#. module: sh_activities_management_basic
+#. odoo-javascript
+#: code:addons/sh_activities_management_basic/static/src/xml/dashboard_components/main_component.xml:0
+#, python-format
+msgid "Custom"
+msgstr "Personalizado"
+
+#. module: sh_activities_management_basic
+#: model:ir.ui.menu,name:sh_activities_management_basic.sh_menu_activity_dashboard
+msgid "Dashboard"
+msgstr "Tablero"
+
+#. module: sh_activities_management_basic
+#: model_terms:ir.ui.view,arch_db:sh_activities_management_basic.sh_res_config_settings_mail_activity_form_inherit
+msgid "Dashboard Configuration"
+msgstr "Configuración del tablero"
+
+#. module: sh_activities_management_basic
+#: model_terms:ir.ui.view,arch_db:sh_activities_management_basic.sh_res_config_settings_mail_activity_form_inherit
+msgid "Data Table"
+msgstr "Tabla de datos"
+
+#. module: sh_activities_management_basic
+#. odoo-javascript
+#: code:addons/sh_activities_management_basic/static/src/xml/dashboard_components/table_component.xml:0
+#, python-format
+msgid "Deadline Date"
+msgstr "Fecha límite"
+
+#. module: sh_activities_management_basic
+#: model_terms:ir.ui.view,arch_db:sh_activities_management_basic.sh_mail_schedule_activity_view_kanban
+msgid "Delete"
+msgstr "Eliminar"
+
+#. module: sh_activities_management_basic
+#: model_terms:ir.ui.view,arch_db:sh_activities_management_basic.sh_res_config_settings_mail_activity_form_inherit
+msgid "Display Dashboard Counter and Data Table Configuration"
+msgstr "Mostrar contador del tablero y configuración de tabla de datos"
+
+#. module: sh_activities_management_basic
+#: model:ir.model.fields,field_description:sh_activities_management_basic.field_res_config_settings__sh_display_multi_user
+msgid "Display Multi Users ?"
+msgstr "¿Mostrar múltiples usuarios?"
+
+#. module: sh_activities_management_basic
+#: model:ir.model.fields,field_description:sh_activities_management_basic.field_activity_dashboard__display_name
+#: model:ir.model.fields,field_description:sh_activities_management_basic.field_activity_feedback__display_name
+#: model:ir.model.fields,field_description:sh_activities_management_basic.field_sh_activity_tags__display_name
+#: model:ir.model.fields,field_description:sh_activities_management_basic.field_sh_mark_as_done__display_name
+msgid "Display Name"
+msgstr "Nombre a mostrar"
+
+#. module: sh_activities_management_basic
+#: model_terms:ir.ui.view,arch_db:sh_activities_management_basic.sh_mail_activity_view_search
+msgid "Document Model"
+msgstr "Modelo de documento"
+
+#. module: sh_activities_management_basic
+#. odoo-javascript
+#: code:addons/sh_activities_management_basic/static/src/xml/dashboard_components/table_component.xml:0
+#: model:ir.model.fields.selection,name:sh_activities_management_basic.selection__mail_activity__sh_state__done
+#: model:ir.model.fields.selection,name:sh_activities_management_basic.selection__mail_activity__state__done
+#: model_terms:ir.ui.view,arch_db:sh_activities_management_basic.feedback_wizard_view
+#: model_terms:ir.ui.view,arch_db:sh_activities_management_basic.mark_as_done_feedback_wizard_view
+#, python-format
+msgid "Done"
+msgstr "Listo"
+
+#. module: sh_activities_management_basic
+#: model_terms:ir.ui.view,arch_db:sh_activities_management_basic.feedback_wizard_view
+#: model_terms:ir.ui.view,arch_db:sh_activities_management_basic.sh_mail_activity_view_form
+msgid "Done & Schedule Next"
+msgstr "Completado y agendar siguiente"
+
+#. module: sh_activities_management_basic
+#: model:ir.model.fields,field_description:sh_activities_management_basic.field_activity_feedback__done_button_pressed
+msgid "Done Button Pressed"
+msgstr "Botón 'Listo' presionado"
+
+#. module: sh_activities_management_basic
+#: model_terms:ir.ui.view,arch_db:sh_activities_management_basic.sh_mail_schedule_activity_view_kanban
+msgid "Dropdown menu"
+msgstr "Menú desplegable"
+
+#. module: sh_activities_management_basic
+#. odoo-javascript
+#: code:addons/.../table_component.xml:0  (repetidas líneas)
+#: model_terms:ir.ui.view,arch_db:sh_mail_activity_view_form
+#: model_terms:ir.ui.view,arch_db:sh_mail_activity_view_tree
+#, python-format
+msgid "Origin"
+msgstr "Origen"
+
+#. module: sh_activities_management_basic
+#: model:ir.model.fields.selection,name:selection__mail_activity__sh_state__overdue
+msgid "Overdue"
+msgstr "Vencido"
+
+#. module: sh_activities_management_basic
+#: model:ir.model.fields,field_description:...__sh_display_overdue_activities_table
+msgid "Overdue Activities"
+msgstr "Actividades vencidas"
+
+#. module: sh_activities_management_basic
+#: model:ir.model.fields,field_description:...__sh_display_overdue_activities_counter
+msgid "Overdue Activities "
+msgstr "Actividades vencidas "
+
+#. module: sh_activities_management_basic
+#: model:ir.model.fields.selection,name:selection__mail_activity__sh_state__planned
+msgid "Planned"
+msgstr "Planificado"
+
+#. module: sh_activities_management_basic
+#: model:ir.model.fields,field_description:...__sh_display_planned_activities_table
+msgid "Planned Activities"
+msgstr "Actividades planificadas"
+
+#. module: sh_activities_management_basic
+#: model:ir.model.fields,field_description:...__sh_display_planned_activities_counter
+msgid "Planned Activities "
+msgstr "Actividades planificadas "
+
+#. module: sh_activities_management_basic
+#: model:ir.model.fields,field_description:...__sh_planned_table
+msgid "Planned Activities Table Limit"
+msgstr "Límite de tabla de actividades planificadas"
+
+#. module: sh_activities_management_basic
+#. odoo-javascript
+#: code:addons/.../main_component.xml:0
+#, python-format
+msgid "Previous Month"
+msgstr "Mes anterior"
+
+#. module: sh_activities_management_basic
+#. odoo-javascript
+#: code:addons/.../main_component.xml:0
+#, python-format
+msgid "Previous Week"
+msgstr "Semana anterior"
+
+#. module: sh_activities_management_basic
+#. odoo-javascript
+#: code:addons/.../main_component.xml:0
+#, python-format
+msgid "Previous Year"
+msgstr "Año anterior"
+
+#. module: sh_activities_management_basic
+#: model:ir.model.fields,field_description:...__reference
+msgid "Related Document"
+msgstr "Documento relacionado"
+
+#. module: sh_activities_management_basic
+#: model_terms:ir.ui.view,arch_db:sh_mail_activity_view_form
+msgid "Related Document Model"
+msgstr "Modelo de documento relacionado"
+
+#. module: sh_activities_management_basic
+#: model:ir.ui.menu,name:sh_activities_management_basic.reporting
+msgid "Reporting"
+msgstr "Informes"
+
+#. module: sh_activities_management_basic
+#: model_terms:...calendar,graph,pivot
+msgid "Schedule Activity"
+msgstr "Programar actividad"
+
+#. module: sh_activities_management_basic
+#. odoo-python
+#: models/...mail_activity.py, wizard/sh_feedback.py
+#, python-format
+msgid "Schedule an Activity"
+msgstr "Programar una actividad"
+
+#. module: sh_activities_management_basic
+#. odoo-javascript
+#: code:addons/.../main_component.xml:0
+#, python-format
+msgid "Select Date"
+msgstr "Seleccionar fecha"
+
+#. module: sh_activities_management_basic
+#. odoo-javascript
+#: dashboard_components/main_component.js
+#, python-format
+msgid "Select a Activity Type"
+msgstr "Seleccionar tipo de actividad"
+
+#. module: sh_activities_management_basic
+#. odoo-javascript
+#: same ruta
+msgid "Select a Activity Type .."
+msgstr "Seleccionar tipo de actividad .."
+
+#. module: sh_activities_management_basic
+#. odoo-javascript
+#: main_component.js
+msgid "Select a Model"
+msgstr "Seleccionar un modelo"
+
+#. module: sh_activities_management_basic
+#. odoo-javascript
+#: main_component.js
+msgid "Select a Model..."
+msgstr "Seleccionar un modelo..."
+
+#. module: sh_activities_management_basic
+#. odoo-javascript
+#: main_component.js
+msgid "Select a Supervisor"
+msgstr "Seleccionar un supervisor"
+
+#. module: sh_activities_management_basic
+#. odoo-javascript
+#: main_component.js
+msgid "Select a Supervisor..."
+msgstr "Seleccionar un supervisor..."
+
+#. module: sh_activities_management_basic
+#. odoo-javascript
+#: main_component.js
+msgid "Select a User"
+msgstr "Seleccionar un usuario"
+
+#. module: sh_activities_management_basic
+#. odoo-javascript
+#: main_component.js
+msgid "Select a User..."
+msgstr "Seleccionar un usuario..."
+
+#. module: sh_activities_management_basic
+#: model:ir.actions.act_window,name=...activity_config_settings_action
+#: model:ir.ui.menu,name=...menu_config_activity
+msgid "Settings"
+msgstr "Configuración"
+
+#. module: sh_activities_management_basic
+#: model:ir.model.fields,field_description:...__sh_all_table
+msgid "Sh All Table"
+msgstr "Sh All Table"
+
+#. module: sh_activities_management_basic
+#: field_description:...__sh_cancel_table
+msgid "Sh Cancel Table"
+msgstr "Sh Cancel Table"
+
+#. module: sh_activities_management_basic
+#: field_description:...__sh_completed_table
+msgid "Sh Completed Table"
+msgstr "Sh Completed Table"
+
+#. module: sh_activities_management_basic
+#: field_description:...__sh_display_all_activities_counter
+msgid "Sh Display All Activities Counter"
+msgstr "Contador total de actividades (Sh)"
+
+#. module: sh_activities_management_basic
+#: field_description:...__sh_display_all_activities_table
+msgid "Sh Display All Activities Table"
+msgstr "Tabla de todas las actividades (Sh)"
+
+#. module: sh_activities_management_basic
+#: field_description:...__sh_display_cancelled_activities_counter
+msgid "Sh Display Cancelled Activities Counter"
+msgstr "Contador de actividades canceladas (Sh)"
+
+#. module: sh_activities_management_basic
+#: field_description:...__sh_display_cancelled_activities_table
+msgid "Sh Display Cancelled Activities Table"
+msgstr "Tabla de actividades canceladas (Sh)"
+
+#. module: sh_activities_management_basic
+#: field_description:...__sh_display_completed_activities_counter
+msgid "Sh Display Completed Activities Counter"
+msgstr "Contador de actividades completadas (Sh)"
+
+#. module: sh_activities_management_basic
+#: field_description:...__sh_display_completed_activities_table
+msgid "Sh Display Completed Activities Table"
+msgstr "Tabla de actividades completadas (Sh)"
+
+#. module: sh_activities_management_basic
+#: field_description Multi User flags etc.
+msgid "Sh Display Multi User"
+msgstr "Mostrar multiusuario (Sh)"
+
+#. module: sh_activities_management_basic
+#: field_description:...__sh_display_overdue_activities_counter
+msgid "Sh Display Overdue Activities Counter"
+msgstr "Contador de actividades vencidas (Sh)"
+
+#. module: sh_activities_management_basic
+#: field_description:...__sh_display_overdue_activities_table
+msgid "Sh Display Overdue Activities Table"
+msgstr "Tabla de actividades vencidas (Sh)"
+
+#. module: sh_activities_management_basic
+#: field_description:...__sh_display_planned_activities_counter
+msgid "Sh Display Planned Activities Counter"
+msgstr "Contador de actividades planificadas (Sh)"
+
+#. module: sh_activities_management_basic
+#: field_description:...__sh_display_planned_activities_table
+msgid "Sh Display Planned Activities Table"
+msgstr "Tabla de actividades planificadas (Sh)"
+
+#. module: sh_activities_management_basic
+#: field_description:...__sh_due_table
+msgid "Sh Due Table"
+msgstr "Sh Due Table"
+
+#. module: sh_activities_management_basic
+#: field_description:...__sh_planned_table
+msgid "Sh Planned Table"
+msgstr "Sh Planned Table"
+
+#. module: sh_activities_management_basic
+#: field_description:...__state
+#: model_terms:...activity_view_tree
+msgid "State"
+msgstr "Estado"
+
+#. module: sh_activities_management_basic
+#: field_description:...__sh_state
+msgid "State "
+msgstr "Estado "
+
+#. module: sh_activities_management_basic
+#. odoo-javascript
+#: ... xml table_component
+msgid "Supervisor"
+msgstr "Supervisor"
+
+#. module: sh_activities_management_basic
+#: ir.actions etc.
+msgid "Supervisor Activities"
+msgstr "Actividades del supervisor"
+
+#. module: sh_activities_management_basic
+#: field_description:...__name
+msgid "Tag Name"
+msgstr "Nombre de etiqueta"
+
+#. module: sh_activities_management_basic
+#: constraint message
+msgid "Tag name already exists !"
+msgstr "¡El nombre de etiqueta ya existe!"
+
+#. module: sh_activities_management_basic
+#: tree & search view definitions
+msgid "Tags"
+msgstr "Etiquetas"
+
+#. module: sh_activities_management_basic
+#. odoo-javascript
+#: main_component.xml
+msgid "Today"
+msgstr "Hoy"
+
+#. module: sh_activities_management_basic
+#. odoo-javascript
+#: table_component.xml
+msgid "Unarchive"
+msgstr "Desarchivar"
+
+#. module: sh_activities_management_basic
+#: settings mail activity form inherit
+msgid "Update Old Activity Data"
+msgstr "Actualizar datos antiguos de actividad"
+
+#. module: sh_activities_management_basic
+#: model:res_users
+msgid "User"
+msgstr "Usuario"
+
+#. module: sh_activities_management_basic
+#. odoo-javascript
+#: table_component.xml
+msgid "View/Edit"
+msgstr "Ver/Editar"
+
+#. module: sh_activities_management_basic
+#. odoo-javascript
+#: activity_dashboard.xml
+msgid "Welcome to Your Activity Dashboard"
+msgstr "Bienvenido a tu panel de actividades"
+
+#. module: sh_activities_management_basic
+#. odoo-javascript
+#: main_component.xml
+msgid "Yesterday"
+msgstr "Ayer"
+
+#. module: sh_activities_management_basic
+#. odoo-python
+#: mail_activity.py
+msgid "You cannot merge a contact with one of his parent."
+msgstr "No puedes fusionar un contacto con uno de sus padres."
+
+#. module: sh_activities_management_basic
+#: field_description...
+msgid "check user activity type"
+msgstr "verificar tipo de actividad del usuario"
+
+#. module: sh_activities_management_basic
+#: view form model
+msgid "e.g. Discuss proposal"
+msgstr "por ejemplo, discutir propuesta"
+
+#. module: sh_activities_management_basic
+#: selection field types
+msgid "manager"
+msgstr "gestor"
+
+#. module: sh_activities_management_basic
+msgid "none"
+msgstr "ninguno"
+
+#. module: sh_activities_management_basic
+msgid "supervisor"
+msgstr "supervisor"
+
+#. module: sh_activities_management_basic
+msgid "user"
+msgstr "usuario"
