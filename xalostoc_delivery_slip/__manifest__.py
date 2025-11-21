@@ -21,5 +21,6 @@
     "depends": ["stock"],
     "data": [
         "views/report_deliveryslip_xalostoc.xml",
+        "views/report_deliveryslip_inherit.xml",
     ],
 }

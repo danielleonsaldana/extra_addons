@@ -1,0 +1,87 @@
+<odoo>
+    <template id="report_delivery_document_inherit" inherit_id="stock.report_delivery_document">
+        
+        <!-- Agregar totales al final de la tabla cuando el estado es 'done' -->
+        <xpath expr="//table[@name='stock_move_line_table']" position="after">
+            <t t-if="o.state == 'done'">
+                <div class="row mt-4">
+                    <div class="col-12">
+                        <table class="table table-sm">
+                            <tbody>
+                                <tr style="border-top: 2px solid black;">
+                                    <td class="text-right" style="width: 70%;">
+                                        <strong>TOTAL DE PIEZAS:</strong>
+                                    </td>
+                                    <td class="text-right" style="width: 30%;">
+                                        <strong>
+                                            <t t-set="total_pieces" t-value="sum(o.move_line_ids.mapped('quantity'))"/>
+                                            <span t-esc="int(total_pieces)"/>
+                                        </strong>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="text-right">
+                                        <strong>TOTAL DE METROS:</strong>
+                                    </td>
+                                    <td class="text-right">
+                                        <strong>
+                                            <t t-set="total_meters" t-value="0.0"/>
+                                            <t t-foreach="o.move_line_ids" t-as="line">
+                                                <t t-if="line.product_uom_id.name == 'MTR' or line.product_uom_id.name == 'Metros'">
+                                                    <t t-set="total_meters" t-value="total_meters + line.quantity"/>
+                                                </t>
+                                            </t>
+                                            <span t-esc="'%.2f' % total_meters"/> MTR
+                                        </strong>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </t>
+        </xpath>
+
+        <!-- Agregar totales al final de la tabla cuando el estado NO es 'done' -->
+        <xpath expr="//table[@name='stock_move_table']" position="after">
+            <t t-if="o.state != 'done'">
+                <div class="row mt-4">
+                    <div class="col-12">
+                        <table class="table table-sm">
+                            <tbody>
+                                <tr style="border-top: 2px solid black;">
+                                    <td class="text-right" style="width: 70%;">
+                                        <strong>TOTAL DE PIEZAS:</strong>
+                                    </td>
+                                    <td class="text-right" style="width: 30%;">
+                                        <strong>
+                                            <t t-set="total_pieces" t-value="sum(o.move_ids.filtered(lambda x: x.product_uom_qty).mapped('quantity'))"/>
+                                            <span t-esc="int(total_pieces)"/>
+                                        </strong>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="text-right">
+                                        <strong>TOTAL DE METROS:</strong>
+                                    </td>
+                                    <td class="text-right">
+                                        <strong>
+                                            <t t-set="total_meters" t-value="0.0"/>
+                                            <t t-foreach="o.move_ids.filtered(lambda x: x.product_uom_qty)" t-as="move">
+                                                <t t-if="move.product_uom.name == 'MTR' or move.product_uom.name == 'Metros'">
+                                                    <t t-set="total_meters" t-value="total_meters + move.quantity"/>
+                                                </t>
+                                            </t>
+                                            <span t-esc="'%.2f' % total_meters"/> MTR
+                                        </strong>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </t>
+        </xpath>
+
+    </template>
+</odoo>
