@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <menuitem id="menu_lot_type" name="Lot Types" parent="stock.menu_stock_root" action="stock_lot_type_tree" groups="stock.group_stock_manager" sequence="2"/>
+</odoo>

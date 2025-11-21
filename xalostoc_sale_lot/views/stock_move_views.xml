@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <record id="view_stock_move_line_operation_tree" model="ir.ui.view">
+        <field name="name">stock.move.line.operation.tree.inherit.xalostoc</field>
+        <field name="model">stock.move.line</field>
+        <field name="inherit_id" ref="stock.view_stock_move_line_operation_tree" />
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='quant_id']" position="before">
+                <field name="has_lot_sold" column_invisible="True"/>
+            </xpath>
+            <xpath expr="//field[@name='quant_id']" position="attributes">
+                <attribute name="readonly">has_lot_sold</attribute>
+            </xpath>
+            <xpath expr="//field[@name='lot_id']" position="attributes">
+                <attribute name="readonly">package_level_id and parent.picking_type_entire_packs or has_lot_sold</attribute>
+            </xpath>
+            <xpath expr="//field[@name='lot_name']" position="attributes">
+                <attribute name="readonly">package_level_id and parent.picking_type_entire_packs or has_lot_sold</attribute>
+            </xpath>
+            <xpath expr="//field[@name='location_dest_id']" position="attributes">
+                <attribute name="readonly">package_level_id and parent.picking_type_entire_packs or has_lot_sold</attribute>
+            </xpath>
+            <xpath expr="//field[@name='quantity']" position="attributes">
+                <attribute name="readonly">(state == 'done' and is_locked) or (package_level_id and parent.picking_type_entire_packs) or has_lot_sold</attribute>
+            </xpath>
+            <xpath expr="//field[@name='product_uom_id'][2]" position="attributes">
+                <attribute name="readonly">(package_level_id and parent.picking_type_entire_packs) or (state == 'done' and id) or has_lot_sold</attribute>
+            </xpath>
+        </field>
+    </record>
+</odoo>

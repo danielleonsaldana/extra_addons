@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <template id="report_delivery_document_xalostoc" inherit_id="stock.report_delivery_document">
+        <xpath expr="//th[@name='th_sml_product']" position="before">
+            <th name="th_sml_count" class="text-center"><strong>No.</strong></th>
+        </xpath>
+        <xpath expr="//th[@name='lot_serial']" position="replace">
+            <th name="lot_serial" t-else="" class="text-center">
+                <strong>Lot-Serial Number</strong>
+            </th>
+        </xpath>
+        <!-- Has packages and package destination -->
+        <xpath expr="//tr[@t-foreach='package_move_lines']" position="replace">
+            <t t-call="xalostoc_delivery_slip.stock_report_delivery_group_by_product_xalostoc"/>
+        </xpath>
+        <!-- No packages -->
+        <xpath expr="//tr[@t-foreach='move_lines']" position="replace">
+            <t t-call="xalostoc_delivery_slip.stock_report_delivery_group_by_product_xalostoc"/>
+        </xpath>
+        <!-- Has packages but no package destination -->
+        <xpath expr="//tr[@t-foreach='o.move_line_ids']" position="replace">
+            <t t-call="xalostoc_delivery_slip.stock_report_delivery_group_by_product_xalostoc"/>
+        </xpath>
+    </template>
+    <template id="stock_report_delivery_has_serial_move_line_xalostoc" inherit_id="stock.stock_report_delivery_has_serial_move_line">
+        <xpath expr="//t[@t-if='has_serial_number']/td" position="attributes">
+            <attribute name="class">text-center</attribute>
+        </xpath>
+        <xpath expr="//td" position="before">
+            <td class="text-center">
+                <span t-esc="move_line_index + 1"/>
+            </td>
+        </xpath>
+    </template>
+    <template id="stock_report_delivery_group_by_product_xalostoc">
+        <t t-set="lines_grouped_by_product" t-value="o.move_line_ids._group_by_product()"/>
+        <t t-foreach="lines_grouped_by_product" t-as="lines_grouped">
+            <t t-set="product_name" t-value="lines_grouped['product_name']"/>
+            <t t-set="product_uom" t-value="lines_grouped['product_uom']"/>
+            <t t-set="move_lines" t-value="lines_grouped['move_lines']"/>
+            <t t-set="qty_sum" t-value="lines_grouped['qty_sum']"/>
+            <t t-set="pieces" t-value="lines_grouped['pieces']"/>
+            <!-- Next element follows parent logic to render each row. -->
+            <tr t-foreach="move_lines" t-as="move_line">
+                <t t-call="stock.stock_report_delivery_has_serial_move_line"/>
+            </tr>
+            <tr style="border-bottom: 2px solid black;">
+                <td colspan="3"><strong>TOTAL <t t-esc='product_name'/> (<t t-esc='pieces'/> PIECES)</strong></td>
+                <td class="text-center"><strong><t t-esc='qty_sum'/> <t t-esc='product_uom'/></strong></td>
+            </tr>
+        </t>
+    </template>
+</odoo>

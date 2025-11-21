@@ -1,0 +1,153 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* xalostoc_lot_types
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 17.0+e\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2024-09-04 16:22+0000\n"
+"PO-Revision-Date: 2024-09-04 16:22+0000\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: \n"
+
+#. module: xalostoc_lot_types
+#: model_terms:ir.actions.act_window,help:xalostoc_lot_types.stock_lot_type_tree
+msgid "Create a new stock lot type"
+msgstr "Cree un nuevo tipo de lote"
+
+#. module: xalostoc_lot_types
+#: model:ir.model.fields,field_description:xalostoc_lot_types.field_stock_lot_type__create_uid
+msgid "Created by"
+msgstr "Creado por"
+
+#. module: xalostoc_lot_types
+#: model:ir.model.fields,field_description:xalostoc_lot_types.field_stock_lot_type__create_date
+msgid "Created on"
+msgstr "Creado en"
+
+#. module: xalostoc_lot_types
+#: model:ir.model.fields,field_description:xalostoc_lot_types.field_account_move_line__l10n_mx_edi_customs_date
+#: model:ir.model.fields,field_description:xalostoc_lot_types.field_stock_lot__l10n_mx_edi_customs_date_display
+msgid "Customs Date"
+msgstr "Fecha de Pedimento"
+
+#. module: xalostoc_lot_types
+#: model:ir.model.fields,field_description:xalostoc_lot_types.field_stock_lot__l10n_mx_edi_customs_number_display
+msgid "Customs Number"
+msgstr "Número de Pedimento"
+
+#. module: xalostoc_lot_types
+#: model:ir.model.fields,field_description:xalostoc_lot_types.field_account_move_line__l10n_mx_edi_customs_number
+msgid "Customs number"
+msgstr "Número de Pedimento"
+
+#. module: xalostoc_lot_types
+#: model:ir.model.fields,field_description:xalostoc_lot_types.field_stock_lot_type__display_name
+msgid "Display Name"
+msgstr "Nombre"
+
+#. module: xalostoc_lot_types
+#: model:ir.model.fields,field_description:xalostoc_lot_types.field_stock_lot_type__id
+msgid "ID"
+msgstr ""
+
+#. module: xalostoc_lot_types
+#: model:ir.model,name:xalostoc_lot_types.model_account_move_line
+msgid "Journal Item"
+msgstr "Apunte contable"
+
+#. module: xalostoc_lot_types
+#: model:ir.model.fields,field_description:xalostoc_lot_types.field_stock_lot__l10n_mx_edi_customs_date
+msgid "L10N Mx Edi Customs Date"
+msgstr "Fechas de Pedimento"
+
+#. module: xalostoc_lot_types
+#: model:ir.model.fields,field_description:xalostoc_lot_types.field_stock_lot__l10n_mx_edi_customs_number
+msgid "L10N Mx Edi Customs Number"
+msgstr "Número de Pedimento"
+
+#. module: xalostoc_lot_types
+#: model:ir.model.fields,field_description:xalostoc_lot_types.field_stock_lot_type__write_uid
+msgid "Last Updated by"
+msgstr "Última vez actualizado por"
+
+#. module: xalostoc_lot_types
+#: model:ir.model.fields,field_description:xalostoc_lot_types.field_stock_lot_type__write_date
+msgid "Last Updated on"
+msgstr "Última vez actualizado en"
+
+#. module: xalostoc_lot_types
+#: model:ir.model.fields,field_description:xalostoc_lot_types.field_stock_lot__additional_lot
+#: model:ir.model.fields,field_description:xalostoc_lot_types.field_stock_move_line__additional_lot
+msgid "Lot 2"
+msgstr "Lote 2"
+
+#. module: xalostoc_lot_types
+#: model:ir.model.fields,field_description:xalostoc_lot_types.field_stock_lot__lot_type_id
+#: model:ir.model.fields,field_description:xalostoc_lot_types.field_stock_move_line__lot_type_id
+msgid "Lot Type"
+msgstr "Tipo de Lote"
+
+#. module: xalostoc_lot_types
+#: model:ir.ui.menu,name:xalostoc_lot_types.menu_lot_type
+#: model_terms:ir.ui.view,arch_db:xalostoc_lot_types.stock_lot_type_tree_view
+msgid "Lot Types"
+msgstr "Tipos de Lotes"
+
+#. module: xalostoc_lot_types
+#: model:ir.model,name:xalostoc_lot_types.model_stock_lot
+msgid "Lot/Serial"
+msgstr "Número de lote/serie "
+
+#. module: xalostoc_lot_types
+#: model:ir.model.fields,field_description:xalostoc_lot_types.field_stock_lot__move_line_ids
+msgid "Move Line"
+msgstr "Línea de movimiento"
+
+#. module: xalostoc_lot_types
+#: model:ir.model.fields,field_description:xalostoc_lot_types.field_stock_lot_type__name
+msgid "Name"
+msgstr "Nombre"
+
+#. module: xalostoc_lot_types
+#: model:ir.model.fields,field_description:xalostoc_lot_types.field_stock_lot__note
+msgid "Note"
+msgstr "Nota"
+
+#. module: xalostoc_lot_types
+#: model:ir.model.fields,field_description:xalostoc_lot_types.field_stock_lot__product_qty
+msgid "On Hand Quantity"
+msgstr "Cantidad a la mano"
+
+#. module: xalostoc_lot_types
+#: model:ir.model.fields,help:xalostoc_lot_types.field_account_move_line__l10n_mx_edi_customs_number
+msgid ""
+"Optional field for entering the customs information in the case of first-hand sales of imported goods or in the case of foreign trade operations with goods or services.\n"
+"The format must be:\n"
+" - 2 digits of the year of validation followed by two spaces.\n"
+" - 2 digits of customs clearance followed by two spaces.\n"
+" - 4 digits of the serial number followed by two spaces.\n"
+" - 1 digit corresponding to the last digit of the current year, except in case of a consolidated customs initiated in the previous year of the original request for a rectification.\n"
+" - 6 digits of the progressive numbering of the custom."
+msgstr ""
+
+#. module: xalostoc_lot_types
+#: model:ir.model.fields,field_description:xalostoc_lot_types.field_stock_lot__partner_id
+msgid "Partner"
+msgstr "Contacto"
+
+#. module: xalostoc_lot_types
+#: model:ir.model,name:xalostoc_lot_types.model_stock_move_line
+msgid "Product Moves (Stock Move Line)"
+msgstr "Movimientos de producto (línea de movimiento de inventario)"
+
+#. module: xalostoc_lot_types
+#: model:ir.actions.act_window,name:xalostoc_lot_types.stock_lot_type_tree
+#: model:ir.model,name:xalostoc_lot_types.model_stock_lot_type
+msgid "Stock Lot Type"
+msgstr "Tipo de Lote"

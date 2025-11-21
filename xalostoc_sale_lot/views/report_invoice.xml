@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <!-- Heredar el template principal de factura -->
+        <template id="report_invoice_document_inherit" inherit_id="account.report_invoice_document">
+            
+            <!-- Sección: Uso de CFDI y Régimen Fiscal -->
+            <xpath expr="//t[@t-set='address']/.." position="after">
+                <div class="row mt-3" t-if="o.l10n_mx_edi_usage or o.partner_id.l10n_mx_edi_fiscal_regime">
+                    <div class="col-12">
+                        <table class="table table-sm table-borderless">
+                            <tr t-if="o.l10n_mx_edi_usage">
+                                <td style="width: 30%;"><strong>Uso de CFDI:</strong></td>
+                                <td>
+                                    <span t-field="o.l10n_mx_edi_usage"/>
+                                </td>
+                            </tr>
+                            <tr t-if="o.partner_id.l10n_mx_edi_fiscal_regime">
+                                <td><strong>Régimen Fiscal:</strong></td>
+                                <td>
+                                    <span t-field="o.partner_id.l10n_mx_edi_fiscal_regime"/>
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+            </xpath>
+
+            <!-- Sección: Condiciones de Pago y Forma de Pago -->
+            <xpath expr="//div[@id='informations']" position="inside">
+                <div class="col-auto mw-100 mb-2" t-if="o.invoice_payment_term_id">
+                    <strong>Condiciones de Pago:</strong>
+                    <p class="m-0">
+                        <span t-field="o.invoice_payment_term_id.name"/>
+                    </p>
+                </div>
+                <div class="col-auto mw-100 mb-2" t-if="o.l10n_mx_edi_payment_method_id">
+                    <strong>Forma de Pago:</strong>
+                    <p class="m-0">
+                        <span t-field="o.l10n_mx_edi_payment_method_id.name"/>
+                    </p>
+                </div>
+            </xpath>
+
+            <!-- Columnas adicionales en la tabla de productos -->
+            <!-- Agregar encabezados -->
+            <xpath expr="//table[@name='invoice_line_table']//thead//th[@name='th_description']" position="after">
+                <th name="th_product_code" class="text-start" style="width: 10%;">
+                    <span>Clave Producto</span>
+                </th>
+                <th name="th_uom_code" class="text-center" style="width: 10%;">
+                    <span>Clave Unidad</span>
+                </th>
+                <th name="th_pedimento" class="text-center" style="width: 12%;">
+                    <span>Pedimento</span>
+                </th>
+            </xpath>
+
+            <!-- Agregar celdas de datos -->
+            <xpath expr="//table[@name='invoice_line_table']//tbody//td[@name='account_invoice_line_name']" position="after">
+                <!-- Clave del producto SAT -->
+                <td name="td_product_code" class="text-start">
+                    <span t-if="line.product_id.l10n_mx_edi_code_sat_id">
+                        <t t-esc="line.product_id.l10n_mx_edi_code_sat_id.code"/>
+                    </span>
+                </td>
+                
+                <!-- Clave de unidad SAT -->
+                <td name="td_uom_code" class="text-center">
+                    <span t-if="line.product_uom_id.l10n_mx_edi_code_sat_id">
+                        <t t-esc="line.product_uom_id.l10n_mx_edi_code_sat_id.code"/>
+                    </span>
+                </td>
+                
+                <!-- Número de pedimento -->
+                <td name="td_pedimento" class="text-center">
+                    <span t-if="line.l10n_mx_edi_customs_number">
+                        <t t-esc="line.l10n_mx_edi_customs_number"/>
+                    </span>
+                </td>
+            </xpath>
+
+        </template>
+
+        <!-- Vista de formulario para agregar el campo de pedimento en las líneas -->
+        <record id="view_move_form_inherit" model="ir.ui.view">
+            <field name="name">account.move.form.inherit.pedimento</field>
+            <field name="model">account.move</field>
+            <field name="inherit_id" ref="account.view_move_form"/>
+            <field name="arch" type="xml">
+                <!-- Agregar campo Uso de CFDI en el formulario de factura -->
+                <xpath expr="//field[@name='partner_id']" position="after">
+                    <field name="l10n_mx_edi_usage" 
+                           attrs="{'invisible': [('move_type', 'not in', ['out_invoice', 'out_refund'])]}"/>
+                </xpath>
+                
+                <!-- Agregar campo de pedimento en las líneas de factura -->
+                <xpath expr="//field[@name='invoice_line_ids']//tree//field[@name='product_id']" position="after">
+                    <field name="l10n_mx_edi_customs_number" optional="hide"/>
+                </xpath>
+            </field>
+        </record>
+
+    </data>
+</odoo>

@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <record id="view_order_form" model="ir.ui.view">
+        <field name="name">view.order.form.inherit.xalostoc</field>
+        <field name="model">sale.order</field>
+        <field name="inherit_id" ref="sale.view_order_form" />
+        <field name="arch" type="xml" >
+            <xpath expr="//page[@name='order_lines']//tree//field[@name='product_uom_qty']" position="after">
+                <field name="lot_stock_id" column_invisible="True" />
+                <field name="lot_ids" widget="many2many_tags"
+                        domain="[('product_qty', '>', 0), ('product_id', '=', product_id), ('quant_ids.location_id', 'child_of', lot_stock_id), ('sale_order_line_ids', '=', False)]"
+                        readonly="not product_updatable"
+                        options="{'no_create': True}"/>
+            </xpath>
+            <xpath expr="//page[@name='order_lines']//tree//field[@name='product_uom_qty']" position="attributes">
+                <attribute name="readonly">lot_ids</attribute>
+            </xpath>
+        </field>
+    </record>
+</odoo>

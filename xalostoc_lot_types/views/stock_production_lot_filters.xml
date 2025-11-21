@@ -1,0 +1,21 @@
+<odoo>
+    <record id="search_product_lot_filter_inherit_categ" model="ir.ui.view">
+        <field name="name">search.product.lot.filter.categ.inherit</field>
+        <field name="model">stock.lot</field>
+        <field name="inherit_id" ref="stock.search_product_lot_filter"/>
+        <field name="arch" type="xml">
+
+            <xpath expr="//search" position="inside">
+
+                <filter name="product_categ_filter"
+                        string="Categoría de producto"
+                        domain="[['x_product_categ_id', '!=', False]]"
+                        context="{'group_by': 'x_product_categ_id'}"/>
+
+                <field name="x_product_categ_id" string="Categoría"/>
+
+            </xpath>
+
+        </field>
+    </record>
+</odoo>

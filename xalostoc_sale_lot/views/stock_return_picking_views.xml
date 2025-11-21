@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+<record id="view_stock_return_picking_line_tree_lot" model="ir.ui.view">
+  <field name="name">stock.return.picking.line.tree.lot</field>
+  <field name="model">stock.return.picking.line</field>
+  <field name="arch" type="xml">
+    <tree editable="top" create="0">
+      <field name="product_id" options="{'no_create': True, 'no_open': True}" force_save="1"/>
+      <field name="quantity"/>
+      <field name="lot_id" force_save="1"/>
+      <field name="uom_id" groups="uom.group_uom"/>
+      <field name="move_id" column_invisible="True"/>
+    </tree>
+  </field>
+</record>
+</odoo>

@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <record id="view_picking_form" model="ir.ui.view">
+        <field name="name">stock.picking.form.inherit.xalostoc</field>
+        <field name="model">stock.picking</field>
+        <field name="inherit_id" ref="stock.view_picking_form" />
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='lot_ids']" position="before"> 
+                <field name="sale_line_id" column_invisible="True" />
+                <field name="has_lots_sold" column_invisible="True" />
+            </xpath>
+            <xpath expr="//field[@name='lot_ids']" position="attributes">
+                <attribute name="invisible">not show_details_visible or has_tracking not in ('serial', 'lot')</attribute>
+                <attribute name="optional">show</attribute>
+                <attribute name="readonly">has_lots_sold</attribute>
+            </xpath>
+            
+        </field>
+    </record>
+</odoo>

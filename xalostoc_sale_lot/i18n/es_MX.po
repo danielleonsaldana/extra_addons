@@ -1,0 +1,105 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* xalostoc_sale_lot
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 17.0+e\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2024-02-08 20:47+0000\n"
+"PO-Revision-Date: 2024-02-08 20:47+0000\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: \n"
+
+#. module: xalostoc_sale_lot
+#: model:ir.model.fields,field_description:xalostoc_sale_lot.field_stock_move_line__has_lot_sold
+msgid "Has Lot sold"
+msgstr "Tiene lote vendido"
+
+#. module: xalostoc_sale_lot
+#: model:ir.model.fields,field_description:xalostoc_sale_lot.field_stock_move__has_lots_sold
+msgid "Has Lots sold"
+msgstr "Tiene lotes vendidos"
+
+#. module: xalostoc_sale_lot
+#: model:ir.model.fields,field_description:xalostoc_sale_lot.field_stock_lot__is_sale_selectable
+msgid "Is Sale Selectable"
+msgstr "Es elegible para vender"
+
+#. module: xalostoc_sale_lot
+#: model:ir.model.fields,field_description:xalostoc_sale_lot.field_sale_order_line__lot_stock_id
+msgid "Location Stock"
+msgstr ""
+
+#. module: xalostoc_sale_lot
+#: model:ir.model,name:xalostoc_sale_lot.model_stock_lot
+msgid "Lot/Serial"
+msgstr "Número de lote/serie "
+
+#. module: xalostoc_sale_lot
+#: model:ir.model.fields,field_description:xalostoc_sale_lot.field_sale_order_line__lot_ids
+msgid "Lots"
+msgstr "Lotes"
+
+#. module: xalostoc_sale_lot
+#: model:ir.model,name:xalostoc_sale_lot.model_stock_move_line
+msgid "Product Moves (Stock Move Line)"
+msgstr ""
+
+#. module: xalostoc_sale_lot
+#: model:ir.model.fields,field_description:xalostoc_sale_lot.field_stock_lot__product_real_qty
+msgid "Product Real Qty"
+msgstr ""
+
+#. module: xalostoc_sale_lot
+#: model:ir.model.fields,field_description:xalostoc_sale_lot.field_sale_order_line__product_uom_qty
+msgid "Quantity"
+msgstr "Cantidad"
+
+#. module: xalostoc_sale_lot
+#: model:ir.model,name:xalostoc_sale_lot.model_stock_quant
+msgid "Quants"
+msgstr ""
+
+#. module: xalostoc_sale_lot
+#: model:ir.model.fields,field_description:xalostoc_sale_lot.field_stock_lot__sale_order_line_ids
+msgid "Sale Order Line"
+msgstr ""
+
+#. module: xalostoc_sale_lot
+#: model:ir.model,name:xalostoc_sale_lot.model_sale_order_line
+msgid "Sales Order Line"
+msgstr "Línea de la orden de venta"
+
+#. module: xalostoc_sale_lot
+#: model:ir.model,name:xalostoc_sale_lot.model_stock_move
+msgid "Stock Move"
+msgstr "Movimiento de existencias"
+
+#. module: xalostoc_sale_lot
+#. odoo-python
+#: code:addons/xalostoc_sale_lot/models/sale_order_line.py:0
+#, python-format
+msgid ""
+"The following lots are being or have been sold on another order line: \n"
+"%s"
+msgstr "Los siguientes lotes estan siendo or han sido vendidos desde otra linea de venta: \n"
+"%s"
+
+#. module: xalostoc_sale_lot
+#: model:ir.model.fields,help:xalostoc_sale_lot.field_stock_move__has_lots_sold
+msgid "True if move lots are being sold from an order line"
+msgstr ""
+"Verdadero si los lotes en el movimiento son vendidos desde una linea de "
+"venta"
+
+#. module: xalostoc_sale_lot
+#: model:ir.model.fields,help:xalostoc_sale_lot.field_stock_move_line__has_lot_sold
+msgid "True if the lot on move line is from respective move sale order line"
+msgstr ""
+"Verdadero si el lote en la linea de movimiento pertenece a la linea de "
+"orden de venta del movimiento"

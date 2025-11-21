@@ -1,0 +1,7 @@
+from . import test_sale_order_line_with_lots
+from . import test_sale_order_discount_inherit_xalostoc
+from . import test_sale_prices_inherit_xalostoc
+from . import test_sale_to_invoice_inherit_xalostoc
+from . import test_sale_ui_inherit_xalostoc
+from . import test_sale_stock_access_rights_inherit_xalostoc
+from . import test_avatax_inherit_xalostoc
