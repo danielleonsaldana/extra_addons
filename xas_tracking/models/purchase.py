@@ -102,11 +102,9 @@ class PurchaseOrder(models.Model):
 class PurchaseOrderLine(models.Model):
     _inherit  = 'purchase.order.line'
 
-    xas_boxes_per_pallet = fields.Float(
-        string='Caja por tarima',
-        digits='Product Unit of Measure',
-        help='Número de cajas que caben en una tarima'
-    )
+    xas_tracking_id = fields.Many2one('tracking', string='Id de seguimiento', copy=True)
+    xas_trip_number_id = fields.Many2one('trip.number', string='Código de embarque', copy=True)
+    
     xas_cost_per_pallet = fields.Float(
         string='Costo por tarima',
         digits='Product Price',
