@@ -1,10 +1,4 @@
 # -*- coding: utf-8 -*-
-################################################################
-#
-# Author: Analytica Space
-# Coder: Giovany Villarreal (giv@analytica.space)
-#
-################################################################
 from odoo import models, fields, api, _
 from odoo.exceptions import UserError, ValidationError
 
@@ -99,12 +93,18 @@ class PurchaseOrder(models.Model):
         for rec in self:
             rec.order_line.write({'xas_tracking_id':rec.xas_tracking_id.id, 'xas_trip_number_id':rec.xas_trip_number_id.id})
 
-class PurchaseOrderLine(models.Model):
-    _inherit  = 'purchase.order.line'
 
+class PurchaseOrderLine(models.Model):
+    _inherit = 'purchase.order.line'
+    
     xas_tracking_id = fields.Many2one('tracking', string='Id de seguimiento', copy=True)
     xas_trip_number_id = fields.Many2one('trip.number', string='Código de embarque', copy=True)
     
+    xas_boxes_per_pallet = fields.Float(
+        string='Caja por tarima',
+        digits='Product Unit of Measure',
+        help='Número de cajas que caben en una tarima'
+    )
     xas_cost_per_pallet = fields.Float(
         string='Costo por tarima',
         digits='Product Price',
@@ -117,16 +117,68 @@ class PurchaseOrderLine(models.Model):
         store=True,
         help='Costo calculado por caja individual'
     )
+    
+    # NUEVOS CAMPOS PARA IGI
+    xas_igi_percentage = fields.Float(
+        string='IGI %',
+        digits=(16, 2),
+        help='Porcentaje de IGI aplicable al producto'
+    )
+    xas_igi_amount = fields.Monetary(
+        string='Monto IGI',
+        currency_field='currency_id',
+        compute='_compute_xas_igi_amount',
+        store=True,
+        help='Monto calculado del IGI'
+    )
+    xas_subtotal_with_igi = fields.Monetary(
+        string='Subtotal + IGI',
+        currency_field='currency_id',
+        compute='_compute_xas_subtotal_with_igi',
+        store=True,
+        help='Subtotal incluyendo el IGI'
+    )
+    
+    @api.depends('price_subtotal', 'xas_igi_percentage')
+    def _compute_xas_igi_amount(self):
+        for line in self:
+            if line.xas_igi_percentage > 0:
+                line.xas_igi_amount = line.price_subtotal * (line.xas_igi_percentage / 100)
+            else:
+                line.xas_igi_amount = 0.0
+    
+    @api.depends('price_subtotal', 'xas_igi_amount')
+    def _compute_xas_subtotal_with_igi(self):
+        for line in self:
+            line.xas_subtotal_with_igi = line.price_subtotal + line.xas_igi_amount
+
+    @api.onchange('product_id')
+    def _onchange_product_id_igi(self):
+        """
+        Cuando se selecciona un producto, heredar automáticamente el IGI
+        si el producto tiene configurado que debe aplicarse
+        """
+        if self.product_id and self.product_id.xas_apply_igi:
+            self.xas_igi_percentage = self.product_id.xas_igi_percentage
+        else:
+            self.xas_igi_percentage = 0.0
 
     @api.model_create_multi
     def create(self, vals_list):
         # Procesamos cada conjunto de valores antes de crear
         for vals in vals_list:
+            # Heredar IGI del producto si no se especificó explícitamente
+            if vals.get('product_id') and 'xas_igi_percentage' not in vals:
+                product = self.env['product.product'].browse(vals['product_id'])
+                if product.xas_apply_igi:
+                    vals['xas_igi_percentage'] = product.xas_igi_percentage
+            
             # Si no se especificó xas_tracking_id y hay una order_id asociada
-            if vals.get('xas_tracking_id',False) == False and vals.get('order_id'):
+            if vals.get('xas_tracking_id', False) == False and vals.get('order_id'):
                 order = self.env['purchase.order'].browse(vals['order_id'])
                 if order.xas_tracking_id:
                     vals['xas_tracking_id'] = order.xas_tracking_id.id
+        
         # Creamos los registros con los valores actualizados
         return super(PurchaseOrderLine, self).create(vals_list)
 
@@ -139,16 +191,18 @@ class PurchaseOrderLine(models.Model):
                 line.xas_cost_per_box = 0.0
 
     def _prepare_stock_move_vals(self, picking, price_unit, product_uom_qty, product_uom):
-
         result = super(PurchaseOrderLine, self)._prepare_stock_move_vals(picking, price_unit, product_uom_qty, product_uom)
 
         # Agregamos el numero de viaje a los stock.moves
         if picking.xas_tracking_id:
-            result.update({'xas_tracking_id':picking.xas_tracking_id.id})
+            result.update({'xas_tracking_id': picking.xas_tracking_id.id})
 
         return result
 
     def _prepare_account_move_line(self, move=False):
         result = super(PurchaseOrderLine, self)._prepare_account_move_line(move)
-        result.update({'xas_tracking_id':self.xas_tracking_id.id or self.order_id.xas_tracking_id.id,'xas_trip_number_id':self.xas_trip_number_id.id or self.order_id.xas_trip_number_id.id })
+        result.update({
+            'xas_tracking_id': self.xas_tracking_id.id or self.order_id.xas_tracking_id.id,
+            'xas_trip_number_id': self.xas_trip_number_id.id or self.order_id.xas_trip_number_id.id
+        })
         return result

@@ -1,10 +1,4 @@
 # -*- coding: utf-8 -*-
-################################################################
-#
-# Author: Analytica Space
-# Coder: Giovany Villarreal (giv@analytica.space)
-#
-################################################################
 from odoo import _, api, fields, models
 from odoo.exceptions import UserError
 from odoo.tools.float_utils import float_is_zero, float_round

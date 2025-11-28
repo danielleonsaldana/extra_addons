@@ -49,20 +49,18 @@
         </field>
     </record>
 
-    <!-- Herencia de vista busqueda para Facturas de proveedor -->
-    <!--<record id="account_invoice_filter_inherit_account_3way_match_inherit" model="ir.ui.view">
-        <field name="name">account_invoice_filter_inherit_account_3way_match_inherit</field>
-        <field name="model">account.move</field>
-        <field name="inherit_id" ref="account_3way_match.account_invoice_filter_inherit_account_3way_match"/>
+    <record id="product_template_form_view_igi" model="ir.ui.view">
+        <field name="name">product.template.form.igi</field>
+        <field name="model">product.template</field>
+        <field name="inherit_id" ref="product.product_template_form_view"/>
         <field name="arch" type="xml">
-            <field name="name" position="after">
-                <field name="xas_tracking_id"/>
-                <field name="xas_trip_number_id"/>
-            </field>
-            <xpath expr="//group" position="inside">
-                <filter string="Id de seguimiento" name="xas_tracking_id" domain="[]" context="{'group_by': 'xas_tracking_id'}"/>
-                <filter string="Código de embarque" name="xas_trip_number_id" domain="[]" context="{'group_by': 'xas_trip_number_id'}"/>
+            <xpath expr="//page[@name='purchase']" position="inside">
+                <group string="IGI (Impuesto General de Importación)">
+                    <field name="xas_apply_igi"/>
+                    <field name="xas_igi_percentage" invisible="not xas_apply_igi"/>
+                </group>
             </xpath>
         </field>
-    </record>-->
+    </record>
+    
 </odoo>

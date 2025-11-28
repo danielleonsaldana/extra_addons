@@ -1,10 +1,4 @@
 # -*- coding: utf-8 -*-
-################################################################
-#
-# Author: Analytica Space
-# Coder: Giovany Villarreal (giv@analytica.space)
-#
-################################################################
 {
     'name': "Seguimientos",
     'version': '17.0.1.3',

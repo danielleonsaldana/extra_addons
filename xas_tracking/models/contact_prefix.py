@@ -1,10 +1,5 @@
 # -*- coding: utf-8 -*-
-################################################################
-#
-# Author: Analytica Space
-# Coder: Giovany Villarreal (giv@analytica.space)
-#
-################################################################
+
 from odoo import models, fields, api, _
 from odoo.exceptions import UserError, ValidationError
 

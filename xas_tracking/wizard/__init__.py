@@ -1,10 +1,4 @@
 # -*- coding: utf-8 -*-
-################################################################
-#
-# Author: Analytica Space
-# Coder: Giovany Villarreal (giv@analytica.space)
-#
-################################################################
 
 from . import invoices_wizard
 from . import stock_picking_return_wizard

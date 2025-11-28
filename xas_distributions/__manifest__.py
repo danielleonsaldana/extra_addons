@@ -1,10 +1,4 @@
 # -*- coding: utf-8 -*-
-################################################################
-#
-# Author: Analytica Space
-# Coder: Giovany Villarreal (giv@analytica.space)
-#
-################################################################
 {
     'name': "Distribución de mercancias",
     'version': '17.0.0.3',
