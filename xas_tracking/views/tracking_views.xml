@@ -276,7 +276,11 @@
 
                             <page string="Productos" class="oe_page_title" accesskey="P">
                                 <field name="xas_purchase_order_line_ids" readonly="1" force_save="1">
-                                    <tree string="Purchase Order Lines" editable="bottom" readonly="1">
+                                    <tree string="Purchase Order Lines" 
+                                        editable="bottom" 
+                                        readonly="1"
+                                        decoration-muted="display_type == 'line_section' or display_type == 'line_note'"
+                                        decoration-bf="display_type == 'line_section'">
                                         <control>
                                             <create name="add_product_control" string="Add a product"/>
                                             <create name="add_section_control" string="Add a section" context="{'default_display_type': 'line_section'}"/>
@@ -295,35 +299,110 @@
                                         <field name="product_uom_category_id" column_invisible="True"/>
                                         <field name="invoice_lines" column_invisible="True"/>
                                         
-                                        <!-- Campos visibles -->
+                                        <!-- SECCIÓN 1: Identificación del Producto (sin color específico) -->
                                         <field name="sequence" widget="handle"/>
-                                        <field name="product_id" readonly="state in ('purchase', 'to approve', 'done', 'cancel')" required="not display_type" width="35%" force_save="1" domain="[('purchase_ok', '=', True)]"/>
+                                        <field name="product_id" 
+                                            readonly="state in ('purchase', 'to approve', 'done', 'cancel')" 
+                                            required="not display_type" 
+                                            width="35%" 
+                                            force_save="1" 
+                                            domain="[('purchase_ok', '=', True)]"
+                                            class="fw-bold"/>
                                         <field name="name" widget="section_and_note_text"/>
-                                        <field name="date_planned" optional="hide" required="not display_type" force_save="1"/>
-                                        <field name="analytic_distribution" widget="analytic_distribution" optional="hide" groups="analytic.group_analytic_accounting" options="{'product_field': 'product_id', 'business_domain': 'purchase_order', 'amount_field': 'price_subtotal'}"/>
-                                        <field name="product_qty"/>
+                                        <field name="date_planned" 
+                                            optional="hide" 
+                                            required="not display_type" 
+                                            force_save="1"/>
+                                        <field name="analytic_distribution" 
+                                            widget="analytic_distribution" 
+                                            optional="hide" 
+                                            groups="analytic.group_analytic_accounting" 
+                                            options="{'product_field': 'product_id', 'business_domain': 'purchase_order', 'amount_field': 'price_subtotal'}"/>
+                                        
+                                        <!-- SECCIÓN 2: Cantidades (fondo azul claro) -->
+                                        <field name="product_qty" 
+                                            class="text-end fw-bold text-primary"/>
                                         <field name="qty_received_manual" column_invisible="True"/>
                                         <field name="qty_received_method" column_invisible="True"/>
-                                        <field name="qty_received" string="Received" column_invisible="parent.state not in ('purchase', 'done')" readonly="qty_received_method != 'manual'" optional="show"/>
-                                        <field name="qty_invoiced" string="Billed" column_invisible="parent.state not in ('purchase', 'done')" optional="show"/>
-                                        <field name="product_uom" string="UoM" groups="uom.group_uom" readonly="state in ('purchase', 'done', 'cancel')" required="not display_type" options="{'no_open': True}" force_save="1" optional="show"/>
-                                        <field name="product_packaging_qty" invisible="not product_id or not product_packaging_id" groups="product.group_stock_packaging" optional="show"/>
-                                        <field name="product_packaging_id" invisible="not product_id" context="{'default_product_id': product_id, 'tree_view_ref':'product.product_packaging_tree_view', 'form_view_ref':'product.product_packaging_form_view'}" groups="product.group_stock_packaging" optional="show"/>
-                                        <field name="price_unit" readonly="qty_invoiced != 0"/>
-                                        <field name="taxes_id" widget="many2many_tags" context="{'default_type_tax_use': 'purchase', 'search_view_ref': 'account.account_tax_view_search'}" options="{'no_create': True}" optional="show"/>
-                                        <field name="discount" string="Disc.%" readonly="qty_invoiced != 0" optional="hide"/>
+                                        <field name="qty_received" 
+                                            string="Received" 
+                                            column_invisible="parent.state not in ('purchase', 'done')" 
+                                            readonly="qty_received_method != 'manual'" 
+                                            optional="show"
+                                            class="text-end text-info"/>
+                                        <field name="qty_invoiced" 
+                                            string="Billed" 
+                                            column_invisible="parent.state not in ('purchase', 'done')" 
+                                            optional="show"
+                                            class="text-end text-info"/>
                                         
-                                        <!-- NUEVOS CAMPOS IGI -->
-                                        <field name="xas_igi_percentage" string="IGI %" optional="show"/>
-                                        <field name="xas_igi_amount" string="Monto IGI" optional="show"/>
+                                        <!-- SECCIÓN 3: Unidades y Empaques -->
+                                        <field name="product_uom" 
+                                            string="UoM" 
+                                            groups="uom.group_uom" 
+                                            readonly="state in ('purchase', 'done', 'cancel')" 
+                                            required="not display_type" 
+                                            options="{'no_open': True}" 
+                                            force_save="1" 
+                                            optional="show"/>
+                                        <field name="product_packaging_qty" 
+                                            invisible="not product_id or not product_packaging_id" 
+                                            groups="product.group_stock_packaging" 
+                                            optional="show"
+                                            class="text-end"/>
+                                        <field name="product_packaging_id" 
+                                            invisible="not product_id" 
+                                            context="{'default_product_id': product_id, 'tree_view_ref':'product.product_packaging_tree_view', 'form_view_ref':'product.product_packaging_form_view'}" 
+                                            groups="product.group_stock_packaging" 
+                                            optional="show"/>
                                         
-                                        <field name="price_subtotal" string="Tax excl."/>
-                                        <field name="xas_subtotal_with_igi" string="Subtotal + IGI" optional="show"/>
-                                        <field name="price_total" string="Tax incl." optional="show"/>
+                                        <!-- SECCIÓN 4: Precios Base (fondo verde claro) -->
+                                        <field name="price_unit" 
+                                            readonly="qty_invoiced != 0"
+                                            class="text-end fw-bold text-success"/>
+                                        <field name="taxes_id" 
+                                            widget="many2many_tags" 
+                                            context="{'default_type_tax_use': 'purchase', 'search_view_ref': 'account.account_tax_view_search'}" 
+                                            options="{'no_create': True}" 
+                                            optional="show"/>
+                                        <field name="discount" 
+                                            string="Desc.%" 
+                                            readonly="qty_invoiced != 0" 
+                                            optional="hide"
+                                            class="text-end text-warning"/>
+                                        
+                                        <!-- SECCIÓN 5: IGI (Impuestos) - fondo naranja claro -->
+                                        <field name="xas_igi_percentage" 
+                                            string="IGI %" 
+                                            optional="show"
+                                            class="text-end text-warning fw-bold"/>
+                                        <field name="xas_igi_amount" 
+                                            string="Monto IGI" 
+                                            optional="show"
+                                            class="text-end text-warning fw-bold"/>
+                                        
+                                        <!-- SECCIÓN 6: Totales (fondo gris claro/oscuro) -->
+                                        <field name="price_subtotal" 
+                                            string="Subtotal"
+                                            class="text-end fw-bold text-dark"/>
+                                        <field name="xas_subtotal_with_igi" 
+                                            string="Subtotal + IGI" 
+                                            optional="show"
+                                            class="text-end fw-bold text-danger"/>
+                                        <field name="price_total" 
+                                            string="Total" 
+                                            optional="show"
+                                            class="text-end fw-bold text-success"/>
                                     </tree>
                                 </field>
 
-                                <button name="compute_purchase_order_lines" type="object" string="Calcular lineas" class="btn-primary"/>
+                                <group class="mt-3">
+                                    <button name="compute_purchase_order_lines" 
+                                            type="object" 
+                                            string="Calcular líneas" 
+                                            class="btn-primary"
+                                            icon="fa-calculator"/>
+                                </group>
                             </page>
 
                             
