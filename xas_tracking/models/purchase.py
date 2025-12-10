@@ -261,8 +261,7 @@ class PurchaseOrderLine(models.Model):
         'xas_igi_amount',
         'discount',
         'xas_dta_prv_percentage',
-        'xas_tracking_id.xas_total_incrementables_mxn',
-        'xas_tracking_id.xas_purchase_order_line_ids.xas_total_mxn'
+        'order_id.xas_tracking_id.xas_total_incrementables_mxn',  # A través de la orden
     )
     def _compute_amounts_custom(self):
         """
@@ -276,36 +275,48 @@ class PurchaseOrderLine(models.Model):
             # Total en MXN (Pesos) = Total USD * Tipo de Cambio
             line.xas_total_mxn = line.xas_total_usd * line.xas_exchange_rate_pedimento
             
-            _logger.info(f"=== CALCULANDO LÍNEA: {line.product_id.name if line.product_id else 'Sin producto'} ===")
-            _logger.info(f"Total USD: {line.xas_total_usd}")
-            _logger.info(f"Tipo de cambio: {line.xas_exchange_rate_pedimento}")
-            _logger.info(f"Total MXN (Pesos): {line.xas_total_mxn}")
-            
             # DTA + PRV = Total MXN * Porcentaje
             line.xas_dta_prv = line.xas_total_mxn * (line.xas_dta_prv_percentage / 100)
-            _logger.info(f"DTA + PRV: {line.xas_dta_prv}")
             
             # Subtotal = Pesos + IGI + DTA + PRV
             # Convertir IGI de USD a MXN si es necesario
             igi_mxn = line.xas_igi_amount * line.xas_exchange_rate_pedimento if line.currency_id != line.company_currency_id else line.xas_igi_amount
             line.xas_subtotal_total = line.xas_total_mxn + igi_mxn + line.xas_dta_prv
-            _logger.info(f"IGI en MXN: {igi_mxn}")
-            _logger.info(f"Subtotal: {line.xas_subtotal_total}")
             
             # CÁLCULO DE GASTOS BASADO EN INCREMENTABLES
+            # Buscar el tracking a través de múltiples rutas
+            tracking = None
+            
+            # Opción 1: A través de xas_tracking_id de la línea
             if line.xas_tracking_id:
-                _logger.info(f"Tiene tracking ID: {line.xas_tracking_id.id}")
+                tracking = line.xas_tracking_id
+                _logger.info(f"Tracking encontrado en línea: {tracking.id}")
+            
+            # Opción 2: A través de la orden de compra
+            elif line.order_id and line.order_id.xas_tracking_id:
+                tracking = line.order_id.xas_tracking_id
+                _logger.info(f"Tracking encontrado en orden: {tracking.id}")
+            
+            if tracking:
+                _logger.info(f"=== CALCULANDO GASTOS - Línea: {line.product_id.name if line.product_id else 'Sin producto'} ===")
+                _logger.info(f"Tracking ID: {tracking.id}")
                 
                 # Obtener todas las líneas del mismo tracking
-                all_lines = line.xas_tracking_id.xas_purchase_order_line_ids
+                # Buscar por órdenes de compra que tengan este tracking
+                purchase_orders = self.env['purchase.order'].search([
+                    ('xas_tracking_id', '=', tracking.id)
+                ])
+                all_lines = purchase_orders.mapped('order_line')
+                
+                _logger.info(f"Órdenes con este tracking: {len(purchase_orders)}")
                 _logger.info(f"Total de líneas en tracking: {len(all_lines)}")
                 
                 # Suma total de pesos de todas las líneas
                 total_pesos = sum(all_lines.mapped('xas_total_mxn'))
-                _logger.info(f"Suma total de pesos de todas las líneas: {total_pesos}")
+                _logger.info(f"Suma total de pesos: {total_pesos}")
                 
                 # Usar el total de incrementables calculado en el tracking
-                suma_incrementables_mxn = line.xas_tracking_id.xas_total_incrementables_mxn
+                suma_incrementables_mxn = tracking.xas_total_incrementables_mxn
                 _logger.info(f"Suma incrementables MXN: {suma_incrementables_mxn}")
                 
                 # Gastos = pesos * (suma_incrementables_mxn / suma_total_pesos)
@@ -318,21 +329,16 @@ class PurchaseOrderLine(models.Model):
                     _logger.info(f"Gastos = 0 porque total_pesos={total_pesos} o suma_incrementables={suma_incrementables_mxn}")
             else:
                 line.xas_gastos = 0.0
-                _logger.info("No tiene tracking_id, gastos = 0")
+                _logger.info(f"Línea {line.id}: No tiene tracking_id (ni en línea ni en orden), gastos = 0")
             
             # Total Final = Subtotal + Gastos
             line.xas_total_final = line.xas_subtotal_total + line.xas_gastos
-            _logger.info(f"Total Final: {line.xas_total_final}")
             
             # Precio por metro = Total Final / Metros
             if line.product_qty > 0:
                 line.xas_price_per_meter = line.xas_total_final / line.product_qty
             else:
                 line.xas_price_per_meter = 0.0
-            
-            _logger.info(f"Precio por metro: {line.xas_price_per_meter}")
-            _logger.info("=" * 80)
-
 
 
     @api.onchange('product_id')

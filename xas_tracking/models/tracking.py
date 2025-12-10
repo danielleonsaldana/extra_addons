@@ -45,16 +45,9 @@ class Tracking(models.Model):
         """
         for record in self:
             total = 0.0
-            _logger.info(f"=== CALCULANDO INCREMENTABLES PARA TRACKING {record.id} ===")
-            _logger.info(f"Número de líneas de costo: {len(record.xas_tracking_cost_line_ids)}")
-            
             for line in record.xas_tracking_cost_line_ids:
-                _logger.info(f"Línea: {line.xas_plan} - Total: {line.xas_total_amount}")
                 total += line.xas_total_amount
-            
             record.xas_total_incrementables_mxn = total
-            _logger.info(f"TOTAL INCREMENTABLES: {total}")
-            _logger.info("=" * 80)
     
     def action_apply_exchange_rate(self):
         """
@@ -81,69 +74,6 @@ class Tracking(models.Model):
         
         # Retornar True para recargar la vista
         return True
-    
-    def compute_purchase_order_lines(self):
-        """
-        Recalcula todas las líneas de órdenes de compra
-        """
-        self.ensure_one()
-        
-        _logger.info("=" * 100)
-        _logger.info("=== INICIANDO RECÁLCULO MANUAL DE LÍNEAS ===")
-        _logger.info(f"Tracking ID: {self.id}")
-        
-        # Buscar órdenes de compra con este tracking
-        purchase_orders = self.env['purchase.order'].search([
-            ('xas_tracking_id', '=', self.id)
-        ])
-        _logger.info(f"Órdenes de compra con este tracking: {len(purchase_orders)}")
-        
-        purchase_lines = purchase_orders.mapped('order_line')
-        _logger.info(f"Total de líneas encontradas: {len(purchase_lines)}")
-        
-        if purchase_lines:
-            # PASO 1: Asignar tracking_id a TODAS las líneas
-            _logger.info("PASO 1: Asignando tracking_id a todas las líneas...")
-            purchase_lines.write({'xas_tracking_id': self.id})
-            
-            # Verificar asignación
-            lines_con_tracking = purchase_lines.filtered(lambda l: l.xas_tracking_id and l.xas_tracking_id.id == self.id)
-            _logger.info(f"Líneas CON tracking correcto: {len(lines_con_tracking)}")
-            
-            # PASO 2: Recalcular incrementables
-            _logger.info("PASO 2: Recalculando incrementables...")
-            self._compute_total_incrementables_mxn()
-            _logger.info(f"Total incrementables: {self.xas_total_incrementables_mxn}")
-            
-            # PASO 3: Calcular suma de pesos
-            total_pesos = sum(purchase_lines.mapped('xas_total_mxn'))
-            _logger.info(f"PASO 3: Total pesos: {total_pesos}")
-            
-            # PASO 4: Recalcular cada línea
-            _logger.info("PASO 4: Recalculando cada línea...")
-            for line in purchase_lines:
-                _logger.info(f"\n--- Línea {line.id}: {line.product_id.name if line.product_id else 'N/A'} ---")
-                _logger.info(f"Tracking ID: {line.xas_tracking_id.id if line.xas_tracking_id else 'NINGUNO'}")
-                
-                # Forzar recálculo
-                line._compute_amounts_custom()
-                
-                _logger.info(f"Gastos calculados: {line.xas_gastos}")
-            
-            # PASO 5: Invalidar cache
-            _logger.info("PASO 5: Invalidando cache...")
-            self.invalidate_recordset()
-            purchase_lines.invalidate_recordset()
-            
-            _logger.info("=== RECÁLCULO COMPLETADO ===")
-            _logger.info("=" * 100)
-            
-            return True
-        else:
-            _logger.error("!!! NO SE ENCONTRARON LÍNEAS !!!")
-            raise UserError('No se encontraron líneas de órdenes de compra para este tracking')
-        
-
 
     name = fields.Char(string='Nombre', required=True, default="Borrador", copy=False)
     company_id = fields.Many2one('res.company', string='Compañia', required=True, readonly=False, default=lambda self: self.env.company)
@@ -330,20 +260,6 @@ class Tracking(models.Model):
         compute="_compute_xas_total_cost_usd"
     )
 
-    # @api.onchange('xas_trip_number')
-    # def onchange_xas_trip_number(self):
-    #     for rec in self:
-    #         # Obtener el valor anterior del campo
-    #         before_value = self._origin.xas_trip_number if self._origin else False
-    #         print("before_value", before_value)
-    #         after_value = self.xas_trip_number
-    #         print("after_value", after_value)
-
-    #         if before_value.id != False and after_value.id == False:
-    #             before_value.xas_tracking_id = False
-    #         if before_value.id == False and after_value.id != False:
-    #             after_value.xas_tracking_id = rec.id
-
     @api.depends('xas_tracking_cost_line_ids.xas_amount')
     def _compute_xas_total_cost_usd(self):
         for rec in self:
@@ -411,14 +327,6 @@ class Tracking(models.Model):
             return latest_rate[0].xas_rate
         return 0
 
-    # Funcion para establecer fecha actual en el cambio de estado
-    # @api.onchange('state')
-    # def _onchange_state(self):
-    #     if self.state:
-    #         field_name = f'xas_{self.state}_date'
-    #         if hasattr(self, field_name):
-    #             setattr(self, field_name, datetime.now())
-
     @api.depends('name')
     def _compute_xas_user_edit_protection_exchange_rate(self):
         for record in self:
@@ -478,9 +386,7 @@ class Tracking(models.Model):
                 vals['state'] = new_state_value
             if self.xas_way != 'maritime':
                 vals['state'] = new_state_value
-        # else:
-            # vals.pop('state')
-            # raise UserError(_("No puedes regresar al estado anterior."))
+
         result = super(Tracking, self).write(vals)
 
         # Si se actualiza el campo xas_tracking_id, actualizamos las líneas de las órdenes de compra
@@ -503,7 +409,6 @@ class Tracking(models.Model):
                 # Si encontramos numeros de viaje relacionados, rompemos la relación
                 if trip_ids.ids != []:
                     trip_ids.write({'xas_tracking_id':False})
-
 
     @api.model
     def create(self, vals):
@@ -576,7 +481,6 @@ class Tracking(models.Model):
         """Verifica si el nuevo estado es anterior al estado anterior"""
         state_order = [
             'new',
-            # 'dispatch',
             'eta',
             'arrival',
             'container',
@@ -616,10 +520,6 @@ class Tracking(models.Model):
 
         # Comparar los índices para determinar si hay un retroceso
         return new_index < previous_index
-
-    def _state_is_previous(self, current_state, new_state):
-        """ Verifica si el nuevo estado es anterior al estado actual. """
-        state_order
 
     @api.model
     def _expand_groups(self, states, domain, order):
@@ -671,21 +571,6 @@ class Tracking(models.Model):
 
     def add_trip_number(self):
         self.ensure_one()
-        # YA NO SE LLAMA AL MODELO DE TRIP NUMBER
-        # action = {
-        #     'type': 'ir.actions.act_window',
-        #     'name': 'Número de Viaje',
-        #     'res_model': 'trip.number',
-        #     'view_mode': 'form',
-        #     'view_id': self.env.ref('xas_tracking.trip_number_form_view').id,
-        #     'target': 'new',
-        #     'context': {
-        #         'default_tracking_id': self.id,
-        #         'default_xas_partner_id': self.xas_main_partner_id.id,
-        #     }
-        # }
-        # return action
-
         action = {
             'type': 'ir.actions.act_window',
             'name': 'Número de Viaje',
@@ -717,7 +602,45 @@ class Tracking(models.Model):
             rec.xas_last_caliber_costed = val
 
     def compute_purchase_order_lines(self):
+        """
+        FUNCIÓN UNIFICADA: Recalcula las líneas de costos Y los gastos basados en incrementables
+        """
         for record in self:
+            _logger.info("=" * 100)
+            _logger.info(f"=== INICIANDO compute_purchase_order_lines PARA TRACKING {record.id} ===")
+            
+            # PARTE 1: RECALCULAR GASTOS DE PRODUCTOS (código nuevo)
+            purchase_orders = self.env['purchase.order'].search([
+                ('xas_tracking_id', '=', record.id)
+            ])
+            _logger.info(f"Órdenes de compra encontradas: {len(purchase_orders)}")
+            
+            purchase_lines = purchase_orders.mapped('order_line')
+            _logger.info(f"Total de líneas encontradas: {len(purchase_lines)}")
+            
+            if purchase_lines:
+                # Asignar tracking_id a todas las líneas
+                _logger.info("Asignando tracking_id a todas las líneas...")
+                purchase_lines.write({'xas_tracking_id': record.id})
+                
+                # Recalcular incrementables
+                _logger.info("Recalculando incrementables...")
+                record._compute_total_incrementables_mxn()
+                _logger.info(f"Total incrementables: {record.xas_total_incrementables_mxn}")
+                
+                # Recalcular cada línea
+                _logger.info("Recalculando gastos de cada línea...")
+                for line in purchase_lines:
+                    line._compute_amounts_custom()
+                    _logger.info(f"Línea {line.id}: Gastos = {line.xas_gastos}")
+                
+                # Invalidar cache
+                record.invalidate_recordset()
+                purchase_lines.invalidate_recordset()
+            
+            # PARTE 2: RECALCULAR LÍNEAS DE COSTO (código original)
+            _logger.info("Recalculando líneas de costo...")
+            
             # Eliminar solo las líneas con xas_lock_line en False
             if record.xas_tracking_cost_line_ids:
                 lines_to_remove = record.xas_tracking_cost_line_ids.filtered(lambda x: not x.xas_lock_line)
@@ -729,7 +652,6 @@ class Tracking(models.Model):
             if record.xas_trip_number.state == 'done':
                 purchase_lines = self.env['purchase.order.line'].search([
                     ('order_id', 'in', record.xas_purchase_ids.ids),
-                    # ('state','=','draft') se abre para que muestre todas las lineas sin importar el status
                 ])
                 if not purchase_lines:
                     record.xas_purchase_order_line_ids = False
@@ -762,9 +684,7 @@ class Tracking(models.Model):
                         cost_lines.append((0, 0, {
                             'xas_code': 'FLEA',
                             'xas_partner_id': record.xas_partner_nt_id.id,
-                            #'xas_partner_id': record.xas_tracking_route_id.xas_partner_id.id if record.xas_tracking_route_id else track_partner_id.id,
                             'xas_plan': ame_id.id,
-                            #'xas_amount': record.xas_tracking_route_id.xas_total / record.xas_protection_exchange_rate if record.xas_protection_exchange_rate != 0 else 1,
                             'xas_amount': sum(ame_line_ids.mapped('price_total')),
                         }))
 
@@ -806,9 +726,7 @@ class Tracking(models.Model):
                         cost_lines.append((0, 0, {
                             'xas_code': 'FLEN',
                             'xas_partner_id': record.xas_tracking_route_id.xas_partner_id.id if record.xas_tracking_route_id else track_partner_id.id,
-                            #'xas_partner_id': record.xas_partner_nt_id.id,
                             'xas_plan': record.xas_tracking_route_id.xas_product_id.id,
-                            #'xas_amount': sum(ame_line_ids.mapped('price_total')),
                             'xas_amount': record.xas_tracking_route_id.xas_total / record.xas_protection_exchange_rate if record.xas_protection_exchange_rate != 0 else 1,
                         }))
 
@@ -868,6 +786,9 @@ class Tracking(models.Model):
                         record.sudo().write({'xas_tracking_cost_line_ids': cost_lines})
             else:
                 record.xas_purchase_order_line_ids = False
+            
+            _logger.info("=== compute_purchase_order_lines COMPLETADO ===")
+            _logger.info("=" * 100)
 
     def get_current_exchange_rate(self):
         # Obtener las monedas desde el modelo `res.currency`
@@ -930,7 +851,6 @@ class Tracking(models.Model):
             vals.update({"american_cargo": [american_price_line.xas_amount, american_price_line.xas_total_amount]})
 
         # Definimos el costo fruta
-        # fruit_cost = (self.xas_box * vals['fruit_price'][0])
         fruit_cost = (vals['fruit_price'][0] + vals['american_cargo'][0])
         vals.update({"fruit_cost": [ fruit_cost, fruit_cost * self.xas_protection_exchange_rate]})
 
@@ -953,12 +873,6 @@ class Tracking(models.Model):
         if warehouse_price_line:
             vals.update({"warehouse_maneuvers": [warehouse_price_line.xas_amount, warehouse_price_line.xas_total_amount]})
 
-        # Definimos el valor de impuestos aduana 00.00%
-        # LOS IMUESTOS ADUANA SE QUEDAN EN O
-
-        # Definimos el valor de comisión 0
-        # LA COMISION 0 SE QUEDA EN 0
-
         # Definimos el valor de agencia aduanal
         agency_price_line = cost_lines.filtered(lambda x: x.xas_code == 'AGEN')
         if agency_price_line:
@@ -970,20 +884,16 @@ class Tracking(models.Model):
             vals.update({"insurance": [insurance_price_line.xas_amount, insurance_price_line.xas_total_amount]})
 
         # Definimos el valor de costo de viaje
-        # Lista de claves a sumar (desde 'fruit_price' hasta 'insurance')
         keys_to_sum = [
             'fruit_price', 'invoice_price', 'american_cargo', 'fruit_cost',
             'incremental', 'bci', 'national_cargo', 'warehouse_maneuvers',
             'custom_tax', 'commission', 'customs_agency', 'insurance'
         ]
-        # Inicializar las sumas en las posiciones 0 y 1
         suma_0 = 0
         suma_1 = 0
-        # Realizar la suma para las posiciones 0 y 1
         for key in keys_to_sum:
             suma_0 += vals[key][0]
             suma_1 += vals[key][1]
-        # Asignar las sumas a 'travel_cost'
         vals['travel_cost'] = [suma_0, suma_1]
 
         # Definimos el valor para ultimo calibre costeado
@@ -1066,16 +976,14 @@ class Tracking(models.Model):
         return picking_id
 
     def send_email_custom(self):
-        self.ensure_one()  # Asegurarse de que solo se está procesando un registro
+        self.ensure_one()
 
         if not self.xas_partner_custom_id or not self.xas_partner_custom_id.email:
             raise ValidationError("El destinatario no tiene una dirección de correo electrónico.")
 
-        # Preparar valores para el asistente de enviar correos
-        template_id = self.env.ref('xas_tracking.mail_template_tracking_notification').id  # Usa una plantilla existente o crea una nueva
+        template_id = self.env.ref('xas_tracking.mail_template_tracking_notification').id
         ctx = {
             'default_model': self._name,
-            # 'default_res_id': self.id,
             'default_use_template': bool(template_id),
             'default_template_id': template_id,
             'default_composition_mode': 'comment',
@@ -1093,13 +1001,14 @@ class Tracking(models.Model):
 
     def compute_double_cost(self):
         for rec in self:
-            # Validamos que la linea cuente con lineas de productos
             if rec.xas_purchase_order_line_ids.ids == []:
                 raise UserError("Es necesario contar con lineas de productos para poder realizar los calculos")
             else:
                 for purchase_id in rec.xas_purchase_order_line_ids:
                     cost_per_pallet = rec.xas_total_cost_usd / sum(rec.xas_purchase_order_line_ids.mapped('product_packaging_qty')) if sum(rec.xas_purchase_order_line_ids.mapped('product_packaging_qty')) > 0 else rec.xas_total_cost_usd
                     purchase_id.xas_cost_per_pallet = cost_per_pallet
+
+
 
 class TripNumber(models.Model):
     _name = 'trip.number'
