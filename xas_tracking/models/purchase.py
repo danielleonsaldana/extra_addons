@@ -263,6 +263,17 @@ class PurchaseOrderLine(models.Model):
         'xas_tracking_id.xas_tracking_cost_line_ids.xas_amount',
         'xas_tracking_id.xas_tracking_cost_line_ids.xas_exchange_usd_mxn'
     )
+    
+    @api.depends(
+        'product_qty', 
+        'price_unit', 
+        'xas_exchange_rate_pedimento',
+        'xas_igi_amount',
+        'discount',
+        'xas_dta_prv_percentage',
+        'xas_tracking_id.xas_total_incrementables_mxn',  # Usar el campo computado
+        'xas_tracking_id.xas_purchase_order_line_ids.xas_total_mxn'  # Para recalcular cuando cambien otras líneas
+    )
     def _compute_amounts_custom(self):
         """
         Calcula todos los montos basados en el tipo de cambio y las cantidades.
@@ -291,20 +302,11 @@ class PurchaseOrderLine(models.Model):
                 # Suma total de pesos de todas las líneas
                 total_pesos = sum(all_lines.mapped('xas_total_mxn'))
                 
-                # Suma de incrementables en MXN
-                incrementables = line.xas_tracking_id.xas_tracking_cost_line_ids
-                suma_incrementables_mxn = 0.0
-                
-                for inc in incrementables:
-                    if inc.xas_exchange_usd_mxn:
-                        # Si está marcado como USD -> MXN, usar xas_total_amount (ya está en MXN)
-                        suma_incrementables_mxn += inc.xas_total_amount
-                    else:
-                        # Si no está marcado, usar xas_total_amount directamente (está en MXN)
-                        suma_incrementables_mxn += inc.xas_total_amount
+                # Usar el total de incrementables calculado en el tracking
+                suma_incrementables_mxn = line.xas_tracking_id.xas_total_incrementables_mxn
                 
                 # Gastos = pesos * (suma_incrementables_mxn / suma_total_pesos)
-                if total_pesos > 0:
+                if total_pesos > 0 and suma_incrementables_mxn > 0:
                     line.xas_gastos = line.xas_total_mxn * (suma_incrementables_mxn / total_pesos)
                 else:
                     line.xas_gastos = 0.0

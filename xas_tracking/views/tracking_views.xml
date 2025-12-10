@@ -281,10 +281,21 @@
                                         <field name="xas_exchange_rate" class="fw-bold fs-5"/>
                                         <button name="action_apply_exchange_rate" 
                                                 type="object" 
-                                                string="Aplicar" 
+                                                string="Aplicar Tipo de Cambio" 
                                                 class="btn-primary"
                                                 icon="fa-refresh"
                                                 confirm="¿Está seguro de aplicar este tipo de cambio a todas las líneas de órdenes de compra?"/>
+                                    </group>
+                                    <group string="Información de Costos">
+                                        <field name="xas_total_incrementables_mxn" 
+                                            class="fw-bold fs-5 text-success"
+                                            readonly="1"/>
+                                        <button name="compute_purchase_order_lines" 
+                                                type="object" 
+                                                string="Recalcular Gastos" 
+                                                class="btn-warning"
+                                                icon="fa-calculator"
+                                                help="Recalcula los gastos basados en los incrementables actuales"/>
                                     </group>
                                 </group>
                                 

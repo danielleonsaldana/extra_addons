@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 from . import tracking
+from . import tracking_cost_line
 from . import soap_zeep
 from . import res_partner
 from . import purchase

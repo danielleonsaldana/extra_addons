@@ -13,66 +13,32 @@ class Tracking(models.Model):
     _inherit = ['mail.thread', 'mail.activity.mixin']
 
     
-    # Campo para el tipo de cambio general
     xas_exchange_rate = fields.Float(
         string='Tipo de Cambio General',
         digits=(12, 6),
         default=18.665200,
         help='Tipo de cambio que se aplicará a todas las líneas de órdenes de compra'
     )
-
-    '''def action_apply_exchange_rate(self):
+    
+    # Campo computado para la suma de incrementables en MXN
+    xas_total_incrementables_mxn = fields.Monetary(
+        string='Total Incrementables MXN',
+        compute='_compute_total_incrementables_mxn',
+        store=True,
+        currency_field='currency_id'
+    )
+    
+    @api.depends('xas_tracking_cost_line_ids.xas_total_amount')
+    def _compute_total_incrementables_mxn(self):
         """
-        Aplica el tipo de cambio general a todas las líneas
+        Calcula la suma total de incrementables en MXN
         """
-        self.ensure_one()
-        
-        # DEBUG: Ver qué está pasando
-        _logger.info(f"=== DEBUG TIPO DE CAMBIO ===")
-        _logger.info(f"Tracking ID: {self.id}")
-        _logger.info(f"Tipo de cambio a aplicar: {self.xas_exchange_rate}")
-        
-        # Buscar por todos los métodos posibles
-        # Método 1: Campo One2many directo
-        lines_method1 = self.xas_purchase_order_line_ids
-        _logger.info(f"Líneas encontradas (método 1 - One2many): {len(lines_method1)}")
-        
-        # Método 2: Búsqueda directa
-        lines_method2 = self.env['purchase.order.line'].search([
-            ('xas_tracking_id', '=', self.id)
-        ])
-        _logger.info(f"Líneas encontradas (método 2 - search directo): {len(lines_method2)}")
-        
-        # Método 3: A través de purchase.order
-        purchase_orders = self.env['purchase.order'].search([
-            ('xas_tracking_id', '=', self.id)
-        ])
-        _logger.info(f"Órdenes de compra encontradas: {len(purchase_orders)}")
-        lines_method3 = purchase_orders.mapped('order_line')
-        _logger.info(f"Líneas encontradas (método 3 - a través de PO): {len(lines_method3)}")
-        
-        # Usar el método que encuentre líneas
-        purchase_lines = lines_method1 or lines_method2 or lines_method3
-        
-        if not purchase_lines:
-            raise UserError('No se encontraron líneas de órdenes de compra asociadas a este seguimiento')
-        
-        # Aplicar el tipo de cambio
-        purchase_lines.write({
-            'xas_exchange_rate_pedimento': self.xas_exchange_rate
-        })
-        
-        return {
-            'type': 'ir.actions.client',
-            'tag': 'display_notification',
-            'params': {
-                'title': 'Éxito',
-                'message': f'Se aplicó el tipo de cambio ${self.xas_exchange_rate:.6f} a {len(purchase_lines)} líneas',
-                'type': 'success',
-                'sticky': False,
-            }
-        }
-    '''
+        for record in self:
+            total = 0.0
+            for line in record.xas_tracking_cost_line_ids:
+                # Sumar siempre xas_total_amount porque ya está en la moneda correcta
+                total += line.xas_total_amount
+            record.xas_total_incrementables_mxn = total
     
     def action_apply_exchange_rate(self):
         """
@@ -103,7 +69,39 @@ class Tracking(models.Model):
             'xas_exchange_rate_pedimento': self.xas_exchange_rate
         })
         
-        # Retornar simplemente True para recargar la vista automáticamente
+        # Retornar True para recargar la vista
+        return True
+    
+    def compute_purchase_order_lines(self):
+        """
+        Recalcula todas las líneas de órdenes de compra
+        Fuerza el recálculo de los campos computados
+        """
+        self.ensure_one()
+        
+        # Buscar todas las líneas relacionadas
+        purchase_lines = self.xas_purchase_order_line_ids
+        if not purchase_lines:
+            purchase_lines = self.env['purchase.order.line'].search([
+                ('xas_tracking_id', '=', self.id)
+            ])
+        if not purchase_lines:
+            purchase_orders = self.env['purchase.order'].search([
+                ('xas_tracking_id', '=', self.id)
+            ])
+            purchase_lines = purchase_orders.mapped('order_line')
+        
+        if purchase_lines:
+            # Primero recalcular el total de incrementables
+            self._compute_total_incrementables_mxn()
+            
+            # Forzar el recálculo de los campos computados
+            purchase_lines._compute_amounts_custom()
+            
+            # Invalidar cache para forzar recarga
+            self.invalidate_recordset(['xas_purchase_order_line_ids'])
+            purchase_lines.invalidate_recordset()
+        
         return True
 
     name = fields.Char(string='Nombre', required=True, default="Borrador", copy=False)
