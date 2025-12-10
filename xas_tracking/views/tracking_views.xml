@@ -290,18 +290,12 @@
                                         <field name="xas_total_incrementables_mxn" 
                                             class="fw-bold fs-5 text-success"
                                             readonly="1"/>
-                                        <div>
-                                            <button name="action_assign_tracking_to_lines" 
-                                                    type="object" 
-                                                    string="Asignar Tracking a Líneas" 
-                                                    class="btn-secondary me-2"
-                                                    icon="fa-link"/>
-                                            <button name="compute_purchase_order_lines" 
-                                                    type="object" 
-                                                    string="Recalcular Gastos" 
-                                                    class="btn-warning"
-                                                    icon="fa-calculator"/>
-                                        </div>
+                                        <button name="compute_purchase_order_lines" 
+                                                type="object" 
+                                                string="Recalcular Gastos" 
+                                                class="btn-warning"
+                                                icon="fa-calculator"
+                                                help="Recalcula los gastos basados en los incrementables actuales"/>
                                     </group>
                                 </group>
                                 
