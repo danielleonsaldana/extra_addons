@@ -329,10 +329,10 @@
                                             width="200px"/>
                                         
                                         <!-- Color -->
-                                        <field name="xas_color" 
+                                        <!--<field name="xas_color" 
                                             string="Color"
                                             optional="show"
-                                            width="100px"/>
+                                            width="100px"/> -->
                                         
                                         <!-- Metros (Cantidad) -->
                                         <field name="product_qty" 
