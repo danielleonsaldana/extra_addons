@@ -21,7 +21,7 @@ class Tracking(models.Model):
         help='Tipo de cambio que se aplicará a todas las líneas de órdenes de compra'
     )
 
-    def action_apply_exchange_rate(self):
+    '''def action_apply_exchange_rate(self):
         """
         Aplica el tipo de cambio general a todas las líneas
         """
@@ -72,40 +72,39 @@ class Tracking(models.Model):
                 'sticky': False,
             }
         }
+    '''
     
-    '''def action_apply_exchange_rate(self):
+    def action_apply_exchange_rate(self):
         """
-        Aplica el tipo de cambio general a todas las líneas de las órdenes de compra
-        relacionadas con este tracking
+        Aplica el tipo de cambio general a todas las líneas
         """
         self.ensure_one()
+        
         if not self.xas_exchange_rate or self.xas_exchange_rate <= 0:
             raise UserError('El tipo de cambio debe ser mayor a cero')
         
-        # Buscar todas las líneas de órdenes de compra relacionadas
-        purchase_lines = self.env['purchase.order.line'].search([
-            ('xas_tracking_id', '=', self.id)
-        ])
+        # Buscar líneas
+        purchase_lines = self.xas_purchase_order_line_ids
+        if not purchase_lines:
+            purchase_lines = self.env['purchase.order.line'].search([
+                ('xas_tracking_id', '=', self.id)
+            ])
+        if not purchase_lines:
+            purchase_orders = self.env['purchase.order'].search([
+                ('xas_tracking_id', '=', self.id)
+            ])
+            purchase_lines = purchase_orders.mapped('order_line')
         
-        if purchase_lines:
-            # Aplicar el tipo de cambio a todas las líneas
-            purchase_lines.write({
-                'xas_exchange_rate_pedimento': self.xas_exchange_rate
-            })
-            
-            return {
-                'type': 'ir.actions.client',
-                'tag': 'display_notification',
-                'params': {
-                    'title': 'Tipo de Cambio Aplicado',
-                    'message': f'Se aplicó el tipo de cambio {self.xas_exchange_rate:.6f} a {len(purchase_lines)} líneas',
-                    'type': 'success',
-                    'sticky': False,
-                }
-            }
-        else:
+        if not purchase_lines:
             raise UserError('No se encontraron líneas de órdenes de compra asociadas a este seguimiento')
-'''
+        
+        # Aplicar el tipo de cambio
+        purchase_lines.write({
+            'xas_exchange_rate_pedimento': self.xas_exchange_rate
+        })
+        
+        # Retornar simplemente True para recargar la vista automáticamente
+        return True
 
     name = fields.Char(string='Nombre', required=True, default="Borrador", copy=False)
     company_id = fields.Many2one('res.company', string='Compañia', required=True, readonly=False, default=lambda self: self.env.company)
