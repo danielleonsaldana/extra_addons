@@ -12,7 +12,7 @@ class Tracking(models.Model):
     _description = "Seguimiento de viaje"
     _inherit = ['mail.thread', 'mail.activity.mixin']
 
-    
+
     xas_exchange_rate = fields.Float(
         string='Tipo de Cambio General',
         digits=(12, 6),
@@ -20,12 +20,21 @@ class Tracking(models.Model):
         help='Tipo de cambio que se aplicará a todas las líneas de órdenes de compra'
     )
     
+    # Campo de moneda de la compañía
+    company_currency_id = fields.Many2one(
+        'res.currency',
+        related='company_id.currency_id',
+        string='Company Currency',
+        readonly=True,
+        store=True
+    )
+    
     # Campo computado para la suma de incrementables en MXN
     xas_total_incrementables_mxn = fields.Monetary(
         string='Total Incrementables MXN',
         compute='_compute_total_incrementables_mxn',
         store=True,
-        currency_field='currency_id'
+        currency_field='company_currency_id'  # Usar company_currency_id en lugar de currency_id
     )
     
     @api.depends('xas_tracking_cost_line_ids.xas_total_amount')
@@ -79,6 +88,8 @@ class Tracking(models.Model):
         """
         self.ensure_one()
         
+        _logger.info("=== INICIANDO RECÁLCULO DE LÍNEAS ===")
+        
         # Buscar todas las líneas relacionadas
         purchase_lines = self.xas_purchase_order_line_ids
         if not purchase_lines:
@@ -94,6 +105,11 @@ class Tracking(models.Model):
         if purchase_lines:
             # Primero recalcular el total de incrementables
             self._compute_total_incrementables_mxn()
+            _logger.info(f"Total incrementables MXN: {self.xas_total_incrementables_mxn}")
+            
+            # Calcular suma de pesos
+            total_pesos = sum(purchase_lines.mapped('xas_total_mxn'))
+            _logger.info(f"Total pesos: {total_pesos}")
             
             # Forzar el recálculo de los campos computados
             purchase_lines._compute_amounts_custom()
@@ -101,6 +117,10 @@ class Tracking(models.Model):
             # Invalidar cache para forzar recarga
             self.invalidate_recordset(['xas_purchase_order_line_ids'])
             purchase_lines.invalidate_recordset()
+            
+            _logger.info("=== RECÁLCULO COMPLETADO ===")
+        else:
+            _logger.warning("No se encontraron líneas de compra para recalcular")
         
         return True
 
