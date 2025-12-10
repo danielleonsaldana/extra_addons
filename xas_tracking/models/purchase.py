@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 from odoo import models, fields, api, _
 from odoo.exceptions import UserError, ValidationError
+import logging
+_logger = logging.getLogger(__name__)
 
 class PurchaseOrder(models.Model):
     _inherit = 'purchase.order'
@@ -259,20 +261,8 @@ class PurchaseOrderLine(models.Model):
         'xas_igi_amount',
         'discount',
         'xas_dta_prv_percentage',
-        'xas_tracking_id.xas_tracking_cost_line_ids.xas_total_amount',
-        'xas_tracking_id.xas_tracking_cost_line_ids.xas_amount',
-        'xas_tracking_id.xas_tracking_cost_line_ids.xas_exchange_usd_mxn'
-    )
-    
-    @api.depends(
-        'product_qty', 
-        'price_unit', 
-        'xas_exchange_rate_pedimento',
-        'xas_igi_amount',
-        'discount',
-        'xas_dta_prv_percentage',
-        'xas_tracking_id.xas_total_incrementables_mxn',  # Usar el campo computado
-        'xas_tracking_id.xas_purchase_order_line_ids.xas_total_mxn'  # Para recalcular cuando cambien otras líneas
+        'xas_tracking_id.xas_total_incrementables_mxn',
+        'xas_tracking_id.xas_purchase_order_line_ids.xas_total_mxn'
     )
     def _compute_amounts_custom(self):
         """
@@ -286,41 +276,64 @@ class PurchaseOrderLine(models.Model):
             # Total en MXN (Pesos) = Total USD * Tipo de Cambio
             line.xas_total_mxn = line.xas_total_usd * line.xas_exchange_rate_pedimento
             
+            _logger.info(f"=== CALCULANDO LÍNEA: {line.product_id.name if line.product_id else 'Sin producto'} ===")
+            _logger.info(f"Total USD: {line.xas_total_usd}")
+            _logger.info(f"Tipo de cambio: {line.xas_exchange_rate_pedimento}")
+            _logger.info(f"Total MXN (Pesos): {line.xas_total_mxn}")
+            
             # DTA + PRV = Total MXN * Porcentaje
             line.xas_dta_prv = line.xas_total_mxn * (line.xas_dta_prv_percentage / 100)
+            _logger.info(f"DTA + PRV: {line.xas_dta_prv}")
             
             # Subtotal = Pesos + IGI + DTA + PRV
             # Convertir IGI de USD a MXN si es necesario
             igi_mxn = line.xas_igi_amount * line.xas_exchange_rate_pedimento if line.currency_id != line.company_currency_id else line.xas_igi_amount
             line.xas_subtotal_total = line.xas_total_mxn + igi_mxn + line.xas_dta_prv
+            _logger.info(f"IGI en MXN: {igi_mxn}")
+            _logger.info(f"Subtotal: {line.xas_subtotal_total}")
             
             # CÁLCULO DE GASTOS BASADO EN INCREMENTABLES
             if line.xas_tracking_id:
+                _logger.info(f"Tiene tracking ID: {line.xas_tracking_id.id}")
+                
                 # Obtener todas las líneas del mismo tracking
                 all_lines = line.xas_tracking_id.xas_purchase_order_line_ids
+                _logger.info(f"Total de líneas en tracking: {len(all_lines)}")
                 
                 # Suma total de pesos de todas las líneas
                 total_pesos = sum(all_lines.mapped('xas_total_mxn'))
+                _logger.info(f"Suma total de pesos de todas las líneas: {total_pesos}")
                 
                 # Usar el total de incrementables calculado en el tracking
                 suma_incrementables_mxn = line.xas_tracking_id.xas_total_incrementables_mxn
+                _logger.info(f"Suma incrementables MXN: {suma_incrementables_mxn}")
                 
                 # Gastos = pesos * (suma_incrementables_mxn / suma_total_pesos)
                 if total_pesos > 0 and suma_incrementables_mxn > 0:
                     line.xas_gastos = line.xas_total_mxn * (suma_incrementables_mxn / total_pesos)
+                    _logger.info(f"GASTOS CALCULADOS: {line.xas_gastos}")
+                    _logger.info(f"Fórmula: {line.xas_total_mxn} * ({suma_incrementables_mxn} / {total_pesos})")
                 else:
                     line.xas_gastos = 0.0
+                    _logger.info(f"Gastos = 0 porque total_pesos={total_pesos} o suma_incrementables={suma_incrementables_mxn}")
             else:
                 line.xas_gastos = 0.0
+                _logger.info("No tiene tracking_id, gastos = 0")
             
             # Total Final = Subtotal + Gastos
             line.xas_total_final = line.xas_subtotal_total + line.xas_gastos
+            _logger.info(f"Total Final: {line.xas_total_final}")
             
             # Precio por metro = Total Final / Metros
             if line.product_qty > 0:
                 line.xas_price_per_meter = line.xas_total_final / line.product_qty
             else:
                 line.xas_price_per_meter = 0.0
+            
+            _logger.info(f"Precio por metro: {line.xas_price_per_meter}")
+            _logger.info("=" * 80)
+
+
 
     @api.onchange('product_id')
     def _onchange_product_id_igi(self):
