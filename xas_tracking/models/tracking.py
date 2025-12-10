@@ -12,7 +12,7 @@ class Tracking(models.Model):
     _description = "Seguimiento de viaje"
     _inherit = ['mail.thread', 'mail.activity.mixin']
 
-
+    
     xas_exchange_rate = fields.Float(
         string='Tipo de Cambio General',
         digits=(12, 6),
@@ -34,7 +34,7 @@ class Tracking(models.Model):
         string='Total Incrementables MXN',
         compute='_compute_total_incrementables_mxn',
         store=True,
-        currency_field='company_currency_id'  # Usar company_currency_id en lugar de currency_id
+        currency_field='company_currency_id'
     )
     
     @api.depends('xas_tracking_cost_line_ids.xas_total_amount')
@@ -44,10 +44,16 @@ class Tracking(models.Model):
         """
         for record in self:
             total = 0.0
+            _logger.info(f"=== CALCULANDO INCREMENTABLES PARA TRACKING {record.id} ===")
+            _logger.info(f"Número de líneas de costo: {len(record.xas_tracking_cost_line_ids)}")
+            
             for line in record.xas_tracking_cost_line_ids:
-                # Sumar siempre xas_total_amount porque ya está en la moneda correcta
+                _logger.info(f"Línea: {line.xas_plan} - Total: {line.xas_total_amount}")
                 total += line.xas_total_amount
+            
             record.xas_total_incrementables_mxn = total
+            _logger.info(f"TOTAL INCREMENTABLES: {total}")
+            _logger.info("=" * 80)
     
     def action_apply_exchange_rate(self):
         """
@@ -88,41 +94,77 @@ class Tracking(models.Model):
         """
         self.ensure_one()
         
-        _logger.info("=== INICIANDO RECÁLCULO DE LÍNEAS ===")
+        _logger.info("=" * 100)
+        _logger.info("=== INICIANDO RECÁLCULO MANUAL DE LÍNEAS ===")
+        _logger.info(f"Tracking ID: {self.id}")
         
         # Buscar todas las líneas relacionadas
         purchase_lines = self.xas_purchase_order_line_ids
+        _logger.info(f"Líneas encontradas (método 1 - One2many): {len(purchase_lines)}")
+        
         if not purchase_lines:
             purchase_lines = self.env['purchase.order.line'].search([
                 ('xas_tracking_id', '=', self.id)
             ])
+            _logger.info(f"Líneas encontradas (método 2 - search): {len(purchase_lines)}")
+        
         if not purchase_lines:
             purchase_orders = self.env['purchase.order'].search([
                 ('xas_tracking_id', '=', self.id)
             ])
+            _logger.info(f"Órdenes de compra encontradas: {len(purchase_orders)}")
             purchase_lines = purchase_orders.mapped('order_line')
+            _logger.info(f"Líneas encontradas (método 3 - a través de PO): {len(purchase_lines)}")
         
         if purchase_lines:
+            # IMPORTANTE: Asignar el tracking_id a todas las líneas si no lo tienen
+            _logger.info("Verificando y asignando tracking_id a las líneas...")
+            lines_sin_tracking = purchase_lines.filtered(lambda l: not l.xas_tracking_id)
+            if lines_sin_tracking:
+                _logger.warning(f"¡¡¡ {len(lines_sin_tracking)} líneas NO tienen tracking_id asignado !!!")
+                lines_sin_tracking.write({'xas_tracking_id': self.id})
+                _logger.info("tracking_id asignado a las líneas faltantes")
+            else:
+                _logger.info("Todas las líneas ya tienen tracking_id")
+            
+            # Verificar después de asignar
+            for line in purchase_lines:
+                _logger.info(f"Línea {line.id} - Producto: {line.product_id.name if line.product_id else 'N/A'} - Tracking: {line.xas_tracking_id.id if line.xas_tracking_id else 'NINGUNO'}")
+            
             # Primero recalcular el total de incrementables
+            _logger.info("Recalculando total de incrementables...")
             self._compute_total_incrementables_mxn()
-            _logger.info(f"Total incrementables MXN: {self.xas_total_incrementables_mxn}")
+            _logger.info(f"Total incrementables MXN después de compute: {self.xas_total_incrementables_mxn}")
             
-            # Calcular suma de pesos
-            total_pesos = sum(purchase_lines.mapped('xas_total_mxn'))
-            _logger.info(f"Total pesos: {total_pesos}")
+            # Calcular suma de pesos ANTES del recálculo
+            total_pesos_antes = sum(purchase_lines.mapped('xas_total_mxn'))
+            _logger.info(f"Total pesos ANTES del recálculo: {total_pesos_antes}")
             
-            # Forzar el recálculo de los campos computados
-            purchase_lines._compute_amounts_custom()
+            # Forzar el recálculo de los campos computados línea por línea
+            _logger.info("Forzando recálculo de cada línea...")
+            for line in purchase_lines:
+                line._compute_amounts_custom()
+            
+            # Calcular suma de pesos DESPUÉS del recálculo
+            total_pesos_despues = sum(purchase_lines.mapped('xas_total_mxn'))
+            _logger.info(f"Total pesos DESPUÉS del recálculo: {total_pesos_despues}")
+            
+            # Mostrar resumen de gastos calculados
+            _logger.info("=== RESUMEN DE GASTOS ===")
+            for line in purchase_lines:
+                _logger.info(f"Línea: {line.product_id.name if line.product_id else 'N/A'} - Gastos: {line.xas_gastos}")
             
             # Invalidar cache para forzar recarga
-            self.invalidate_recordset(['xas_purchase_order_line_ids'])
+            self.invalidate_recordset(['xas_purchase_order_line_ids', 'xas_total_incrementables_mxn'])
             purchase_lines.invalidate_recordset()
             
             _logger.info("=== RECÁLCULO COMPLETADO ===")
+            _logger.info("=" * 100)
         else:
-            _logger.warning("No se encontraron líneas de compra para recalcular")
+            _logger.warning("!!! NO SE ENCONTRARON LÍNEAS DE COMPRA PARA RECALCULAR !!!")
         
         return True
+
 
     name = fields.Char(string='Nombre', required=True, default="Borrador", copy=False)
     company_id = fields.Many2one('res.company', string='Compañia', required=True, readonly=False, default=lambda self: self.env.company)
