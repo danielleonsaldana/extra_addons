@@ -7,7 +7,7 @@ class PurchaseOrder(models.Model):
 
     
     xas_exchange_rate = fields.Float(
-        string='Tipo de Cambio General',
+        string='Tipo de Cambio',
         digits=(12, 6),
         default=0.0,
         help='Tipo de cambio que se aplicará a todas las líneas'

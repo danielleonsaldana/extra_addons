@@ -277,7 +277,7 @@
                             <page string="Productos" class="oe_page_title" accesskey="P">
                                 <!-- Sección para el tipo de cambio general -->
                                 <group>
-                                    <group string="Configuración de Tipo de Cambio">
+                                    <group string="Configuración de Tipo de Cambio de Pedimento">
                                         <field name="xas_exchange_rate" class="fw-bold fs-5"/>
                                         <button name="action_apply_exchange_rate" 
                                                 type="object" 
@@ -355,7 +355,7 @@
                                         
                                         <!-- Tipo de Cambio Pedimento - READONLY EN TREE -->
                                         <field name="xas_exchange_rate_pedimento" 
-                                            string="TIPO DE CAMBIO PEDIMENTO"
+                                            string="Tipo de cambio"
                                             class="text-center fw-bold text-warning bg-warning bg-opacity-25"
                                             width="150px"
                                             readonly="1"/>
