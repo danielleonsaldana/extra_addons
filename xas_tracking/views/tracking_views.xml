@@ -275,7 +275,7 @@
                             </page>
 
                             <page string="Productos" class="oe_page_title" accesskey="P">
-                                <!-- Sección para el tipo de cambio general -->
+                                
                                 <group>
                                     <group string="Configuración de Tipo de Cambio de Pedimento">
                                         <field name="xas_exchange_rate" class="fw-bold fs-5"/>
@@ -290,12 +290,18 @@
                                         <field name="xas_total_incrementables_mxn" 
                                             class="fw-bold fs-5 text-success"
                                             readonly="1"/>
-                                        <button name="compute_purchase_order_lines" 
-                                                type="object" 
-                                                string="Recalcular Gastos" 
-                                                class="btn-warning"
-                                                icon="fa-calculator"
-                                                help="Recalcula los gastos basados en los incrementables actuales"/>
+                                        <div>
+                                            <button name="action_assign_tracking_to_lines" 
+                                                    type="object" 
+                                                    string="Asignar Tracking a Líneas" 
+                                                    class="btn-secondary me-2"
+                                                    icon="fa-link"/>
+                                            <button name="compute_purchase_order_lines" 
+                                                    type="object" 
+                                                    string="Recalcular Gastos" 
+                                                    class="btn-warning"
+                                                    icon="fa-calculator"/>
+                                        </div>
                                     </group>
                                 </group>
                                 

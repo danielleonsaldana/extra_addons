@@ -37,60 +37,55 @@ class Tracking(models.Model):
         currency_field='company_currency_id'
     )
     
-    @api.depends('xas_tracking_cost_line_ids.xas_total_amount')
-    def _compute_total_incrementables_mxn(self):
-        """
-        Calcula la suma total de incrementables en MXN
-        """
-        for record in self:
-            total = 0.0
-            _logger.info(f"=== CALCULANDO INCREMENTABLES PARA TRACKING {record.id} ===")
-            _logger.info(f"Número de líneas de costo: {len(record.xas_tracking_cost_line_ids)}")
-            
-            for line in record.xas_tracking_cost_line_ids:
-                _logger.info(f"Línea: {line.xas_plan} - Total: {line.xas_total_amount}")
-                total += line.xas_total_amount
-            
-            record.xas_total_incrementables_mxn = total
-            _logger.info(f"TOTAL INCREMENTABLES: {total}")
-            _logger.info("=" * 80)
     
-    def action_apply_exchange_rate(self):
+    def action_assign_tracking_to_lines(self):
         """
-        Aplica el tipo de cambio general a todas las líneas
+        Asigna este tracking a todas las líneas de órdenes de compra relacionadas
         """
         self.ensure_one()
         
-        if not self.xas_exchange_rate or self.xas_exchange_rate <= 0:
-            raise UserError('El tipo de cambio debe ser mayor a cero')
+        _logger.info("=" * 100)
+        _logger.info("=== ASIGNANDO TRACKING A LÍNEAS ===")
         
-        # Buscar líneas
-        purchase_lines = self.xas_purchase_order_line_ids
-        if not purchase_lines:
-            purchase_lines = self.env['purchase.order.line'].search([
-                ('xas_tracking_id', '=', self.id)
-            ])
-        if not purchase_lines:
-            purchase_orders = self.env['purchase.order'].search([
-                ('xas_tracking_id', '=', self.id)
-            ])
-            purchase_lines = purchase_orders.mapped('order_line')
+        # Método 1: A través de xas_purchase_order_line_ids
+        lines_method1 = self.xas_purchase_order_line_ids
+        _logger.info(f"Método 1 (One2many): {len(lines_method1)} líneas")
         
-        if not purchase_lines:
-            raise UserError('No se encontraron líneas de órdenes de compra asociadas a este seguimiento')
+        # Método 2: Buscar por órdenes de compra que tengan este tracking
+        purchase_orders = self.env['purchase.order'].search([
+            ('xas_tracking_id', '=', self.id)
+        ])
+        lines_method2 = purchase_orders.mapped('order_line')
+        _logger.info(f"Método 2 (PO con tracking): {len(purchase_orders)} órdenes, {len(lines_method2)} líneas")
         
-        # Aplicar el tipo de cambio
-        purchase_lines.write({
-            'xas_exchange_rate_pedimento': self.xas_exchange_rate
-        })
+        # Usar el que tenga más líneas
+        all_lines = lines_method1 if len(lines_method1) >= len(lines_method2) else lines_method2
         
-        # Retornar True para recargar la vista
-        return True
+        if all_lines:
+            # Asignar tracking_id a TODAS las líneas
+            _logger.info(f"Asignando tracking_id={self.id} a {len(all_lines)} líneas")
+            all_lines.write({'xas_tracking_id': self.id})
+            
+            # Verificar
+            for line in all_lines:
+                _logger.info(f"Línea {line.id}: tracking_id = {line.xas_tracking_id.id if line.xas_tracking_id else 'NINGUNO'}")
+            
+            return {
+                'type': 'ir.actions.client',
+                'tag': 'display_notification',
+                'params': {
+                    'title': 'Éxito',
+                    'message': f'Se asignó el tracking a {len(all_lines)} líneas',
+                    'type': 'success',
+                    'sticky': False,
+                }
+            }
+        else:
+            raise UserError('No se encontraron líneas de órdenes de compra')
     
     def compute_purchase_order_lines(self):
         """
         Recalcula todas las líneas de órdenes de compra
-        Fuerza el recálculo de los campos computados
         """
         self.ensure_one()
         
@@ -98,73 +93,65 @@ class Tracking(models.Model):
         _logger.info("=== INICIANDO RECÁLCULO MANUAL DE LÍNEAS ===")
         _logger.info(f"Tracking ID: {self.id}")
         
-        # Buscar todas las líneas relacionadas
-        purchase_lines = self.xas_purchase_order_line_ids
-        _logger.info(f"Líneas encontradas (método 1 - One2many): {len(purchase_lines)}")
+        # Primero, asegurar que todas las líneas tengan el tracking_id
+        purchase_orders = self.env['purchase.order'].search([
+            ('xas_tracking_id', '=', self.id)
+        ])
+        _logger.info(f"Órdenes de compra con este tracking: {len(purchase_orders)}")
+        
+        purchase_lines = purchase_orders.mapped('order_line')
+        _logger.info(f"Total de líneas encontradas: {len(purchase_lines)}")
         
         if not purchase_lines:
-            purchase_lines = self.env['purchase.order.line'].search([
-                ('xas_tracking_id', '=', self.id)
-            ])
-            _logger.info(f"Líneas encontradas (método 2 - search): {len(purchase_lines)}")
-        
-        if not purchase_lines:
-            purchase_orders = self.env['purchase.order'].search([
-                ('xas_tracking_id', '=', self.id)
-            ])
-            _logger.info(f"Órdenes de compra encontradas: {len(purchase_orders)}")
-            purchase_lines = purchase_orders.mapped('order_line')
-            _logger.info(f"Líneas encontradas (método 3 - a través de PO): {len(purchase_lines)}")
+            # Intentar con xas_purchase_order_line_ids
+            purchase_lines = self.xas_purchase_order_line_ids
+            _logger.info(f"Líneas desde One2many: {len(purchase_lines)}")
         
         if purchase_lines:
-            # IMPORTANTE: Asignar el tracking_id a todas las líneas si no lo tienen
-            _logger.info("Verificando y asignando tracking_id a las líneas...")
-            lines_sin_tracking = purchase_lines.filtered(lambda l: not l.xas_tracking_id)
-            if lines_sin_tracking:
-                _logger.warning(f"¡¡¡ {len(lines_sin_tracking)} líneas NO tienen tracking_id asignado !!!")
-                lines_sin_tracking.write({'xas_tracking_id': self.id})
-                _logger.info("tracking_id asignado a las líneas faltantes")
-            else:
-                _logger.info("Todas las líneas ya tienen tracking_id")
+            # PASO 1: Asignar tracking_id a TODAS las líneas
+            _logger.info("PASO 1: Asignando tracking_id a todas las líneas...")
+            purchase_lines.write({'xas_tracking_id': self.id})
             
-            # Verificar después de asignar
-            for line in purchase_lines:
-                _logger.info(f"Línea {line.id} - Producto: {line.product_id.name if line.product_id else 'N/A'} - Tracking: {line.xas_tracking_id.id if line.xas_tracking_id else 'NINGUNO'}")
+            # Verificar asignación
+            lines_con_tracking = purchase_lines.filtered(lambda l: l.xas_tracking_id.id == self.id)
+            lines_sin_tracking = purchase_lines.filtered(lambda l: not l.xas_tracking_id or l.xas_tracking_id.id != self.id)
+            _logger.info(f"Líneas CON tracking correcto: {len(lines_con_tracking)}")
+            _logger.info(f"Líneas SIN tracking o incorrecto: {len(lines_sin_tracking)}")
             
-            # Primero recalcular el total de incrementables
-            _logger.info("Recalculando total de incrementables...")
+            # PASO 2: Recalcular incrementables
+            _logger.info("PASO 2: Recalculando incrementables...")
             self._compute_total_incrementables_mxn()
-            _logger.info(f"Total incrementables MXN después de compute: {self.xas_total_incrementables_mxn}")
+            _logger.info(f"Total incrementables: {self.xas_total_incrementables_mxn}")
             
-            # Calcular suma de pesos ANTES del recálculo
-            total_pesos_antes = sum(purchase_lines.mapped('xas_total_mxn'))
-            _logger.info(f"Total pesos ANTES del recálculo: {total_pesos_antes}")
+            # PASO 3: Calcular suma de pesos
+            total_pesos = sum(purchase_lines.mapped('xas_total_mxn'))
+            _logger.info(f"PASO 3: Total pesos: {total_pesos}")
             
-            # Forzar el recálculo de los campos computados línea por línea
-            _logger.info("Forzando recálculo de cada línea...")
+            # PASO 4: Recalcular cada línea
+            _logger.info("PASO 4: Recalculando cada línea...")
             for line in purchase_lines:
+                _logger.info(f"\n--- Recalculando línea {line.id} ---")
+                _logger.info(f"Producto: {line.product_id.name if line.product_id else 'N/A'}")
+                _logger.info(f"Tracking antes: {line.xas_tracking_id.id if line.xas_tracking_id else 'NINGUNO'}")
+                
+                # Forzar recálculo
                 line._compute_amounts_custom()
+                
+                _logger.info(f"Tracking después: {line.xas_tracking_id.id if line.xas_tracking_id else 'NINGUNO'}")
+                _logger.info(f"Gastos calculados: {line.xas_gastos}")
             
-            # Calcular suma de pesos DESPUÉS del recálculo
-            total_pesos_despues = sum(purchase_lines.mapped('xas_total_mxn'))
-            _logger.info(f"Total pesos DESPUÉS del recálculo: {total_pesos_despues}")
-            
-            # Mostrar resumen de gastos calculados
-            _logger.info("=== RESUMEN DE GASTOS ===")
-            for line in purchase_lines:
-                _logger.info(f"Línea: {line.product_id.name if line.product_id else 'N/A'} - Gastos: {line.xas_gastos}")
-            
-            # Invalidar cache para forzar recarga
-            self.invalidate_recordset(['xas_purchase_order_line_ids', 'xas_total_incrementables_mxn'])
+            # PASO 5: Invalidar cache
+            _logger.info("PASO 5: Invalidando cache...")
+            self.invalidate_recordset()
             purchase_lines.invalidate_recordset()
             
             _logger.info("=== RECÁLCULO COMPLETADO ===")
             _logger.info("=" * 100)
+            
+            return True
         else:
-            _logger.warning("!!! NO SE ENCONTRARON LÍNEAS DE COMPRA PARA RECALCULAR !!!")
-        
-        return True
-
+            _logger.error("!!! NO SE ENCONTRARON LÍNEAS !!!")
+            raise UserError('No se encontraron líneas de órdenes de compra para este tracking')
 
     name = fields.Char(string='Nombre', required=True, default="Borrador", copy=False)
     company_id = fields.Many2one('res.company', string='Compañia', required=True, readonly=False, default=lambda self: self.env.company)
