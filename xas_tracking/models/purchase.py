@@ -3,7 +3,7 @@ from odoo import models, fields, api, _
 from odoo.exceptions import UserError, ValidationError
 
 class PurchaseOrder(models.Model):
-    _inherit  = 'purchase.order'
+    _inherit = 'purchase.order'
 
     xas_tracking_id = fields.Many2one('tracking', string='Id de seguimiento', copy=True)
     xas_trip_number_id = fields.Many2one('trip.number', string='Código de embarque', related='xas_tracking_id.xas_trip_number', copy=True, store=True)
@@ -55,7 +55,7 @@ class PurchaseOrder(models.Model):
             }
             return action
         if self.partner_id:
-            trip_number_id =  self.env['trip.number'].create({'xas_partner_id':self.partner_id.id})
+            trip_number_id = self.env['trip.number'].create({'xas_partner_id':self.partner_id.id})
             if trip_number_id.id:
                 self.xas_trip_number_id = trip_number_id.id
             if self.xas_tracking_id.id:
@@ -63,29 +63,12 @@ class PurchaseOrder(models.Model):
                 self.xas_tracking_id.xas_trip_number = trip_number_id.id
         else:
             raise UserError('Para generar el número de viaje, es necesario tener un proveedor asignado dentro de la orden de compra')
-        # SE COMENTA EL LLAMADO AL WIZARD, YA QUE EL CLIENTE LO SOLICITA ASI 30/05/2025
-        # action = {
-        #     'type': 'ir.actions.act_window',
-        #     'name': 'Número de Viaje',
-        #     'res_model': 'trip.number',
-        #     'view_mode': 'form',
-        #     'view_id': self.env.ref('xas_tracking.trip_number_form_view').id,
-        #     'target': 'new',
-        #     'context': {
-        #         'default_xas_partner_id': self.partner_id.id,
-        #         'default_purchase_id': self.id,
-        #     }
-        # }
-        # return action
 
     def _prepare_picking(self):
-
         result = super(PurchaseOrder, self)._prepare_picking()
-
         # Anexamos el xas_tracking_id a los datos del picking
         if self.xas_tracking_id:
             result.update({'xas_tracking_id':self.xas_tracking_id.id, 'xas_purchase_id':self.id})
-
         return result
 
     @api.onchange('xas_tracking_id','xas_trip_number_id')
@@ -94,6 +77,7 @@ class PurchaseOrder(models.Model):
             rec.order_line.write({'xas_tracking_id':rec.xas_tracking_id.id, 'xas_trip_number_id':rec.xas_trip_number_id.id})
 
 
+class PurchaseOrderLine(models.Model):
     _inherit = 'purchase.order.line'
     
     xas_tracking_id = fields.Many2one('tracking', string='Id de seguimiento', copy=True)
@@ -117,7 +101,7 @@ class PurchaseOrder(models.Model):
         help='Costo calculado por caja individual'
     )
     
-    # NUEVOS CAMPOS PARA IGI
+    # CAMPOS PARA IGI
     xas_igi_percentage = fields.Float(
         string='IGI %',
         digits=(16, 2),
@@ -138,6 +122,97 @@ class PurchaseOrder(models.Model):
         help='Subtotal incluyendo el IGI'
     )
     
+    # NUEVOS CAMPOS PARA CÁLCULOS SIMILARES AL EXCEL
+    xas_color = fields.Char(
+        string='Color',
+        help='Color del producto'
+    )
+    
+    xas_exchange_rate_pedimento = fields.Float(
+        string='Tipo de Cambio Pedimento',
+        digits=(12, 6),
+        default=18.665200,
+        help='Tipo de cambio aplicado en el pedimento de importación'
+    )
+    
+    xas_total_usd = fields.Monetary(
+        string='Total USD',
+        compute='_compute_amounts_custom',
+        store=True,
+        currency_field='currency_id',
+        help='Total en dólares (Precio unitario * Cantidad)'
+    )
+    
+    xas_total_mxn = fields.Monetary(
+        string='Total MXN',
+        compute='_compute_amounts_custom',
+        store=True,
+        currency_field='company_currency_id',
+        help='Total en pesos mexicanos (Total USD * Tipo Cambio)'
+    )
+    
+    xas_dta_prv = fields.Monetary(
+        string='DTA + PRV',
+        compute='_compute_amounts_custom',
+        store=True,
+        currency_field='company_currency_id',
+        help='Derechos de Trámite Aduanero + Previo'
+    )
+    
+    xas_subtotal_total = fields.Monetary(
+        string='Subtotal Total',
+        compute='_compute_amounts_custom',
+        store=True,
+        currency_field='company_currency_id',
+        help='Subtotal (Pesos + IGI/IGE + DTA + PRV)'
+    )
+    
+    xas_gastos = fields.Monetary(
+        string='Gastos',
+        compute='_compute_amounts_custom',
+        store=True,
+        currency_field='company_currency_id',
+        help='Gastos adicionales calculados'
+    )
+    
+    xas_total_final = fields.Monetary(
+        string='Total Final',
+        compute='_compute_amounts_custom',
+        store=True,
+        currency_field='company_currency_id',
+        help='Total Final (Subtotal + Gastos)'
+    )
+    
+    xas_price_per_meter = fields.Monetary(
+        string='Precio por Metro',
+        compute='_compute_amounts_custom',
+        store=True,
+        currency_field='company_currency_id',
+        help='Precio unitario por metro (Total Final / Metros)'
+    )
+    
+    company_currency_id = fields.Many2one(
+        'res.currency',
+        related='company_id.currency_id',
+        string='Company Currency',
+        readonly=True
+    )
+    
+    # PORCENTAJES PARA CÁLCULOS (puedes ajustarlos según necesites)
+    xas_dta_prv_percentage = fields.Float(
+        string='% DTA + PRV',
+        default=0.815,
+        digits=(5, 3),
+        help='Porcentaje aplicado para calcular DTA + PRV'
+    )
+    
+    xas_gastos_percentage = fields.Float(
+        string='% Gastos',
+        default=7.74,
+        digits=(5, 2),
+        help='Porcentaje aplicado para calcular Gastos'
+    )
+    
     @api.depends('price_subtotal', 'xas_igi_percentage')
     def _compute_xas_igi_amount(self):
         for line in self:
@@ -150,6 +225,43 @@ class PurchaseOrder(models.Model):
     def _compute_xas_subtotal_with_igi(self):
         for line in self:
             line.xas_subtotal_with_igi = line.price_subtotal + line.xas_igi_amount
+    
+    @api.depends(
+        'product_qty', 
+        'price_unit', 
+        'xas_exchange_rate_pedimento',
+        'xas_igi_amount',
+        'discount',
+        'xas_dta_prv_percentage',
+        'xas_gastos_percentage'
+    )
+    def _compute_amounts_custom(self):
+        for line in self:
+            # Total en USD (Dólares * Cantidad)
+            line.xas_total_usd = line.price_unit * line.product_qty
+            
+            # Total en MXN (Pesos) = Total USD * Tipo de Cambio
+            line.xas_total_mxn = line.xas_total_usd * line.xas_exchange_rate_pedimento
+            
+            # DTA + PRV = Total MXN * Porcentaje
+            line.xas_dta_prv = line.xas_total_mxn * (line.xas_dta_prv_percentage / 100)
+            
+            # Subtotal = Pesos + IGI + DTA + PRV
+            # Convertir IGI de USD a MXN si es necesario
+            igi_mxn = line.xas_igi_amount * line.xas_exchange_rate_pedimento if line.currency_id != line.company_currency_id else line.xas_igi_amount
+            line.xas_subtotal_total = line.xas_total_mxn + igi_mxn + line.xas_dta_prv
+            
+            # Gastos = Subtotal * Porcentaje
+            line.xas_gastos = line.xas_subtotal_total * (line.xas_gastos_percentage / 100)
+            
+            # Total Final = Subtotal + Gastos
+            line.xas_total_final = line.xas_subtotal_total + line.xas_gastos
+            
+            # Precio por metro = Total Final / Metros
+            if line.product_qty > 0:
+                line.xas_price_per_meter = line.xas_total_final / line.product_qty
+            else:
+                line.xas_price_per_meter = 0.0
 
     @api.onchange('product_id')
     def _onchange_product_id_igi(self):
