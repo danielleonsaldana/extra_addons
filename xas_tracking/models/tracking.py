@@ -3,6 +3,9 @@
 from odoo import models, fields, api, _
 from odoo.exceptions import UserError, ValidationError, AccessError
 from datetime import date,datetime
+import logging
+_logger = logging.getLogger(__name__)
+
 
 class Tracking(models.Model):
     _name = 'tracking'
@@ -17,8 +20,60 @@ class Tracking(models.Model):
         default=18.665200,
         help='Tipo de cambio que se aplicará a todas las líneas de órdenes de compra'
     )
-    
+
     def action_apply_exchange_rate(self):
+        """
+        Aplica el tipo de cambio general a todas las líneas
+        """
+        self.ensure_one()
+        
+        # DEBUG: Ver qué está pasando
+        _logger.info(f"=== DEBUG TIPO DE CAMBIO ===")
+        _logger.info(f"Tracking ID: {self.id}")
+        _logger.info(f"Tipo de cambio a aplicar: {self.xas_exchange_rate}")
+        
+        # Buscar por todos los métodos posibles
+        # Método 1: Campo One2many directo
+        lines_method1 = self.xas_purchase_order_line_ids
+        _logger.info(f"Líneas encontradas (método 1 - One2many): {len(lines_method1)}")
+        
+        # Método 2: Búsqueda directa
+        lines_method2 = self.env['purchase.order.line'].search([
+            ('xas_tracking_id', '=', self.id)
+        ])
+        _logger.info(f"Líneas encontradas (método 2 - search directo): {len(lines_method2)}")
+        
+        # Método 3: A través de purchase.order
+        purchase_orders = self.env['purchase.order'].search([
+            ('xas_tracking_id', '=', self.id)
+        ])
+        _logger.info(f"Órdenes de compra encontradas: {len(purchase_orders)}")
+        lines_method3 = purchase_orders.mapped('order_line')
+        _logger.info(f"Líneas encontradas (método 3 - a través de PO): {len(lines_method3)}")
+        
+        # Usar el método que encuentre líneas
+        purchase_lines = lines_method1 or lines_method2 or lines_method3
+        
+        if not purchase_lines:
+            raise UserError('No se encontraron líneas de órdenes de compra asociadas a este seguimiento')
+        
+        # Aplicar el tipo de cambio
+        purchase_lines.write({
+            'xas_exchange_rate_pedimento': self.xas_exchange_rate
+        })
+        
+        return {
+            'type': 'ir.actions.client',
+            'tag': 'display_notification',
+            'params': {
+                'title': 'Éxito',
+                'message': f'Se aplicó el tipo de cambio ${self.xas_exchange_rate:.6f} a {len(purchase_lines)} líneas',
+                'type': 'success',
+                'sticky': False,
+            }
+        }
+    
+    '''def action_apply_exchange_rate(self):
         """
         Aplica el tipo de cambio general a todas las líneas de las órdenes de compra
         relacionadas con este tracking
@@ -50,7 +105,7 @@ class Tracking(models.Model):
             }
         else:
             raise UserError('No se encontraron líneas de órdenes de compra asociadas a este seguimiento')
-
+'''
 
     name = fields.Char(string='Nombre', required=True, default="Borrador", copy=False)
     company_id = fields.Many2one('res.company', string='Compañia', required=True, readonly=False, default=lambda self: self.env.company)
