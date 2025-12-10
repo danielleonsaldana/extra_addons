@@ -5,6 +5,38 @@ from odoo.exceptions import UserError, ValidationError
 class PurchaseOrder(models.Model):
     _inherit = 'purchase.order'
 
+    
+    xas_exchange_rate = fields.Float(
+        string='Tipo de Cambio General',
+        digits=(12, 6),
+        default=0.0,
+        help='Tipo de cambio que se aplicará a todas las líneas'
+    )
+    
+    def action_apply_exchange_rate_to_lines(self):
+        """
+        Aplica el tipo de cambio a todas las líneas de esta orden
+        """
+        self.ensure_one()
+        if not self.xas_exchange_rate or self.xas_exchange_rate <= 0:
+            raise UserError('El tipo de cambio debe ser mayor a cero')
+        
+        if self.order_line:
+            self.order_line.write({
+                'xas_exchange_rate_pedimento': self.xas_exchange_rate
+            })
+            
+            return {
+                'type': 'ir.actions.client',
+                'tag': 'display_notification',
+                'params': {
+                    'title': 'Tipo de Cambio Aplicado',
+                    'message': f'Se aplicó el tipo de cambio {self.xas_exchange_rate:.6f} a {len(self.order_line)} líneas',
+                    'type': 'success',
+                    'sticky': False,
+                }
+            }
+
     xas_tracking_id = fields.Many2one('tracking', string='Id de seguimiento', copy=True)
     xas_trip_number_id = fields.Many2one('trip.number', string='Código de embarque', related='xas_tracking_id.xas_trip_number', copy=True, store=True)
     xas_negotiation = fields.Selection(

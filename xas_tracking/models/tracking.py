@@ -9,6 +9,49 @@ class Tracking(models.Model):
     _description = "Seguimiento de viaje"
     _inherit = ['mail.thread', 'mail.activity.mixin']
 
+    
+    # Campo para el tipo de cambio general
+    xas_exchange_rate = fields.Float(
+        string='Tipo de Cambio General',
+        digits=(12, 6),
+        default=18.665200,
+        help='Tipo de cambio que se aplicará a todas las líneas de órdenes de compra'
+    )
+    
+    def action_apply_exchange_rate(self):
+        """
+        Aplica el tipo de cambio general a todas las líneas de las órdenes de compra
+        relacionadas con este tracking
+        """
+        self.ensure_one()
+        if not self.xas_exchange_rate or self.xas_exchange_rate <= 0:
+            raise UserError('El tipo de cambio debe ser mayor a cero')
+        
+        # Buscar todas las líneas de órdenes de compra relacionadas
+        purchase_lines = self.env['purchase.order.line'].search([
+            ('xas_tracking_id', '=', self.id)
+        ])
+        
+        if purchase_lines:
+            # Aplicar el tipo de cambio a todas las líneas
+            purchase_lines.write({
+                'xas_exchange_rate_pedimento': self.xas_exchange_rate
+            })
+            
+            return {
+                'type': 'ir.actions.client',
+                'tag': 'display_notification',
+                'params': {
+                    'title': 'Tipo de Cambio Aplicado',
+                    'message': f'Se aplicó el tipo de cambio {self.xas_exchange_rate:.6f} a {len(purchase_lines)} líneas',
+                    'type': 'success',
+                    'sticky': False,
+                }
+            }
+        else:
+            raise UserError('No se encontraron líneas de órdenes de compra asociadas a este seguimiento')
+
+
     name = fields.Char(string='Nombre', required=True, default="Borrador", copy=False)
     company_id = fields.Many2one('res.company', string='Compañia', required=True, readonly=False, default=lambda self: self.env.company)
     state = fields.Selection(
