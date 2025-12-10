@@ -298,6 +298,8 @@
                                         <field name="product_uom" column_invisible="True"/>
                                         <field name="product_uom_category_id" column_invisible="True"/>
                                         <field name="invoice_lines" column_invisible="True"/>
+                                        <field name="qty_invoiced" column_invisible="True"/>
+                                        <field name="company_currency_id" column_invisible="True"/>
                                         
                                         <!-- ESTRUCTURA SIMILAR AL EXCEL -->
                                         
@@ -339,10 +341,9 @@
                                         <!-- Tipo de Cambio Pedimento -->
                                         <field name="xas_exchange_rate_pedimento" 
                                             string="Tipo de Cambio Pedimento"
-                                            class="text-center text-white"
-                                            decoration-bf="1"
+                                            class="text-center fw-bold"
                                             width="120px"
-                                            style="background-color: #FFEB3B !important;"/>
+                                            decoration-warning="1"/>
                                         
                                         <!-- Pesos (Total USD * Tipo Cambio) -->
                                         <field name="xas_total_mxn" 
@@ -400,9 +401,8 @@
                                             class="btn-primary"
                                             icon="fa-calculator"/>
                                 </group>
-                            </page>
+                            </page>           
 
-                            
 
                             <page string="Operación Marítima" class="oe_page_title" invisible="xas_way != 'maritime'" accesskey="m">
                                 <!--  <group> -->
