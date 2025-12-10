@@ -288,111 +288,108 @@
                                             <button name="action_add_from_catalog" string="Catalog" type="object" class="px-4 btn-link" context="{'order_id': parent.id}"/>
                                         </control>
                                         
-                                        <!-- Campos invisibles existentes -->
+                                        <!-- Campos invisibles -->
                                         <field name="tax_calculation_rounding_method" column_invisible="True"/>
                                         <field name="display_type" column_invisible="True"/>
                                         <field name="company_id" column_invisible="True"/>
                                         <field name="currency_id" column_invisible="True"/>
                                         <field name="state" column_invisible="True"/>
                                         <field name="product_type" column_invisible="True"/>
-                                        <field name="product_uom" column_invisible="True" groups="!uom.group_uom"/>
+                                        <field name="product_uom" column_invisible="True"/>
                                         <field name="product_uom_category_id" column_invisible="True"/>
                                         <field name="invoice_lines" column_invisible="True"/>
                                         
-                                        <!-- SECCIÓN 1: Identificación del Producto (sin color específico) -->
+                                        <!-- ESTRUCTURA SIMILAR AL EXCEL -->
+                                        
+                                        <!-- Tipo de Tela (Producto) -->
                                         <field name="sequence" widget="handle"/>
                                         <field name="product_id" 
+                                            string="Tipo de Tela"
                                             readonly="state in ('purchase', 'to approve', 'done', 'cancel')" 
                                             required="not display_type" 
-                                            width="35%" 
                                             force_save="1" 
                                             domain="[('purchase_ok', '=', True)]"
-                                            class="fw-bold"/>
-                                        <field name="name" widget="section_and_note_text"/>
-                                        <field name="date_planned" 
-                                            optional="hide" 
-                                            required="not display_type" 
-                                            force_save="1"/>
-                                        <field name="analytic_distribution" 
-                                            widget="analytic_distribution" 
-                                            optional="hide" 
-                                            groups="analytic.group_analytic_accounting" 
-                                            options="{'product_field': 'product_id', 'business_domain': 'purchase_order', 'amount_field': 'price_subtotal'}"/>
+                                            class="fw-bold"
+                                            width="200px"/>
                                         
-                                        <!-- SECCIÓN 2: Cantidades (fondo azul claro) -->
+                                        <!-- Color -->
+                                        <field name="xas_color" 
+                                            string="Color"
+                                            optional="show"/>
+                                        
+                                        <!-- Metros (Cantidad) -->
                                         <field name="product_qty" 
-                                            class="text-end fw-bold text-primary"/>
-                                        <field name="qty_received_manual" column_invisible="True"/>
-                                        <field name="qty_received_method" column_invisible="True"/>
-                                        <field name="qty_received" 
-                                            string="Received" 
-                                            column_invisible="parent.state not in ('purchase', 'done')" 
-                                            readonly="qty_received_method != 'manual'" 
-                                            optional="show"
-                                            class="text-end text-info"/>
-                                        <field name="qty_invoiced" 
-                                            string="Billed" 
-                                            column_invisible="parent.state not in ('purchase', 'done')" 
-                                            optional="show"
-                                            class="text-end text-info"/>
+                                            string="Metros"
+                                            class="text-end fw-bold"
+                                            width="80px"/>
                                         
-                                        <!-- SECCIÓN 3: Unidades y Empaques -->
-                                        <field name="product_uom" 
-                                            string="UoM" 
-                                            groups="uom.group_uom" 
-                                            readonly="state in ('purchase', 'done', 'cancel')" 
-                                            required="not display_type" 
-                                            options="{'no_open': True}" 
-                                            force_save="1" 
-                                            optional="show"/>
-                                        <field name="product_packaging_qty" 
-                                            invisible="not product_id or not product_packaging_id" 
-                                            groups="product.group_stock_packaging" 
-                                            optional="show"
-                                            class="text-end"/>
-                                        <field name="product_packaging_id" 
-                                            invisible="not product_id" 
-                                            context="{'default_product_id': product_id, 'tree_view_ref':'product.product_packaging_tree_view', 'form_view_ref':'product.product_packaging_form_view'}" 
-                                            groups="product.group_stock_packaging" 
-                                            optional="show"/>
-                                        
-                                        <!-- SECCIÓN 4: Precios Base (fondo verde claro) -->
+                                        <!-- Dólares (Precio unitario) -->
                                         <field name="price_unit" 
+                                            string="Dólares"
                                             readonly="qty_invoiced != 0"
-                                            class="text-end fw-bold text-success"/>
-                                        <field name="taxes_id" 
-                                            widget="many2many_tags" 
-                                            context="{'default_type_tax_use': 'purchase', 'search_view_ref': 'account.account_tax_view_search'}" 
-                                            options="{'no_create': True}" 
-                                            optional="show"/>
-                                        <field name="discount" 
-                                            string="Desc.%" 
-                                            readonly="qty_invoiced != 0" 
-                                            optional="hide"
-                                            class="text-end text-warning"/>
+                                            class="text-end"
+                                            width="90px"/>
                                         
-                                        <!-- SECCIÓN 5: IGI (Impuestos) - fondo naranja claro -->
-                                        <field name="xas_igi_percentage" 
-                                            string="IGI %" 
-                                            optional="show"
-                                            class="text-end text-warning fw-bold"/>
+                                        <!-- Dólares Total (price_unit * product_qty) -->
+                                        <field name="xas_total_usd" 
+                                            string="Dólares Total"
+                                            class="text-end"
+                                            width="100px"/>
+                                        
+                                        <!-- Tipo de Cambio Pedimento -->
+                                        <field name="xas_exchange_rate_pedimento" 
+                                            string="Tipo de Cambio Pedimento"
+                                            class="text-center text-white"
+                                            decoration-bf="1"
+                                            width="120px"
+                                            style="background-color: #FFEB3B !important;"/>
+                                        
+                                        <!-- Pesos (Total USD * Tipo Cambio) -->
+                                        <field name="xas_total_mxn" 
+                                            string="Pesos"
+                                            class="text-end"
+                                            width="110px"/>
+                                        
+                                        <!-- IGI/IGE -->
                                         <field name="xas_igi_amount" 
-                                            string="Monto IGI" 
-                                            optional="show"
-                                            class="text-end text-warning fw-bold"/>
+                                            string="IGI/IGE" 
+                                            class="text-end"
+                                            width="90px"
+                                            decoration-info="1"/>
                                         
-                                        <!-- SECCIÓN 6: Totales (fondo gris claro/oscuro) -->
-                                        <field name="price_subtotal" 
+                                        <!-- DTA + PRV -->
+                                        <field name="xas_dta_prv" 
+                                            string="DTA + PRV"
+                                            class="text-end"
+                                            width="90px"/>
+                                        
+                                        <!-- Subtotal (Pesos + IGI + DTA) -->
+                                        <field name="xas_subtotal_total" 
                                             string="Subtotal"
-                                            class="text-end fw-bold text-dark"/>
-                                        <field name="xas_subtotal_with_igi" 
-                                            string="Subtotal + IGI" 
-                                            optional="show"
-                                            class="text-end fw-bold text-danger"/>
-                                        <field name="price_total" 
-                                            string="Total" 
-                                            optional="show"
-                                            class="text-end fw-bold text-success"/>
+                                            class="text-end fw-bold"
+                                            width="110px"/>
+                                        
+                                        <!-- Gastos -->
+                                        <field name="xas_gastos" 
+                                            string="Gastos"
+                                            class="text-end"
+                                            width="90px"/>
+                                        
+                                        <!-- Total -->
+                                        <field name="xas_total_final" 
+                                            string="Total"
+                                            class="text-end fw-bold text-success"
+                                            width="110px"/>
+                                        
+                                        <!-- Metro (Total/Metros) -->
+                                        <field name="xas_price_per_meter" 
+                                            string="metro"
+                                            class="text-end"
+                                            width="80px"/>
+                                        
+                                        <!-- Campo oculto para notas y secciones -->
+                                        <field name="name" widget="section_and_note_text" column_invisible="True"/>
+                                        
                                     </tree>
                                 </field>
 

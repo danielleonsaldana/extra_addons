@@ -4,6 +4,7 @@ from . import tracking
 from . import soap_zeep
 from . import res_partner
 from . import purchase
+from . import purchase_order_line
 from . import res_config
 from . import contact_prefix
 from . import incremental

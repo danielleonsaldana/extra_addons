@@ -94,7 +94,6 @@ class PurchaseOrder(models.Model):
             rec.order_line.write({'xas_tracking_id':rec.xas_tracking_id.id, 'xas_trip_number_id':rec.xas_trip_number_id.id})
 
 
-class PurchaseOrderLine(models.Model):
     _inherit = 'purchase.order.line'
     
     xas_tracking_id = fields.Many2one('tracking', string='Id de seguimiento', copy=True)
