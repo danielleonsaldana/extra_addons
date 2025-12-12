@@ -138,25 +138,3 @@ class AccountMove(models.Model):
             'view_mode': 'form',
             'target': 'new',
         }
-ación IEPS asociada"""
-        self.ensure_one()
-        
-        if not self.ieps_declaration_id:
-            return {
-                'type': 'ir.actions.client',
-                'tag': 'display_notification',
-                'params': {
-                    'title': _('Información'),
-                    'message': _('Esta factura no ha sido incluida en ninguna declaración IEPS.'),
-                    'type': 'info',
-                }
-            }
-        
-        return {
-            'name': _('Declaración IEPS'),
-            'type': 'ir.actions.act_window',
-            'res_model': 'ieps.declaration',
-            'res_id': self.ieps_declaration_id.id,
-            'view_mode': 'form',
-            'target': 'current',
-        }
