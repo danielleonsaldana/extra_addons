@@ -275,7 +275,7 @@
                             </page>
 
                             <page string="Productos" class="oe_page_title" accesskey="P">
-                                
+    
                                 <group>
                                     <group string="Configuración de Tipo de Cambio de Pedimento">
                                         <field name="xas_exchange_rate" class="fw-bold fs-5"/>
@@ -339,12 +339,6 @@
                                             class="fw-bold"
                                             width="200px"/>
                                         
-                                        <!-- Color -->
-                                        <!--<field name="xas_color" 
-                                            string="Color"
-                                            optional="show"
-                                            width="100px"/> -->
-                                        
                                         <!-- Metros (Cantidad) -->
                                         <field name="product_qty" 
                                             string="Metros"
@@ -358,20 +352,20 @@
                                             class="text-end"
                                             width="90px"/>
                                         
-                                        <!-- Dólares Total (price_unit * product_qty) -->
+                                        <!-- Dólares Total -->
                                         <field name="xas_total_usd" 
                                             string="Dólares"
                                             class="text-end fw-bold"
                                             width="100px"/>
                                         
-                                        <!-- Tipo de Cambio Pedimento - READONLY EN TREE -->
+                                        <!-- Tipo de Cambio -->
                                         <field name="xas_exchange_rate_pedimento" 
                                             string="Tipo de cambio"
                                             class="text-center fw-bold text-warning bg-warning bg-opacity-25"
                                             width="150px"
                                             readonly="1"/>
                                         
-                                        <!-- Pesos (Total USD * Tipo Cambio) -->
+                                        <!-- Pesos -->
                                         <field name="xas_total_mxn" 
                                             string="Pesos"
                                             class="text-end fw-bold"
@@ -383,13 +377,19 @@
                                             class="text-end text-info"
                                             width="90px"/>
                                         
-                                        <!-- DTA + PRV -->
-                                        <field name="xas_dta_prv" 
-                                            string="DTA + PRV"
-                                            class="text-end"
+                                        <!-- DTA (separado) -->
+                                        <field name="xas_dta" 
+                                            string="DTA"
+                                            class="text-end text-primary"
                                             width="90px"/>
                                         
-                                        <!-- Subtotal (Pesos + IGI + DTA) -->
+                                        <!-- PREV (separado) -->
+                                        <field name="xas_prev" 
+                                            string="PREV"
+                                            class="text-end text-primary"
+                                            width="90px"/>
+                                        
+                                        <!-- Subtotal -->
                                         <field name="xas_subtotal_total" 
                                             string="Subtotal"
                                             class="text-end fw-bold text-primary"
@@ -407,27 +407,18 @@
                                             class="text-end fw-bold text-success"
                                             width="110px"/>
                                         
-                                        <!-- Metro (Total/Metros) -->
+                                        <!-- Precio por Metro -->
                                         <field name="xas_price_per_meter" 
                                             string="metro"
                                             class="text-end text-dark"
                                             width="80px"/>
                                         
-                                        <!-- Campo oculto para notas y secciones -->
+                                        <!-- Campo oculto -->
                                         <field name="name" widget="section_and_note_text" column_invisible="True"/>
                                         
                                     </tree>
                                 </field>
-
-                                <!--<group class="mt-3">
-                                    <button name="compute_purchase_order_lines" 
-                                            type="object" 
-                                            string="Calcular líneas" 
-                                            class="btn-primary"
-                                            icon="fa-calculator"/>
-                                </group>-->
-                                
-                            </page>     
+                            </page>  
 
 
                             <page string="Operación Marítima" class="oe_page_title" invisible="xas_way != 'maritime'" accesskey="m">

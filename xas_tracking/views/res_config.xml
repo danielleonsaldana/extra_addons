@@ -20,7 +20,28 @@
                                     </tree>
                                 </field>
                             </setting>
-                            <setting></setting>
+                        </block>
+                        
+                        <block title="Configuración de Cálculos DTA y PREV" id="dta_prev_config">
+                            <setting id="setting_dta_percentage" string="Porcentaje DTA" help="Porcentaje para calcular el DTA (Derechos de Trámite Aduanero)">
+                                <div class="content-group">
+                                    <div class="row mt16">
+                                        <label for="xas_dta_percentage" class="col-lg-3 o_light_label"/>
+                                        <field name="xas_dta_percentage" class="oe_inline"/>
+                                        <span class="o_form_label oe_inline ms-1">%</span>
+                                    </div>
+                                </div>
+                            </setting>
+                            
+                            <setting id="setting_prev_amount" string="Monto Fijo PREV" help="Monto fijo para calcular el PREV (Previo)">
+                                <div class="content-group">
+                                    <div class="row mt16">
+                                        <label for="xas_prev_fixed_amount" class="col-lg-3 o_light_label"/>
+                                        <field name="xas_prev_fixed_amount" class="oe_inline"/>
+                                        <span class="o_form_label oe_inline ms-1">MXN</span>
+                                    </div>
+                                </div>
+                            </setting>
                         </block>
                     </app>
                 </xpath>

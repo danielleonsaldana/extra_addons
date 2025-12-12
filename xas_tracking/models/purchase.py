@@ -240,6 +240,109 @@ class PurchaseOrderLine(models.Model):
         digits=(5, 3),
         help='Porcentaje aplicado para calcular DTA + PRV'
     )
+
+    xas_dta = fields.Monetary(
+        string='DTA',
+        compute='_compute_amounts_custom',
+        store=True,
+        currency_field='company_currency_id',
+        help='Derechos de Trámite Aduanero'
+    )
+    
+    xas_prev = fields.Monetary(
+        string='PREV',
+        compute='_compute_amounts_custom',
+        store=True,
+        currency_field='company_currency_id',
+        help='Previo'
+    )
+
+    @api.depends(
+        'product_qty', 
+        'price_unit', 
+        'xas_exchange_rate_pedimento',
+        'xas_igi_amount',
+        'discount',
+        'order_id.xas_tracking_id.xas_total_incrementables_mxn',
+        'company_id.xas_dta_percentage',
+        'company_id.xas_prev_fixed_amount',
+    )
+    def _compute_amounts_custom(self):
+        """
+        Calcula todos los montos basados en el tipo de cambio y las cantidades.
+        Gastos se calculan: pesos * (suma_incrementables_mxn / suma_total_pesos)
+        DTA se calcula: pesos * (dta_percentage / 100)
+        PREV se calcula: prev_fixed_amount * (suma_total_metros / metros_producto)
+        """
+        for line in self:
+            # Total en USD (Dólares * Cantidad)
+            line.xas_total_usd = line.price_unit * line.product_qty
+            
+            # Total en MXN (Pesos) = Total USD * Tipo de Cambio
+            line.xas_total_mxn = line.xas_total_usd * line.xas_exchange_rate_pedimento
+            
+            # CALCULAR DTA = pesos * (dta_percentage / 100)
+            dta_percentage = line.company_id.xas_dta_percentage or 0.8
+            line.xas_dta = line.xas_total_mxn * (dta_percentage / 100)
+            
+            # CALCULAR PREV = prev_fixed_amount * (suma_total_metros / metros_producto)
+            tracking = None
+            if line.xas_tracking_id:
+                tracking = line.xas_tracking_id
+            elif line.order_id and line.order_id.xas_tracking_id:
+                tracking = line.order_id.xas_tracking_id
+            
+            if tracking:
+                # Buscar todas las líneas del tracking
+                purchase_orders = self.env['purchase.order'].search([
+                    ('xas_tracking_id', '=', tracking.id)
+                ])
+                all_lines = purchase_orders.mapped('order_line')
+                
+                # Suma total de metros de todas las líneas
+                total_metros = sum(all_lines.mapped('product_qty'))
+                
+                # PREV = monto_fijo * (total_metros / metros_este_producto)
+                prev_fixed_amount = line.company_id.xas_prev_fixed_amount or 290.0
+                if line.product_qty > 0 and total_metros > 0:
+                    line.xas_prev = prev_fixed_amount * (total_metros / line.product_qty)
+                else:
+                    line.xas_prev = 0.0
+            else:
+                line.xas_prev = 0.0
+            
+            # Subtotal = Pesos + IGI + DTA + PREV
+            igi_mxn = line.xas_igi_amount * line.xas_exchange_rate_pedimento if line.currency_id != line.company_currency_id else line.xas_igi_amount
+            line.xas_subtotal_total = line.xas_total_mxn + igi_mxn + line.xas_dta + line.xas_prev
+            
+            # CÁLCULO DE GASTOS BASADO EN INCREMENTABLES
+            if tracking:
+                # Obtener todas las líneas del mismo tracking
+                all_lines = purchase_orders.mapped('order_line')
+                
+                # Suma total de pesos de todas las líneas
+                total_pesos = sum(all_lines.mapped('xas_total_mxn'))
+                
+                # Usar el total de incrementables calculado en el tracking
+                suma_incrementables_mxn = tracking.xas_total_incrementables_mxn
+                
+                # Gastos = pesos * (suma_incrementables_mxn / suma_total_pesos)
+                if total_pesos > 0 and suma_incrementables_mxn > 0:
+                    line.xas_gastos = line.xas_total_mxn * (suma_incrementables_mxn / total_pesos)
+                else:
+                    line.xas_gastos = 0.0
+            else:
+                line.xas_gastos = 0.0
+            
+            # Total Final = Subtotal + Gastos
+            line.xas_total_final = line.xas_subtotal_total + line.xas_gastos
+            
+            # Precio por metro = Total Final / Metros
+            if line.product_qty > 0:
+                line.xas_price_per_meter = line.xas_total_final / line.product_qty
+            else:
+                line.xas_price_per_meter = 0.0
+                
     
     @api.depends('price_subtotal', 'xas_igi_percentage')
     def _compute_xas_igi_amount(self):
@@ -254,92 +357,7 @@ class PurchaseOrderLine(models.Model):
         for line in self:
             line.xas_subtotal_with_igi = line.price_subtotal + line.xas_igi_amount
     
-    @api.depends(
-        'product_qty', 
-        'price_unit', 
-        'xas_exchange_rate_pedimento',
-        'xas_igi_amount',
-        'discount',
-        'xas_dta_prv_percentage',
-        'order_id.xas_tracking_id.xas_total_incrementables_mxn',  # A través de la orden
-    )
-    def _compute_amounts_custom(self):
-        """
-        Calcula todos los montos basados en el tipo de cambio y las cantidades.
-        Gastos se calculan: pesos * (suma_incrementables_mxn / suma_total_pesos)
-        """
-        for line in self:
-            # Total en USD (Dólares * Cantidad)
-            line.xas_total_usd = line.price_unit * line.product_qty
-            
-            # Total en MXN (Pesos) = Total USD * Tipo de Cambio
-            line.xas_total_mxn = line.xas_total_usd * line.xas_exchange_rate_pedimento
-            
-            # DTA + PRV = Total MXN * Porcentaje
-            line.xas_dta_prv = line.xas_total_mxn * (line.xas_dta_prv_percentage / 100)
-            
-            # Subtotal = Pesos + IGI + DTA + PRV
-            # Convertir IGI de USD a MXN si es necesario
-            igi_mxn = line.xas_igi_amount * line.xas_exchange_rate_pedimento if line.currency_id != line.company_currency_id else line.xas_igi_amount
-            line.xas_subtotal_total = line.xas_total_mxn + igi_mxn + line.xas_dta_prv
-            
-            # CÁLCULO DE GASTOS BASADO EN INCREMENTABLES
-            # Buscar el tracking a través de múltiples rutas
-            tracking = None
-            
-            # Opción 1: A través de xas_tracking_id de la línea
-            if line.xas_tracking_id:
-                tracking = line.xas_tracking_id
-                _logger.info(f"Tracking encontrado en línea: {tracking.id}")
-            
-            # Opción 2: A través de la orden de compra
-            elif line.order_id and line.order_id.xas_tracking_id:
-                tracking = line.order_id.xas_tracking_id
-                _logger.info(f"Tracking encontrado en orden: {tracking.id}")
-            
-            if tracking:
-                _logger.info(f"=== CALCULANDO GASTOS - Línea: {line.product_id.name if line.product_id else 'Sin producto'} ===")
-                _logger.info(f"Tracking ID: {tracking.id}")
-                
-                # Obtener todas las líneas del mismo tracking
-                # Buscar por órdenes de compra que tengan este tracking
-                purchase_orders = self.env['purchase.order'].search([
-                    ('xas_tracking_id', '=', tracking.id)
-                ])
-                all_lines = purchase_orders.mapped('order_line')
-                
-                _logger.info(f"Órdenes con este tracking: {len(purchase_orders)}")
-                _logger.info(f"Total de líneas en tracking: {len(all_lines)}")
-                
-                # Suma total de pesos de todas las líneas
-                total_pesos = sum(all_lines.mapped('xas_total_mxn'))
-                _logger.info(f"Suma total de pesos: {total_pesos}")
-                
-                # Usar el total de incrementables calculado en el tracking
-                suma_incrementables_mxn = tracking.xas_total_incrementables_mxn
-                _logger.info(f"Suma incrementables MXN: {suma_incrementables_mxn}")
-                
-                # Gastos = pesos * (suma_incrementables_mxn / suma_total_pesos)
-                if total_pesos > 0 and suma_incrementables_mxn > 0:
-                    line.xas_gastos = line.xas_total_mxn * (suma_incrementables_mxn / total_pesos)
-                    _logger.info(f"GASTOS CALCULADOS: {line.xas_gastos}")
-                    _logger.info(f"Fórmula: {line.xas_total_mxn} * ({suma_incrementables_mxn} / {total_pesos})")
-                else:
-                    line.xas_gastos = 0.0
-                    _logger.info(f"Gastos = 0 porque total_pesos={total_pesos} o suma_incrementables={suma_incrementables_mxn}")
-            else:
-                line.xas_gastos = 0.0
-                _logger.info(f"Línea {line.id}: No tiene tracking_id (ni en línea ni en orden), gastos = 0")
-            
-            # Total Final = Subtotal + Gastos
-            line.xas_total_final = line.xas_subtotal_total + line.xas_gastos
-            
-            # Precio por metro = Total Final / Metros
-            if line.product_qty > 0:
-                line.xas_price_per_meter = line.xas_total_final / line.product_qty
-            else:
-                line.xas_price_per_meter = 0.0
-
+   
 
     @api.onchange('product_id')
     def _onchange_product_id_igi(self):
