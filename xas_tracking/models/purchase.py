@@ -305,7 +305,7 @@ class PurchaseOrderLine(models.Model):
                 # PREV = monto_fijo * (total_metros / metros_este_producto)
                 prev_fixed_amount = line.company_id.xas_prev_fixed_amount or 290.0
                 if line.product_qty > 0 and total_metros > 0:
-                    line.xas_prev = prev_fixed_amount * (total_metros / line.product_qty)
+                    line.xas_prev = (prev_fixed_amount / total_metros) * line.product_qty
                 else:
                     line.xas_prev = 0.0
             else:
