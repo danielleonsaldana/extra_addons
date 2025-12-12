@@ -1,0 +1,177 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    
+    <!-- Vista Tree -->
+    <record id="view_ieps_declaration_tree" model="ir.ui.view">
+        <field name="name">ieps.declaration.tree</field>
+        <field name="model">ieps.declaration</field>
+        <field name="arch" type="xml">
+            <tree string="Declaraciones IEPS" decoration-info="state=='draft'" decoration-success="state=='done'" decoration-muted="state=='cancel'">
+                <field name="name"/>
+                <field name="date"/>
+                <field name="period_month"/>
+                <field name="period_year"/>
+                <field name="invoice_count"/>
+                <field name="total_ieps" widget="monetary"/>
+                <field name="user_id" widget="many2one_avatar_user"/>
+                <field name="state" widget="badge" decoration-info="state=='draft'" decoration-success="state=='done'" decoration-muted="state=='cancel'"/>
+            </tree>
+        </field>
+    </record>
+
+    <!-- Vista Form -->
+    <record id="view_ieps_declaration_form" model="ir.ui.view">
+        <field name="name">ieps.declaration.form</field>
+        <field name="model">ieps.declaration</field>
+        <field name="arch" type="xml">
+            <form string="Declaración IEPS">
+                <header>
+                    <button name="action_generate_txt" string="Generar TXT" type="object" 
+                            class="oe_highlight" invisible="state != 'draft'"/>
+                    <button name="action_set_to_draft" string="Regresar a Borrador" type="object" 
+                            invisible="state != 'done'" groups="account.group_account_manager"/>
+                    <button name="action_cancel" string="Cancelar" type="object" 
+                            invisible="state != 'draft'" confirm="¿Está seguro de cancelar esta declaración?"/>
+                    <field name="state" widget="statusbar" statusbar_visible="draft,done"/>
+                </header>
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button name="action_view_invoices" type="object" class="oe_stat_button" icon="fa-file-text-o">
+                            <field name="invoice_count" widget="statbutton" string="Facturas"/>
+                        </button>
+                    </div>
+                    
+                    <div class="oe_title">
+                        <label for="name" string="Folio"/>
+                        <h1>
+                            <field name="name" readonly="1"/>
+                        </h1>
+                    </div>
+                    
+                    <group>
+                        <group>
+                            <field name="period_month" readonly="state != 'draft'"/>
+                            <field name="period_year" readonly="state != 'draft'"/>
+                            <field name="date" readonly="state != 'draft'"/>
+                            <field name="company_id" groups="base.group_multi_company" readonly="state != 'draft'"/>
+                        </group>
+                        <group>
+                            <field name="total_subtotal" widget="monetary"/>
+                            <field name="total_ieps" widget="monetary"/>
+                            <field name="user_id" widget="many2one_avatar_user"/>
+                            <field name="currency_id" invisible="1"/>
+                        </group>
+                    </group>
+                    
+                    <group invisible="not txt_file">
+                        <group>
+                            <label for="txt_file" string="Archivo TXT Generado"/>
+                            <div>
+                                <field name="txt_file" filename="txt_filename" readonly="1"/>
+                                <field name="txt_filename" invisible="1"/>
+                            </div>
+                        </group>
+                    </group>
+                    
+                    <notebook>
+                        <page string="Facturas Incluidas" name="invoices">
+                            <field name="invoice_ids" readonly="state != 'draft'" 
+                                   context="{'tree_view_ref': 'ieps_declaration.view_account_move_ieps_tree'}">
+                                <tree decoration-success="ieps_declared==False" decoration-warning="ieps_declared==True" create="0" delete="0">
+                                    <field name="name"/>
+                                    <field name="invoice_date"/>
+                                    <field name="partner_id"/>
+                                    <field name="amount_untaxed" widget="monetary"/>
+                                    <field name="ieps_amount" widget="monetary"/>
+                                    <field name="ieps_declared" string="Ya Declarado" widget="boolean_toggle"/>
+                                    <field name="ieps_declaration_id" string="Declaración" optional="hide"/>
+                                    <field name="ieps_declaration_date" optional="hide"/>
+                                    <field name="state" invisible="1"/>
+                                    <field name="move_type" invisible="1"/>
+                                </tree>
+                            </field>
+                        </page>
+                        
+                        <page string="Notas" name="notes">
+                            <field name="notes" placeholder="Notas adicionales sobre esta declaración..."/>
+                        </page>
+                    </notebook>
+                </sheet>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids"/>
+                    <field name="activity_ids"/>
+                    <field name="message_ids"/>
+                </div>
+            </form>
+        </field>
+    </record>
+
+    <!-- Vista Search -->
+    <record id="view_ieps_declaration_search" model="ir.ui.view">
+        <field name="name">ieps.declaration.search</field>
+        <field name="model">ieps.declaration</field>
+        <field name="arch" type="xml">
+            <search string="Buscar Declaraciones IEPS">
+                <field name="name" string="Folio"/>
+                <field name="period_month"/>
+                <field name="period_year"/>
+                <field name="user_id"/>
+                <filter string="Borradores" name="draft" domain="[('state', '=', 'draft')]"/>
+                <filter string="Declarados" name="done" domain="[('state', '=', 'done')]"/>
+                <filter string="Cancelados" name="cancel" domain="[('state', '=', 'cancel')]"/>
+                <separator/>
+                <filter string="Mis Declaraciones" name="my_declarations" domain="[('user_id', '=', uid)]"/>
+                <separator/>
+                <filter string="Este Mes" name="this_month" 
+                        domain="[('date', '&gt;=', (context_today() - relativedelta(day=1)).strftime('%Y-%m-%d')), ('date', '&lt;=', (context_today() + relativedelta(day=31)).strftime('%Y-%m-%d'))]"/>
+                <filter string="Este Año" name="this_year" 
+                        domain="[('date', '&gt;=', (context_today() - relativedelta(month=1, day=1)).strftime('%Y-%m-%d'))]"/>
+                <group expand="0" string="Agrupar Por">
+                    <filter string="Estado" name="group_state" context="{'group_by': 'state'}"/>
+                    <filter string="Mes" name="group_month" context="{'group_by': 'period_month'}"/>
+                    <filter string="Año" name="group_year" context="{'group_by': 'period_year'}"/>
+                    <filter string="Responsable" name="group_user" context="{'group_by': 'user_id'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <!-- Acción -->
+    <record id="action_ieps_declaration" model="ir.actions.act_window">
+        <field name="name">Declaraciones IEPS</field>
+        <field name="res_model">ieps.declaration</field>
+        <field name="view_mode">tree,form</field>
+        <field name="context">{'search_default_draft': 1}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Crear nueva declaración IEPS
+            </p>
+            <p>
+                Las declaraciones IEPS le permiten gestionar y generar archivos TXT
+                para la declaración de Impuesto Especial sobre Producción y Servicios.
+            </p>
+        </field>
+    </record>
+
+    <!-- Secuencia -->
+    <record id="seq_ieps_declaration" model="ir.sequence">
+        <field name="name">Declaración IEPS</field>
+        <field name="code">ieps.declaration</field>
+        <field name="prefix">IEPS/</field>
+        <field name="padding">5</field>
+        <field name="company_id" eval="False"/>
+    </record>
+
+    <!-- Menú -->
+    <menuitem id="menu_ieps_declaration_root"
+              name="Declaración IEPS"
+              parent="account.menu_finance"
+              sequence="100"/>
+    
+    <menuitem id="menu_ieps_declaration"
+              name="Declaraciones"
+              parent="menu_ieps_declaration_root"
+              action="action_ieps_declaration"
+              sequence="10"/>
+
+</odoo>

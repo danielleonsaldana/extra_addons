@@ -1,0 +1,5 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_ieps_declaration_user,ieps.declaration.user,model_ieps_declaration,account.group_account_user,1,1,1,0
+access_ieps_declaration_manager,ieps.declaration.manager,model_ieps_declaration,account.group_account_manager,1,1,1,1
+access_ieps_declaration_wizard_user,ieps.declaration.wizard.user,model_ieps_declaration_wizard,account.group_account_user,1,1,1,1
+access_ieps_declaration_wizard_manager,ieps.declaration.wizard.manager,model_ieps_declaration_wizard,account.group_account_manager,1,1,1,1

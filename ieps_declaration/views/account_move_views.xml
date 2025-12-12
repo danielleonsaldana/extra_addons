@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- Vista Tree para facturas con IEPS -->
+    <record id="view_account_move_ieps_tree" model="ir.ui.view">
+        <field name="name">account.move.ieps.tree</field>
+        <field name="model">account.move</field>
+        <field name="arch" type="xml">
+            <tree decoration-success="ieps_declared==False" decoration-warning="ieps_declared==True">
+                <field name="name"/>
+                <field name="invoice_date"/>
+                <field name="partner_id"/>
+                <field name="amount_untaxed" widget="monetary"/>
+                <field name="ieps_amount" widget="monetary"/>
+                <field name="ieps_declared" string="Declarado" widget="boolean_toggle"/>
+                <field name="ieps_declaration_id"/>
+                <field name="ieps_declaration_date"/>
+            </tree>
+        </field>
+    </record>
+
+    <!-- Extensión de la vista form de factura -->
+    <record id="view_move_form_ieps" model="ir.ui.view">
+        <field name="name">account.move.form.ieps</field>
+        <field name="model">account.move</field>
+        <field name="inherit_id" ref="account.view_move_form"/>
+        <field name="arch" type="xml">
+            
+            <!-- Agregar botón en el button_box -->
+            <xpath expr="//div[@name='button_box']" position="inside">
+                <button name="action_view_ieps_declaration" 
+                        type="object" 
+                        class="oe_stat_button" 
+                        icon="fa-file-text"
+                        invisible="not ieps_declared or move_type not in ['out_invoice', 'out_refund']"
+                        help="Ver declaración IEPS">
+                    <div class="o_stat_info">
+                        <field name="ieps_declared" invisible="1"/>
+                        <span class="o_stat_text">IEPS</span>
+                        <span class="o_stat_text">Declarado</span>
+                    </div>
+                </button>
+            </xpath>
+            
+            <!-- Agregar campos IEPS después del total -->
+            <xpath expr="//field[@name='amount_total']" position="after">
+                <field name="ieps_amount" 
+                       widget="monetary"
+                       invisible="ieps_amount == 0 or move_type not in ['out_invoice', 'out_refund']"
+                       readonly="1"
+                       options="{'currency_field': 'currency_id'}"/>
+            </xpath>
+            
+            <!-- Agregar página de información IEPS -->
+            <xpath expr="//notebook" position="inside">
+                <page string="Información IEPS" 
+                      name="ieps_info" 
+                      invisible="ieps_amount == 0 or move_type not in ['out_invoice', 'out_refund']">
+                    <group>
+                        <group string="Estado de Declaración">
+                            <field name="ieps_declared" widget="boolean"/>
+                            <field name="ieps_declaration_id" 
+                                   readonly="1"
+                                   invisible="not ieps_declared"/>
+                            <field name="ieps_declaration_date" 
+                                   readonly="1"
+                                   invisible="not ieps_declared"/>
+                        </group>
+                        <group string="Resumen IEPS">
+                            <field name="ieps_amount" widget="monetary" readonly="1"/>
+                        </group>
+                    </group>
+                    
+                    <group invisible="not ieps_declared" string="Advertencia">
+                        <div class="alert alert-warning" role="alert">
+                            <strong>Factura Declarada:</strong> Esta factura ya fue incluida en una declaración IEPS.
+                            Para modificar la declaración, primero debe regresar la declaración a estado borrador.
+                        </div>
+                    </group>
+                </page>
+            </xpath>
+            
+        </field>
+    </record>
+
+    <!-- Filtro de búsqueda para facturas con IEPS -->
+    <record id="view_account_move_filter_ieps" model="ir.ui.view">
+        <field name="name">account.move.filter.ieps</field>
+        <field name="model">account.move</field>
+        <field name="inherit_id" ref="account.view_account_move_filter"/>
+        <field name="arch" type="xml">
+            <xpath expr="//search" position="inside">
+                <separator/>
+                <filter string="Con IEPS" name="with_ieps" domain="[('ieps_amount', '&gt;', 0)]"/>
+                <filter string="IEPS No Declarado" name="ieps_not_declared" domain="[('ieps_amount', '&gt;', 0), ('ieps_declared', '=', False)]"/>
+                <filter string="IEPS Declarado" name="ieps_declared" domain="[('ieps_amount', '&gt;', 0), ('ieps_declared', '=', True)]"/>
+            </xpath>
+        </field>
+    </record>
+
+    <!-- Acción para ver facturas con IEPS pendientes -->
+    <record id="action_invoice_ieps_pending" model="ir.actions.act_window">
+        <field name="name">Facturas con IEPS Pendiente</field>
+        <field name="res_model">account.move</field>
+        <field name="view_mode">tree,form</field>
+        <field name="domain">[('move_type', 'in', ['out_invoice', 'out_refund']), ('state', '=', 'posted'), ('ieps_amount', '&gt;', 0), ('ieps_declared', '=', False)]</field>
+        <field name="context">{'search_default_posted': 1, 'default_move_type': 'out_invoice'}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                No hay facturas con IEPS pendiente de declarar
+            </p>
+            <p>
+                Aquí aparecerán las facturas que tienen IEPS y aún no han sido incluidas en una declaración.
+            </p>
+        </field>
+    </record>
+
+    <!-- Menú para facturas pendientes -->
+    <menuitem id="menu_invoice_ieps_pending"
+              name="Facturas Pendientes"
+              parent="menu_ieps_declaration_root"
+              action="action_invoice_ieps_pending"
+              sequence="20"/>
+
+</odoo>

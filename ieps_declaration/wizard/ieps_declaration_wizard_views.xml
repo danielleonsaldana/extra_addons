@@ -1,0 +1,148 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- Vista Form del Wizard -->
+    <record id="view_ieps_declaration_wizard_form" model="ir.ui.view">
+        <field name="name">ieps.declaration.wizard.form</field>
+        <field name="model">ieps.declaration.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Asistente de Declaración IEPS">
+                <sheet>
+                    <div class="oe_title">
+                        <h1>Nueva Declaración IEPS</h1>
+                        <p>Seleccione el período y las facturas que desea incluir en la declaración</p>
+                    </div>
+                    
+                    <group>
+                        <group string="Período de Declaración">
+                            <field name="period_month"/>
+                            <field name="period_year"/>
+                            <field name="date_from"/>
+                            <field name="date_to"/>
+                        </group>
+                        <group string="Resumen">
+                            <field name="total_invoices" readonly="1"/>
+                            <field name="total_selected" readonly="1"/>
+                            <field name="total_ieps" widget="monetary" readonly="1"/>
+                            <field name="currency_id" invisible="1"/>
+                        </group>
+                    </group>
+                    
+                    <group>
+                        <group>
+                            <field name="company_id" groups="base.group_multi_company"/>
+                            <field name="show_already_declared"/>
+                        </group>
+                    </group>
+                    
+                    <notebook>
+                        <page string="Facturas Disponibles" name="available_invoices">
+                            <group>
+                                <div class="alert alert-info" role="alert">
+                                    <strong>Instrucciones:</strong>
+                                    <ul>
+                                        <li>Las facturas en <strong>verde</strong> están disponibles para declaración</li>
+                                        <li>Las facturas en <strong>amarillo</strong> ya fueron declaradas previamente</li>
+                                        <li>Use los botones de acción rápida para seleccionar/deseleccionar facturas</li>
+                                    </ul>
+                                </div>
+                            </group>
+                            
+                            <group>
+                                <button name="action_refresh_invoices" 
+                                        string="Actualizar Lista" 
+                                        type="object" 
+                                        icon="fa-refresh"
+                                        class="btn-secondary"/>
+                                <button name="action_select_undeclared_only" 
+                                        string="Seleccionar No Declaradas" 
+                                        type="object" 
+                                        icon="fa-check-square-o"
+                                        class="btn-primary"/>
+                                <button name="action_select_all" 
+                                        string="Seleccionar Todas" 
+                                        type="object" 
+                                        icon="fa-check-square"
+                                        class="btn-secondary"/>
+                                <button name="action_deselect_all" 
+                                        string="Deseleccionar Todas" 
+                                        type="object" 
+                                        icon="fa-square-o"
+                                        class="btn-secondary"/>
+                            </group>
+                            
+                            <field name="invoice_ids" invisible="1"/>
+                            
+                            <field name="selected_invoice_ids" widget="many2many" 
+                                   domain="[('id', 'in', invoice_ids)]">
+                                <tree decoration-success="ieps_declared==False" 
+                                      decoration-warning="ieps_declared==True"
+                                      create="0" delete="0" editable="bottom">
+                                    <field name="name"/>
+                                    <field name="invoice_date"/>
+                                    <field name="partner_id"/>
+                                    <field name="amount_untaxed" widget="monetary" sum="Total Subtotal"/>
+                                    <field name="ieps_amount" widget="monetary" sum="Total IEPS"/>
+                                    <field name="ieps_declared" string="Declarado" widget="boolean_toggle" readonly="1"/>
+                                    <field name="ieps_declaration_id" optional="hide" readonly="1"/>
+                                    <field name="ieps_declaration_date" optional="hide" readonly="1"/>
+                                    <field name="state" invisible="1"/>
+                                    <field name="move_type" invisible="1"/>
+                                </tree>
+                            </field>
+                        </page>
+                        
+                        <page string="Vista Previa" name="preview" invisible="total_selected == 0">
+                            <group>
+                                <div class="alert alert-success" role="alert">
+                                    <h4>Resumen de Declaración</h4>
+                                    <p><strong>Período:</strong> <field name="period_month" readonly="1" nolabel="1"/> / <field name="period_year" readonly="1" nolabel="1"/></p>
+                                    <p><strong>Total de Facturas:</strong> <field name="total_selected" readonly="1" nolabel="1"/></p>
+                                    <p><strong>Monto Total IEPS:</strong> $<field name="total_ieps" readonly="1" nolabel="1" widget="monetary"/></p>
+                                </div>
+                            </group>
+                            
+                            <group string="Facturas Seleccionadas">
+                                <field name="selected_invoice_ids" nolabel="1" readonly="1">
+                                    <tree create="0" delete="0">
+                                        <field name="name"/>
+                                        <field name="invoice_date"/>
+                                        <field name="partner_id"/>
+                                        <field name="amount_untaxed" widget="monetary"/>
+                                        <field name="ieps_amount" widget="monetary"/>
+                                    </tree>
+                                </field>
+                            </group>
+                        </page>
+                    </notebook>
+                </sheet>
+                
+                <footer>
+                    <button name="action_create_declaration" 
+                            string="Crear Declaración" 
+                            type="object" 
+                            class="btn-primary"
+                            invisible="total_selected == 0"/>
+                    <button string="Cancelar" class="btn-secondary" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <!-- Acción del Wizard -->
+    <record id="action_ieps_declaration_wizard" model="ir.actions.act_window">
+        <field name="name">Nueva Declaración IEPS</field>
+        <field name="res_model">ieps.declaration.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+        <field name="binding_model_id" ref="model_ieps_declaration"/>
+    </record>
+
+    <!-- Menú para abrir el wizard -->
+    <menuitem id="menu_ieps_declaration_wizard"
+              name="Nueva Declaración (Asistente)"
+              parent="menu_ieps_declaration_root"
+              action="action_ieps_declaration_wizard"
+              sequence="5"/>
+
+</odoo>
