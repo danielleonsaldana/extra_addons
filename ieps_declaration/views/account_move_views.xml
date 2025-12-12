@@ -122,4 +122,17 @@
               action="action_invoice_ieps_pending"
               sequence="20"/>
 
+    <!-- Acción de servidor para generar declaración desde facturas -->
+    <record id="action_create_ieps_from_invoices" model="ir.actions.server">
+        <field name="name">Generar Declaración IEPS</field>
+        <field name="model_id" ref="account.model_account_move"/>
+        <field name="binding_model_id" ref="account.model_account_move"/>
+        <field name="binding_view_types">list</field>
+        <field name="state">code</field>
+        <field name="code">
+if records:
+    action = records.action_create_ieps_declaration()
+        </field>
+    </record>
+
 </odoo>

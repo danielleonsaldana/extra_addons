@@ -37,14 +37,14 @@
                     </group>
                     
                     <notebook>
-                        <page string="Facturas Disponibles" name="available_invoices">
+                        <page string="Facturas Seleccionadas" name="selected_invoices">
                             <group>
                                 <div class="alert alert-info" role="alert">
                                     <strong>Instrucciones:</strong>
                                     <ul>
                                         <li>Las facturas en <strong>verde</strong> están disponibles para declaración</li>
                                         <li>Las facturas en <strong>amarillo</strong> ya fueron declaradas previamente</li>
-                                        <li>Use los botones de acción rápida para seleccionar/deseleccionar facturas</li>
+                                        <li>Puede agregar o quitar facturas de la selección</li>
                                     </ul>
                                 </div>
                             </group>
@@ -60,11 +60,6 @@
                                         type="object" 
                                         icon="fa-check-square-o"
                                         class="btn-primary"/>
-                                <button name="action_select_all" 
-                                        string="Seleccionar Todas" 
-                                        type="object" 
-                                        icon="fa-check-square"
-                                        class="btn-secondary"/>
                                 <button name="action_deselect_all" 
                                         string="Deseleccionar Todas" 
                                         type="object" 
@@ -79,7 +74,7 @@
                                    context="{'default_company_id': company_id}">
                                 <tree decoration-success="ieps_declared==False" 
                                       decoration-warning="ieps_declared==True"
-                                      create="0" delete="0" editable="bottom">
+                                      create="0" delete="0">
                                     <field name="company_id" column_invisible="1"/>
                                     <field name="name"/>
                                     <field name="invoice_date"/>

@@ -72,3 +72,91 @@ class AccountMove(models.Model):
             'view_mode': 'form',
             'target': 'current',
         }
+
+    def action_create_ieps_declaration(self):
+        """Crea una declaración IEPS con las facturas seleccionadas"""
+        # Filtrar solo facturas válidas
+        valid_invoices = self.filtered(
+            lambda inv: inv.move_type in ['out_invoice', 'out_refund'] 
+            and inv.state == 'posted' 
+            and inv.ieps_amount > 0
+        )
+        
+        if not valid_invoices:
+            return {
+                'type': 'ir.actions.client',
+                'tag': 'display_notification',
+                'params': {
+                    'title': _('Advertencia'),
+                    'message': _('Debe seleccionar facturas de cliente publicadas que contengan IEPS.'),
+                    'type': 'warning',
+                }
+            }
+        
+        # Verificar facturas ya declaradas
+        already_declared = valid_invoices.filtered('ieps_declared')
+        if already_declared:
+            invoice_list = '\n'.join([
+                '- %s (Declarada el %s en %s)' % (
+                    inv.name,
+                    inv.ieps_declaration_date.strftime('%d/%m/%Y') if inv.ieps_declaration_date else 'N/A',
+                    inv.ieps_declaration_id.name if inv.ieps_declaration_id else 'N/A'
+                )
+                for inv in already_declared
+            ])
+            
+            return {
+                'type': 'ir.actions.client',
+                'tag': 'display_notification',
+                'params': {
+                    'title': _('Facturas Ya Declaradas'),
+                    'message': _('Las siguientes facturas ya fueron declaradas:\n\n%s\n\nPor favor, deseleccione estas facturas.') % invoice_list,
+                    'type': 'warning',
+                    'sticky': True,
+                }
+            }
+        
+        # Obtener período de las facturas
+        invoice_dates = valid_invoices.mapped('invoice_date')
+        min_date = min(invoice_dates)
+        
+        # Crear wizard pre-cargado
+        wizard = self.env['ieps.declaration.wizard'].create({
+            'period_month': str(min_date.month).zfill(2),
+            'period_year': str(min_date.year),
+            'date_from': min_date,
+            'date_to': max(invoice_dates),
+            'selected_invoice_ids': [(6, 0, valid_invoices.ids)],
+            'company_id': valid_invoices[0].company_id.id,
+        })
+        
+        return {
+            'name': _('Crear Declaración IEPS'),
+            'type': 'ir.actions.act_window',
+            'res_model': 'ieps.declaration.wizard',
+            'res_id': wizard.id,
+            'view_mode': 'form',
+            'target': 'new',
+        }
+ación IEPS asociada"""
+        self.ensure_one()
+        
+        if not self.ieps_declaration_id:
+            return {
+                'type': 'ir.actions.client',
+                'tag': 'display_notification',
+                'params': {
+                    'title': _('Información'),
+                    'message': _('Esta factura no ha sido incluida en ninguna declaración IEPS.'),
+                    'type': 'info',
+                }
+            }
+        
+        return {
+            'name': _('Declaración IEPS'),
+            'type': 'ir.actions.act_window',
+            'res_model': 'ieps.declaration',
+            'res_id': self.ieps_declaration_id.id,
+            'view_mode': 'form',
+            'target': 'current',
+        }

@@ -116,14 +116,17 @@ class IepsDeclarationWizard(models.TransientModel):
             next_month_date = fields.Date.from_string('%04d-%02d-01' % (next_year, next_month))
             self.date_to = fields.Date.subtract(next_month_date, days=1)
             
-            # Cargar facturas
-            self._load_invoices()
+            # Cargar facturas solo si no hay facturas pre-seleccionadas
+            if not self.selected_invoice_ids:
+                self._load_invoices()
 
     @api.onchange('date_from', 'date_to', 'show_already_declared')
     def _onchange_dates(self):
         """Carga las facturas cuando cambian las fechas"""
         if self.date_from and self.date_to:
-            self._load_invoices()
+            # Solo cargar si no hay facturas pre-seleccionadas
+            if not self.selected_invoice_ids:
+                self._load_invoices()
 
     def _load_invoices(self):
         """Carga las facturas del período que tienen IEPS"""
@@ -142,6 +145,30 @@ class IepsDeclarationWizard(models.TransientModel):
         
         invoices = self.env['account.move'].search(domain, order='invoice_date, name')
         self.invoice_ids = invoices
+    
+    @api.model
+    def default_get(self, fields_list):
+        """Cargar facturas disponibles al crear el wizard"""
+        res = super().default_get(fields_list)
+        
+        # Si hay facturas pre-seleccionadas en el contexto
+        if self._context.get('active_model') == 'account.move' and self._context.get('active_ids'):
+            active_ids = self._context.get('active_ids', [])
+            invoices = self.env['account.move'].browse(active_ids)
+            
+            # Filtrar facturas válidas
+            valid_invoices = invoices.filtered(
+                lambda inv: inv.move_type in ['out_invoice', 'out_refund'] 
+                and inv.state == 'posted' 
+                and inv.ieps_amount > 0
+            )
+            
+            if valid_invoices:
+                res['selected_invoice_ids'] = [(6, 0, valid_invoices.ids)]
+                res['invoice_ids'] = [(6, 0, valid_invoices.ids)]
+        
+        return res
+
 
     def action_select_all(self):
         """Selecciona todas las facturas disponibles"""
